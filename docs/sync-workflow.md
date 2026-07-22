@@ -41,15 +41,10 @@ flowchart LR
 | RBD | Delete duplicate local `mode/light` + `mode/dark` only after imported sets work |
 | All | No bare `foreground` — use `foreground.base` |
 
-## Submodule in Bowtie
+## App repos (Bowtie, HTA, RBD, STPA)
 
-Bowtie reads tokens at `design-tokens/tokens.json`. Bump submodule ref when pinning a release:
-
-```bash
-cd design-tokens && git checkout main && git pull
-cd .. && git add design-tokens && git commit -m "Bump design tokens"
-```
+No `tokens.json` in app git repos. Clone [hfa-ds](https://github.com/larswpettersson/hfa-ds) separately and use its MCP scripts to push tokens into each Penpot file.
 
 ## Cursor multi-root workspace
 
-Open `Projects/hfa-design.code-workspace` to edit `hfa-ds` and app repos side by side.
+Open `Projects/HFA/hfa-design.code-workspace` (or `Projects/hfa-design.code-workspace`) to edit `hfa-ds` and app repos side by side.

@@ -7,7 +7,7 @@ Canonical git home for **HFA DS design tokens** and Penpot sync tooling.
 | Penpot master file | **HFA DS** (Penpot cloud) — tokens + shared component library |
 | Portable contract | **`tokens.json`** in this repo |
 | App Penpot files | Bowtie, HTA, STPA, RBD — import copies of token sets |
-| App code | Submodule at `design-tokens/` (Bowtie) or MCP import only |
+| App code | Clone [hfa-ds](https://github.com/larswpettersson/hfa-ds) separately; no `tokens.json` in app repos |
 
 Penpot token sets are **file-local**. This repo does not live-link Penpot files; scripts push `tokens.json` into each Penpot file via MCP.
 
@@ -28,11 +28,11 @@ npm run build:penpot
 
 ### Sync git → Penpot (after editing tokens.json)
 
-1. `npm run build:penpot`
+1. `npm run build:penpot` (or use committed `scripts/penpot/import-bundle.js`)
 2. Connect target Penpot file (**HFA DS first**, then Bowtie → HTA → STPA → RBD)
-3. Paste into execute_code:
-   - `scripts/penpot/generated/import-payload.js`
-   - `scripts/penpot/import-from-json.js`
+3. Paste into execute_code **one of**:
+   - `scripts/penpot/import-from-github.js` (fetches `tokens.json` from GitHub; needs network)
+   - `scripts/penpot/import-bundle.js` (offline; full payload embedded)
 4. Paste `scripts/penpot/validate.js` (with import-payload) to confirm zero drift
 5. Deactivate legacy sets (`Global` in STPA, duplicate locals)
 
@@ -61,10 +61,10 @@ gh repo create larswpettersson/hfa-ds --public --source=. --remote=origin --push
 
 ## Consumer repos
 
-Bowtie links this repo as a submodule:
+Bowtie, HTA, RBD, and STPA do **not** contain `tokens.json`. Clone this repo alongside them, or import into Penpot via MCP scripts.
 
 ```bash
-git submodule add https://github.com/larswpettersson/hfa-ds.git design-tokens
+git clone https://github.com/larswpettersson/hfa-ds.git
 ```
 
-Tokens path: `design-tokens/tokens.json`
+Penpot sync: paste `scripts/penpot/import-bundle.js` with each Penpot file connected in MCP.
