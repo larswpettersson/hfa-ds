@@ -1,0 +1,29 @@
+{
+  "name": "HFA Workspace",
+  "customizations": {
+    "codespaces": {
+      "repositories": {
+        "larswpettersson/hfa-hta": {
+          "permissions": {
+            "contents": "write"
+          }
+        },
+        "larswpettersson/hfa-bowtie": {
+          "permissions": {
+            "contents": "write"
+          }
+        },
+        "larswpettersson/hfa-stpa": {
+          "permissions": {
+            "contents": "write"
+          }
+        },
+        "larswpettersson/hfa-rbd": {
+          "permissions": {
+            "contents": "write"
+          }
+        }
+      }
+    }
+  }
+}
