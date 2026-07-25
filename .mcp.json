@@ -3,7 +3,10 @@
     "penpot": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@penpot/mcp@latest"]
+      "args": ["-y", "@penpot/mcp@latest"],
+      "env": {
+        "PENPOT_MCP_KEY": "${PENPOT_MCP_URL}"
+      }
     }
   }
 }
