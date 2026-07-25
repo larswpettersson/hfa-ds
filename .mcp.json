@@ -1,12 +1,8 @@
 {
   "mcpServers": {
     "penpot": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@penpot/mcp@latest"],
-      "env": {
-        "PENPOT_MCP_KEY": "${PENPOT_MCP_URL}"
-      }
+      "type": "http",
+      "url": "https://design.penpot.app/mcp/stream?userToken=${PENPOT_MCP_URL}"
     }
   }
 }

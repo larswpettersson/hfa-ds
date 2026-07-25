@@ -8,6 +8,7 @@
     "validate": "node scripts/build/validate-json.mjs",
     "build:penpot": "node scripts/build/embed-for-penpot.mjs",
     "build:css": "node scripts/codegen/tokens-to-css.mjs",
-    "build": "npm run validate && npm run build:penpot && npm run build:css"
+    "build": "npm run validate && npm run build:penpot && npm run build:css",
+    "scan:secrets": "bash scripts/security/scan-secrets.sh"
   }
 }

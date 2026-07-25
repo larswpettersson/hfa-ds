@@ -1,4 +1,4 @@
-// AUTO-GENERATED from tokens.json
+// AUTO-GENERATED from tokens.json — run: npm run build:penpot
 var HFA_DS_TOKEN_SETS = {
   "mode/light": [
     {
@@ -25,7 +25,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "info",
       "type": "color",
       "value": "#007FFF",
-      "description": "Action/Info \u2013 Azure Blue. Visible to almost everyone; stays blue for red-green CVD."
+      "description": "Action/Info – Azure Blue. Visible to almost everyone; stays blue for red-green CVD."
     },
     {
       "name": "shared_tokens.line_styles.strong",
@@ -49,13 +49,13 @@ var HFA_DS_TOKEN_SETS = {
       "name": "success",
       "type": "color",
       "value": "#228B22",
-      "description": "Success/Go \u2013 Shamrock Green. Lighter than error in luminance for red-green CVD."
+      "description": "Success/Go – Shamrock Green. Lighter than error in luminance for red-green CVD."
     },
     {
       "name": "warning",
       "type": "color",
       "value": "#FFC300",
-      "description": "Warning \u2013 Saffron Yellow. Warm orange-yellow that doesn't wash out."
+      "description": "Warning – Saffron Yellow. Warm orange-yellow that doesn't wash out."
     },
     {
       "name": "foreground.base",
@@ -73,7 +73,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "error",
       "type": "color",
       "value": "#C70039",
-      "description": "Error/Stop \u2013 Venetian Red. Cool red, stays dark for red-green CVD."
+      "description": "Error/Stop – Venetian Red. Cool red, stays dark for red-green CVD."
     },
     {
       "name": "size.normal",
@@ -145,55 +145,55 @@ var HFA_DS_TOKEN_SETS = {
       "name": "brand.primary",
       "type": "color",
       "value": "#D70000",
-      "description": "Trafikverket profilr\u00f6d; logotyp, knappar, borders."
+      "description": "Trafikverket profilröd; logotyp, knappar, borders."
     },
     {
       "name": "brand.primary.subtle",
       "type": "color",
       "value": "#FFE5E5",
-      "description": "Ljus r\u00f6d ton; hover, bakgrunder."
+      "description": "Ljus röd ton; hover, bakgrunder."
     },
     {
       "name": "brand.on_primary",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.primary."
+      "description": "Text/ikoner på brand.primary."
     },
     {
       "name": "brand.secondary",
       "type": "color",
       "value": "#B30000",
-      "description": "St\u00f6djande r\u00f6d; mindre framtr\u00e4dande accent."
+      "description": "Stödjande röd; mindre framträdande accent."
     },
     {
       "name": "brand.on_secondary",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.secondary."
+      "description": "Text/ikoner på brand.secondary."
     },
     {
       "name": "brand.tertiary",
       "type": "color",
       "value": "#870000",
-      "description": "RGB 135.0.0; appikon bakgrund, vit ikon p\u00e5 r\u00f6d (Appar-riktlinjer)."
+      "description": "RGB 135.0.0; appikon bakgrund, vit ikon på röd (Appar-riktlinjer)."
     },
     {
       "name": "brand.on_tertiary",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.tertiary."
+      "description": "Text/ikoner på brand.tertiary."
     },
     {
       "name": "brand.inverted",
       "type": "color",
       "value": "#FF4444",
-      "description": "Brand p\u00e5 m\u00f6rka ytor; t.ex. knapp p\u00e5 Snackbar."
+      "description": "Brand på mörka ytor; t.ex. knapp på Snackbar."
     },
     {
       "name": "brand.on_inverted",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.inverted."
+      "description": "Text/ikoner på brand.inverted."
     }
   ],
   "mode/dark": [
@@ -225,25 +225,25 @@ var HFA_DS_TOKEN_SETS = {
       "name": "info",
       "type": "color",
       "value": "#58A6FF",
-      "description": "Action/Info \u2013 Brighter blue for dark mode; stays blue for red-green CVD."
+      "description": "Action/Info – Brighter blue for dark mode; stays blue for red-green CVD."
     },
     {
       "name": "warning",
       "type": "color",
       "value": "#FFC300",
-      "description": "Warning \u2013 Saffron Yellow. Warm orange-yellow that doesn't wash out."
+      "description": "Warning – Saffron Yellow. Warm orange-yellow that doesn't wash out."
     },
     {
       "name": "error",
       "type": "color",
       "value": "#E03E3E",
-      "description": "Error/Stop \u2013 Brighter red for dark mode; still darker than success in luminance for CVD."
+      "description": "Error/Stop – Brighter red for dark mode; still darker than success in luminance for CVD."
     },
     {
       "name": "success",
       "type": "color",
       "value": "#3FB950",
-      "description": "Success/Go \u2013 Brighter green for dark mode; lighter than error in luminance for CVD."
+      "description": "Success/Go – Brighter green for dark mode; lighter than error in luminance for CVD."
     },
     {
       "name": "background.base",
@@ -317,55 +317,55 @@ var HFA_DS_TOKEN_SETS = {
       "name": "brand.primary",
       "type": "color",
       "value": "#FF4444",
-      "description": "Trafikverket profilr\u00f6d; ljusare f\u00f6r kontrast p\u00e5 m\u00f6rk."
+      "description": "Trafikverket profilröd; ljusare för kontrast på mörk."
     },
     {
       "name": "brand.primary.subtle",
       "type": "color",
       "value": "#3D1515",
-      "description": "M\u00f6rk r\u00f6d ton; hover, bakgrunder."
+      "description": "Mörk röd ton; hover, bakgrunder."
     },
     {
       "name": "brand.on_primary",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.primary."
+      "description": "Text/ikoner på brand.primary."
     },
     {
       "name": "brand.secondary",
       "type": "color",
       "value": "#FF6666",
-      "description": "St\u00f6djande r\u00f6d; mindre framtr\u00e4dande accent."
+      "description": "Stödjande röd; mindre framträdande accent."
     },
     {
       "name": "brand.on_secondary",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.secondary."
+      "description": "Text/ikoner på brand.secondary."
     },
     {
       "name": "brand.tertiary",
       "type": "color",
       "value": "#FF8888",
-      "description": "Tredje accent; ljusare r\u00f6d."
+      "description": "Tredje accent; ljusare röd."
     },
     {
       "name": "brand.on_tertiary",
       "type": "color",
       "value": "#0D1117",
-      "description": "Text/ikoner p\u00e5 brand.tertiary (m\u00f6rk f\u00f6r kontrast)."
+      "description": "Text/ikoner på brand.tertiary (mörk för kontrast)."
     },
     {
       "name": "brand.inverted",
       "type": "color",
       "value": "#D70000",
-      "description": "Brand p\u00e5 ljusa ytor i dark mode; t.ex. accent p\u00e5 ljus dialog."
+      "description": "Brand på ljusa ytor i dark mode; t.ex. accent på ljus dialog."
     },
     {
       "name": "brand.on_inverted",
       "type": "color",
       "value": "#FFFFFF",
-      "description": "Text/ikoner p\u00e5 brand.inverted."
+      "description": "Text/ikoner på brand.inverted."
     },
     {
       "name": "radius.round",
