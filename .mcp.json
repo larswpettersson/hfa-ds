@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "penpot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@penpot/mcp@latest"]
+    }
+  }
+}
