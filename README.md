@@ -1,4 +1,4 @@
-# HFA DS — design tokens
+# Human Factors Analysis Design System (HFA DS) — design token
 
 Canonical git home for **HFA DS design tokens** and Penpot sync tooling.
 
