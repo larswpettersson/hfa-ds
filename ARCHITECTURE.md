@@ -1,39 +1,39 @@
-# Arkitektur: HFA-familjen (hfa-ds, hfa-hta, hfa-bowtie)
+# Architecture: The HFA Family (hfa-ds, hfa-hta, hfa-bowtie)
 
-## 1. Syfte och struktur
+## 1. Purpose and Structure
 
-Detta dokument beskriver arkitekturen för tre relaterade repon inom Human Factors Analysis (HFA)-familjen:
+This document describes the architecture of three related repositories within the Human Factors Analysis (HFA) family:
 
-- **hfa-ds** – Design system-repot. Innehåller inga körbara applikationer, utan är sanningskällan för designtokens (färger, typografi, radier m.m.) samt byggskript och Penpot-synk-verktyg som håller ett centralt Penpot-designbibliotek och konsumentprojektens Penpot-filer i synk. Drivs med Node.js (ESM), inga runtime-beroenden.
-- **hfa-hta** – Fristående webbverktyg för Hierarchical Task Analysis (HTA) kombinerat med Tabular Task Analysis (TTA)/HEI-fält. Ren vanilla JS/HTML/CSS utan build-steg, körs genom att öppna HTML-filer direkt i webbläsaren.
-- **hfa-bowtie** – Fristående webbverktyg för att rita och redigera bowtie-diagram (risk: orsaker → toppelement/hot → konsekvenser, med barriärer). Även detta ren vanilla JS/HTML/CSS utan build-steg.
+- **hfa-ds** – Design system repository. Contains no runnable applications, but is the single source of truth for design tokens (colors, typography, radii, etc.) as well as build scripts and Penpot sync tools that keep a central Penpot design library and consumer projects' Penpot files in sync. Runs on Node.js (ESM), no runtime dependencies.
+- **hfa-hta** – Standalone web tool for Hierarchical Task Analysis (HTA) combined with Tabular Task Analysis (TTA)/HEI fields. Pure vanilla JS/HTML/CSS without build steps, runs by opening HTML files directly in the browser.
+- **hfa-bowtie** – Standalone web tool for drawing and editing bowtie diagrams (risk: causes → top event/hazard → consequences, with barriers). Also pure vanilla JS/HTML/CSS without build steps.
 
-Gemensamt syfte: stödja säkerhets- och human factors-analys genom separata, fokuserade in-browser-editorer, medan visuell konsekvens (färger, typsnitt, komponentutseende) hålls samman via ett delat designsystem i Penpot, sprunget ur `hfa-ds`.
+Shared purpose: support safety and human factors analysis through separate, focused in-browser editors, while maintaining visual consistency (colors, fonts, component appearance) via a shared design system in Penpot, sourced from `hfa-ds`.
 
-**Viktigt arkitekturdrag:** Det finns **ingen kodkoppling** (inga npm-paket, inga delade JS-moduler, inga API-anrop) mellan de tre repona. All koppling sker indirekt via:
-1. Penpot som delat designverktyg – `hfa-ds` äger master-tokens och synkar dem till varje konsuments Penpot-fil via MCP-skript.
-2. Manuellt underhållna designkonventioner (CSS-variabler i respektive HTML-fil som ska spegla `hfa-ds/tokens.json`).
+**Important architectural characteristic:** There is **no code coupling** (no npm packages, no shared JS modules, no API calls) between the three repositories. All coupling occurs indirectly via:
+1. Penpot as shared design tool – `hfa-ds` owns master tokens and syncs them to each consumer's Penpot file via MCP scripts.
+2. Manually maintained design conventions (CSS variables in respective HTML files that should mirror `hfa-ds/tokens.json`).
 
-Varken hfa-hta eller hfa-bowtie har `package.json` eller något buildsteg – de är statiska sidor som körs direkt i webbläsaren, med Python-baserade smoke-tester för regressionstest.
+Neither hfa-hta nor hfa-bowtie have `package.json` or any build steps – they are static pages that run directly in the browser, with Python-based smoke tests for regression testing.
 
-## 2. Komponentdiagram – kommunikation mellan repon
+## 2. Component Diagram – Communication Between Repositories
 
 ```mermaid
 flowchart TB
     subgraph DS["hfa-ds (design system)"]
-        tokens["tokens.json<br/>(källa till sanning)"]
+        tokens["tokens.json<br/>(source of truth)"]
         buildScripts["scripts/build/*<br/>validate → embed → tokens-to-css"]
         penpotScripts["scripts/penpot/*<br/>export/import/validate (MCP)"]
-        dist["dist/<br/>genererad CSS"]
+        dist["dist/<br/>generated CSS"]
         tokens --> buildScripts --> dist
         tokens --> penpotScripts
     end
 
-    subgraph Penpot["Penpot (delat designverktyg)"]
-        masterLib["HFA DS<br/>master-bibliotek"]
-        bowtieFile["Bowtie<br/>Penpot-fil"]
-        htaFile["HTA<br/>Penpot-fil"]
-        otherFiles["STPA / RBD<br/>Penpot-filer"]
+    subgraph Penpot["Penpot (shared design tool)"]
+        masterLib["HFA DS<br/>master library"]
+        bowtieFile["Bowtie<br/>Penpot file"]
+        htaFile["HTA<br/>Penpot file"]
+        otherFiles["STPA / RBD<br/>Penpot files"]
     end
 
     subgraph HTA["hfa-hta (app)"]
@@ -46,59 +46,59 @@ flowchart TB
     subgraph Bowtie["hfa-bowtie (app)"]
         bowtieHtml["Bowtie.html"]
         bowtieApp["scripts/penpot5-app.js<br/>in-memory state"]
-        bowtieData["data/ + fixtures/<br/>JSON (bowtie-diagram)"]
+        bowtieData["data/ + fixtures/<br/>JSON (bowtie diagram)"]
         bowtieHtml --> bowtieApp --> bowtieData
     end
 
     penpotScripts -- "push tokens (MCP execute_code)" --> masterLib
-    masterLib -- "publiceras som<br/>komponentbibliotek" --> bowtieFile
-    masterLib -- "publiceras som<br/>komponentbibliotek" --> htaFile
-    masterLib -- "publiceras som<br/>komponentbibliotek" --> otherFiles
+    masterLib -- "published as<br/>component library" --> bowtieFile
+    masterLib -- "published as<br/>component library" --> htaFile
+    masterLib -- "published as<br/>component library" --> otherFiles
 
-    bowtieFile -. "manuell översättning till<br/>CSS-variabler" .-> bowtieHtml
-    htaFile -. "manuell översättning till<br/>CSS-variabler" .-> htaHtml
+    bowtieFile -. "manual translation to<br/>CSS variables" .-> bowtieHtml
+    htaFile -. "manual translation to<br/>CSS variables" .-> htaHtml
 
-    dist -. "referens vid manuell<br/>uppdatering av CSS-variabler" .-> bowtieHtml
-    dist -. "referens vid manuell<br/>uppdatering av CSS-variabler" .-> htaHtml
+    dist -. "reference during manual<br/>CSS variable updates" .-> bowtieHtml
+    dist -. "reference during manual<br/>CSS variable updates" .-> htaHtml
 ```
 
-**Nyckelpunkter i diagrammet:**
-- `hfa-ds` är den enda noden med byggpipeline (validering → paketering → CSS-generering) och den enda som pratar med Penpot MCP för synk.
-- Penpot fungerar som mellanlager/knutpunkt: tokens flödar in från `hfa-ds` och publiceras ut som komponentbibliotek till varje konsumentfil (Bowtie, HTA, STPA, RBD).
-- `hfa-hta` och `hfa-bowtie` är arkitektoniskt identiska mönster: en enskild HTML-sida, en stor vanilla-JS-fil som äger allt state i minnet, och JSON-baserad import/export för persistens (ingen backend, ingen databas).
-- Streckade linjer visar manuella/icke-automatiserade kopplingar (design → kod), till skillnad från de skriptdrivna MCP-flödena.
+**Key points in the diagram:**
+- `hfa-ds` is the only node with a build pipeline (validation → packaging → CSS generation) and the only one that talks to Penpot MCP for sync.
+- Penpot acts as an intermediary/hub: tokens flow in from `hfa-ds` and are published out as component libraries to each consumer file (Bowtie, HTA, STPA, RBD).
+- `hfa-hta` and `hfa-bowtie` follow the same architectural pattern: a single HTML page, one large vanilla-JS file that owns all state in memory, and JSON-based import/export for persistence (no backend, no database).
+- Dashed lines show manual/non-automated couplings (design → code), in contrast to script-driven MCP flows.
 
-## 3. Sekvensdiagram – huvudflöde: token-synk från hfa-ds till en konsumentapp
+## 3. Sequence Diagram – Main Flow: Token Sync from hfa-ds to a Consumer App
 
-Detta är det primära arkitekturella användningsfallet: en designer/utvecklare ändrar ett designtoken i `hfa-ds` och sprider det till en konsumentapp (t.ex. `hfa-bowtie`).
+This is the primary architectural use case: a designer/developer changes a design token in `hfa-ds` and propagates it to a consumer app (e.g., `hfa-bowtie`).
 
 ```mermaid
 sequenceDiagram
-    actor Dev as Utvecklare/Designer
+    actor Dev as Developer/Designer
     participant Tokens as hfa-ds/tokens.json
-    participant Build as hfa-ds build-skript
+    participant Build as hfa-ds build scripts
     participant MCP as Penpot MCP (execute_code)
-    participant Master as Penpot: HFA DS master-bibliotek
-    participant AppFile as Penpot: Bowtie-fil
+    participant Master as Penpot: HFA DS master library
+    participant AppFile as Penpot: Bowtie file
     participant Repo as hfa-bowtie (Bowtie.html)
 
-    Dev->>Tokens: Redigerar token (t.ex. färg, radie)
+    Dev->>Tokens: Edit token (e.g., color, radius)
     Dev->>Build: npm run build
-    Build->>Build: validate-json.mjs (schemakontroll)
-    Build->>Build: embed-for-penpot.mjs (paketerar payload)
-    Build->>Build: tokens-to-css.mjs (genererar CSS-variabler)
-    Build-->>Dev: dist/ uppdaterad + generated/import-payload.js
+    Build->>Build: validate-json.mjs (schema validation)
+    Build->>Build: embed-for-penpot.mjs (package payload)
+    Build->>Build: tokens-to-css.mjs (generate CSS variables)
+    Build-->>Dev: dist/ updated + generated/import-payload.js
 
-    Dev->>MCP: Kör import-bundle.js via execute_code
-    MCP->>Master: Skriver in nya tokens i master-biblioteket
-    Dev->>MCP: Kör validate.js
-    MCP-->>Dev: Bekräftar noll drift (tokens matchar)
+    Dev->>MCP: Run import-bundle.js via execute_code
+    MCP->>Master: Write new tokens to master library
+    Dev->>MCP: Run validate.js
+    MCP-->>Dev: Confirm zero drift (tokens match)
 
-    Master->>AppFile: Publicerat bibliotek uppdaterar<br/>komponenter i Bowtie-filen
-    Dev->>AppFile: Verifierar visuellt i Penpot
+    Master->>AppFile: Published library updates<br/>components in Bowtie file
+    Dev->>AppFile: Verify visually in Penpot
 
-    Dev->>Repo: Uppdaterar CSS-variabler manuellt<br/>i Bowtie.html utifrån dist/ eller Penpot
-    Repo-->>Dev: Bowtie-appen renderas med nya tokens<br/>(state/JSON-import/export opåverkat)
+    Dev->>Repo: Manually update CSS variables<br/>in Bowtie.html based on dist/ or Penpot
+    Repo-->>Dev: Bowtie app renders with new tokens<br/>(state/JSON import/export unaffected)
 ```
 
-**Kommentar:** Eftersom `hfa-hta` och `hfa-bowtie` saknar byggsteg och paketberoenden är det sista steget (kod-uppdatering) manuellt – detta är en medveten designavvägning i projektfamiljen (enkla, beroendefria HTML-appar) snarare än en ofullständig integration.
+**Note:** Because `hfa-hta` and `hfa-bowtie` lack build steps and package dependencies, the final step (code update) is manual – this is a deliberate design tradeoff in the project family (simple, dependency-free HTML apps) rather than incomplete integration.
