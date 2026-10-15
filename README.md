@@ -68,3 +68,7 @@ git clone https://github.com/larswpettersson/hfa-ds.git
 ```
 
 Penpot sync: paste `scripts/penpot/import-bundle.js` with each Penpot file connected in MCP.
+
+## License
+
+[MIT](LICENSE) © 2026 Lars Pettersson
