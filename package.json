@@ -9,6 +9,12 @@
     "build:penpot": "node scripts/build/embed-for-penpot.mjs",
     "build:css": "node scripts/codegen/tokens-to-css.mjs",
     "build": "npm run validate && npm run build:penpot && npm run build:css",
-    "scan:secrets": "bash scripts/security/scan-secrets.sh"
+    "scan:secrets": "bash scripts/security/scan-secrets.sh",
+    "test": "playwright test",
+    "test:shared": "playwright test tests/shared",
+    "test:stpa": "playwright test tests/stpa"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
   }
 }
