@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__penpot__high_level_overview",
+      "mcp__penpot__execute_code",
+      "Bash(gh repo *)",
+      "Bash(cd *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(/mcp)",
+      "Bash(git reset *)",
+      "mcp__penpot__export_shape",
+      "Bash(git remote *)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "penpot"
+  ]
+}
