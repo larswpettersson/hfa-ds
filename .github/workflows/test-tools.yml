@@ -1,0 +1,56 @@
+name: Test HFA tools
+
+on:
+  push:
+    branches: [main]
+    paths: ["tests/**", "tokens.json", "scripts/build/**", "package*.json", "playwright.config.mjs", ".github/workflows/test-tools.yml"]
+  pull_request:
+    paths: ["tests/**", "tokens.json", "scripts/build/**", "package*.json", "playwright.config.mjs", ".github/workflows/test-tools.yml"]
+  workflow_dispatch:
+
+env:
+  HFA_WORKSPACE: ${{ github.workspace }}/ws
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: ws/hfa-ds }
+      # Tools are checked out next to hfa-ds, as in the codespace. HFA_REPOS_TOKEN is needed while the repos are private
+      # (a PAT with read access to them); without it the checkout falls back to the default token.
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-stpa, path: ws/hfa-stpa, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-hta, path: ws/hfa-hta, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-bowtie, path: ws/hfa-bowtie, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-rbd, path: ws/hfa-rbd, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ws/hfa-ds/package-lock.json
+      - name: Install
+        working-directory: ws/hfa-ds
+        run: npm ci
+      - name: Cache Playwright browsers
+        id: pw
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('ws/hfa-ds/package-lock.json') }}
+      - name: Install Chromium
+        working-directory: ws/hfa-ds
+        run: npx playwright install --with-deps chromium
+      - name: Run tests
+        working-directory: ws/hfa-ds
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            ws/hfa-ds/playwright-report
+            ws/hfa-ds/test-results
