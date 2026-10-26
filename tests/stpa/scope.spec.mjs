@@ -88,6 +88,28 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeDisabled();
   });
 
+  test("convert an actuator back to a control action and a sensor back to feedback", async ({ page }) => {
+    const before = await getEditorJson(page, "#editor");
+    await page.locator('#diagram text[data-sel="ca1"]').click({ modifiers: ["Shift"] });
+    await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click({ modifiers: ["Shift"] });
+    await expect(page.locator("#selBar button", { hasText: "Back to control action" })).toBeDisabled();
+    await page.locator("#selBar button", { hasText: "Convert to actuator" }).click();
+    await page.locator("#selBar button", { hasText: "Convert to sensor" }).click();
+    // the actuator block is selected after the conversion; reverting it sends ca1 back to the process
+    await page.locator("#selBar button", { hasText: "Clear" }).click();
+    await node(page, "a1").click({ modifiers: ["Shift"] });
+    await expect(page.locator("#selBar button", { hasText: "Back to feedback" })).toBeDisabled();
+    await page.locator("#selBar button", { hasText: "Back to control action" }).click();
+    // the sensor reverts from its feedback, not only from the block
+    await page.locator("#selBar button", { hasText: "Clear" }).click();
+    await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click({ modifiers: ["Shift"] });
+    await page.locator("#selBar button", { hasText: "Back to feedback" }).click();
+    expect(await getEditorJson(page, "#editor")).toEqual(before);
+    expect(await selected(page)).toEqual(["fb1"]);
+    await expect(node(page, "a1")).toHaveCount(0);
+    await expect(node(page, "s1")).toHaveCount(0);
+  });
+
   test("a scoped question sends the selection, the chosen model and no earlier turns", async ({ page }) => {
     const bodies = await mockClaude(page, "Answer.");
     await node(page, "p1").click({ modifiers: ["Shift"] });
