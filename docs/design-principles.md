@@ -145,7 +145,7 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
 | Location | Status |
 |---|---|
-| Penpot **HFA DS**, set `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption` and `caption-bold` are created. The **Fonter** board shows a sample of every style. |
+| Penpot **HFA DS**, set `typography` | `font.family.base`, `font.family.mono`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption`, `caption-bold` and `code` are created. The legacy `roboto-base` and `size.normal` point to `{font.family.base}` and `{font.size.sm}`. The **Fonter** board shows a sample of every style. |
 | `tokens.json` | Still contains the older tokens only: `roboto-base` (Source Sans 3 stack) and `size.normal` (14). It is updated through the export flow in [sync-workflow.md](sync-workflow.md). |
 
-The legacy tokens `roboto-base` and `size.normal` should then point to `font.family.base` and `font.size.sm`, or be removed.
+The legacy tokens `roboto-base` and `size.normal` can be removed once no Penpot file or tool references them.
