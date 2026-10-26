@@ -42,7 +42,7 @@ Sex storlekar och två vikter. Namnen motsvarar tokens i setet `typography` i Pe
 
 | Token | Storlek | Vikt | Radavstånd | Användning i verktygen |
 |---|---|---|---|---|
-| `font.size.xs` *(föreslagen)* | 12 px | Regular / Bold | 1.35 | Sekundär text: ID, metadata, chips, pills, förklaringar, tips, tabellhuvuden, undertexter i diagram |
+| `font.size.xs` / `typography.caption`, `caption-bold` | 12 px | Regular / Bold | 1.35 | Sekundär text: ID, metadata, chips, pills, förklaringar, tips, tabellhuvuden, undertexter i diagram |
 | `font.size.sm` / `typography.small` | 14 px | Regular | 1.5 | **Standardtext i gränssnittet**: brödtext, knappar, formulär, tabeller, paneler, statusmeddelanden, etiketter i diagram |
 | `font.size.md` / `typography.body`, `body-bold` | 16 px | Regular / Bold | 1.5 | Panel- och avsnittsrubriker (Bold), längre läsbar text som hjälpdialoger |
 | `font.size.lg` / `typography.heading-3` | 20 px | Bold | 1.3 | Applikationstitel |
@@ -145,7 +145,7 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
 | Plats | Status |
 |---|---|
-| Penpot **HFA DS**, setet `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.sm–2xl`, `typography.heading-1/2/3`, `body`, `body-bold` och `small` är skapade. `font.size.xs` är inte skapad än. |
+| Penpot **HFA DS**, setet `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption` och `caption-bold` är skapade. Boarden **Fonter** visar ett prov av varje stil. |
 | `tokens.json` | Innehåller fortfarande bara de äldre tokens `roboto-base` (Source Sans 3-listan) och `size.normal` (14). Den uppdateras via exportflödet i [sync-workflow.md](sync-workflow.md). |
 
 De äldre tokens `roboto-base` och `size.normal` bör därefter peka på `font.family.base` och `font.size.sm`, eller tas bort.

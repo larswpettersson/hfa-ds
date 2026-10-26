@@ -42,7 +42,7 @@ Six sizes, two weights. The names match the tokens in the `typography` set in Pe
 
 | Token | Size | Weight | Line height | Use in the tools |
 |---|---|---|---|---|
-| `font.size.xs` *(proposed)* | 12 px | Regular / Bold | 1.35 | Secondary text: IDs, metadata, chips, pills, legend, hints, table headers, diagram sub-labels |
+| `font.size.xs` / `typography.caption`, `caption-bold` | 12 px | Regular / Bold | 1.35 | Secondary text: IDs, metadata, chips, pills, legend, hints, table headers, diagram sub-labels |
 | `font.size.sm` / `typography.small` | 14 px | Regular | 1.5 | **Default UI text**: body, buttons, forms, tables, panels, status messages, diagram labels |
 | `font.size.md` / `typography.body`, `body-bold` | 16 px | Regular / Bold | 1.5 | Panel and section headings (Bold), longer reading text such as help dialogs |
 | `font.size.lg` / `typography.heading-3` | 20 px | Bold | 1.3 | Application title |
@@ -145,7 +145,7 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
 | Location | Status |
 |---|---|
-| Penpot **HFA DS**, set `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.sm–2xl`, `typography.heading-1/2/3`, `body`, `body-bold` and `small` are created. `font.size.xs` is not yet created. |
+| Penpot **HFA DS**, set `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption` and `caption-bold` are created. The **Fonter** board shows a sample of every style. |
 | `tokens.json` | Still contains the older tokens only: `roboto-base` (Source Sans 3 stack) and `size.normal` (14). It is updated through the export flow in [sync-workflow.md](sync-workflow.md). |
 
 The legacy tokens `roboto-base` and `size.normal` should then point to `font.family.base` and `font.size.sm`, or be removed.
