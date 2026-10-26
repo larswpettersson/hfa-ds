@@ -38,7 +38,7 @@ Varje verktyg är en enda självförsörjande HTML-fil som ska vara **lätt att 
 
 ### 1.3 Typografisk skala
 
-Sex storlekar och två vikter. Namnen motsvarar tokens i setet `typography` i Penpot-filen **HFA DS**.
+Sex storlekar och två vikter. Namnen motsvarar tokens i seten `mode/light` och `mode/dark` i Penpot-filen **HFA DS**.
 
 | Token | Storlek | Vikt | Radavstånd | Användning i verktygen |
 |---|---|---|---|---|
@@ -145,7 +145,7 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
 | Plats | Status |
 |---|---|
-| Penpot **HFA DS**, setet `typography` | `font.family.base`, `font.family.mono`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption`, `caption-bold` och `code` är skapade. De äldre `roboto-base` och `size.normal` pekar på `{font.family.base}` och `{font.size.sm}`. Boarden **Fonter** visar ett prov av varje stil. |
+| Penpot **HFA DS**, seten `mode/light` och `mode/dark` (samma värden i båda) | `font.family.base`, `font.family.mono`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption`, `caption-bold` och `code` är skapade. De äldre `roboto-base` och `size.normal` pekar på `{font.family.base}` och `{font.size.sm}`. Boarden **Fonter** visar ett prov av varje stil. |
 | `tokens.json` | Innehåller fortfarande bara de äldre tokens `roboto-base` (Source Sans 3-listan) och `size.normal` (14). Den uppdateras via exportflödet i [sync-workflow.md](sync-workflow.md). |
 
 De äldre tokens `roboto-base` och `size.normal` kan tas bort när inga Penpot-filer eller verktyg längre refererar till dem.

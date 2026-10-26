@@ -38,7 +38,7 @@ Each tool is a single self-contained HTML file that must stay **easy to read and
 
 ### 1.3 Type scale
 
-Six sizes, two weights. The names match the tokens in the `typography` set in Penpot **HFA DS**.
+Six sizes, two weights. The names match the tokens in the `mode/light` and `mode/dark` sets in Penpot **HFA DS**.
 
 | Token | Size | Weight | Line height | Use in the tools |
 |---|---|---|---|---|
@@ -145,7 +145,7 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
 | Location | Status |
 |---|---|
-| Penpot **HFA DS**, set `typography` | `font.family.base`, `font.family.mono`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption`, `caption-bold` and `code` are created. The legacy `roboto-base` and `size.normal` point to `{font.family.base}` and `{font.size.sm}`. The **Fonter** board shows a sample of every style. |
+| Penpot **HFA DS**, sets `mode/light` and `mode/dark` (same values in both) | `font.family.base`, `font.family.mono`, `font.weight.regular/bold`, `font.size.xs–2xl`, `typography.heading-1/2/3`, `body`, `body-bold`, `small`, `caption`, `caption-bold` and `code` are created. The legacy `roboto-base` and `size.normal` point to `{font.family.base}` and `{font.size.sm}`. The **Fonter** board shows a sample of every style. |
 | `tokens.json` | Still contains the older tokens only: `roboto-base` (Source Sans 3 stack) and `size.normal` (14). It is updated through the export flow in [sync-workflow.md](sync-workflow.md). |
 
 The legacy tokens `roboto-base` and `size.normal` can be removed once no Penpot file or tool references them.
