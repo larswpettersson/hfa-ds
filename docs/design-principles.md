@@ -54,7 +54,10 @@ Rules:
 1. **14 px is the base size in every tool.** The tools are dense work interfaces with tables, diagrams and forms. STPA and RBD already use 14 px, and so does the existing `size.normal` token.
 2. **12 px is the minimum.** Do not use 10, 10.5 or 11 px. 12 px text must meet a contrast of at least 4.5:1.
 3. **Only whole sizes from the scale.** Round 12.5 and 13 to 12 (secondary) or 14 (primary), and round 15 and 18 to 16.
-4. **Only weights 400 and 700.** Replace 600 (semibold) with 700.
+4. **Only weights 400 and 700.** Replace 600 (semibold) with 700, and 500 with 400. There are three reasons:
+   - The manual specifies two weights, Regular and Bold, and Open Sans Bold is 700.
+   - The fallback font, Arial, only has 400 and 700, so on machines without Open Sans, 600 already renders as 700. Using 700 makes the tools look the same on every machine.
+   - The Penpot tokens only define `font.weight.regular` and `font.weight.bold`, so design and code match.
 5. **Separate hierarchy levels by weight before size.** For example, a 16 px Bold section heading over 14 px Regular text.
 6. **Uppercase** is allowed only for short labels such as panel headings. Uppercase labels use 12 px Bold.
 7. **Monospace** is used only for code and JSON, at 12 px.
@@ -84,7 +87,11 @@ Rules reference the variables, not literal pixel values, for example `font-size:
 
 Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
-**All tools:** change the font stack from Source Sans 3 to `"Open Sans", Arial, sans-serif`.
+**All tools:**
+
+- Change the font stack from Source Sans 3 to `"Open Sans", Arial, sans-serif`.
+- Change `font-weight: 600` to 700. It is used for headings and bold text in all four tools.
+- Change `font-weight: 500` to 400. It is used once each in HTA and RBD.
 
 **hfa-hta** (`HTA.html`; `hta-editor.html` and `hta-editor2.html` follow the same pattern)
 

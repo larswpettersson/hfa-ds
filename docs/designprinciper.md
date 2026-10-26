@@ -54,7 +54,10 @@ Regler:
 1. **14 px är grundstorlek i alla verktyg.** Verktygen är täta arbetsgränssnitt med tabeller, diagram och formulär. STPA och RBD använder redan 14 px, och det gör även det befintliga tokenet `size.normal`.
 2. **12 px är minsta storlek.** Använd inte 10, 10,5 eller 11 px. Text på 12 px måste ha en kontrast på minst 4,5:1.
 3. **Bara hela storlekar från skalan.** Avrunda 12,5 och 13 till 12 (sekundär text) eller 14 (primär text), och 15 och 18 till 16.
-4. **Bara vikterna 400 och 700.** Ersätt 600 (semibold) med 700.
+4. **Bara vikterna 400 och 700.** Ersätt 600 (semibold) med 700 och 500 med 400. Skälen är tre:
+   - Manualen anger två vikter, Regular och Bold, och Open Sans Bold är 700.
+   - Reservtypsnittet Arial har bara 400 och 700, så på datorer utan Open Sans visas 600 redan som 700. Med 700 ser verktygen likadana ut på alla datorer.
+   - Tokens i Penpot har bara `font.weight.regular` och `font.weight.bold`, så design och kod stämmer överens.
 5. **Skilj nivåer åt med vikt före storlek.** Till exempel en rubrik på 16 px Bold över text på 14 px Regular.
 6. **Versaler** är bara tillåtna i korta etiketter som panelrubriker. Etiketter med versaler är 12 px Bold.
 7. **Monospace** används bara för kod och JSON, i 12 px.
@@ -84,7 +87,11 @@ Reglerna använder variablerna, inte pixelvärden, till exempel `font-size: var(
 
 Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
-**Alla verktyg:** byt typsnittslistan från Source Sans 3 till `"Open Sans", Arial, sans-serif`.
+**Alla verktyg:**
+
+- Byt typsnittslistan från Source Sans 3 till `"Open Sans", Arial, sans-serif`.
+- Ändra `font-weight: 600` till 700. Det används för rubriker och fet text i alla fyra verktygen.
+- Ändra `font-weight: 500` till 400. Det används på ett ställe vardera i HTA och RBD.
 
 **hfa-hta** (`HTA.html`; `hta-editor.html` och `hta-editor2.html` följer samma mönster)
 
