@@ -10,6 +10,8 @@ This document describes the architecture of three related repositories within th
 
 Shared purpose: support safety and human factors analysis through separate, focused in-browser editors, while maintaining visual consistency (colors, fonts, component appearance) via a shared design system in Penpot, sourced from `hfa-ds`.
 
+Visual design decisions (typography, sizes, font stack) are documented in [docs/design-principles.md](docs/design-principles.md).
+
 **Important architectural characteristic:** There is **no code coupling** (no npm packages, no shared JS modules, no API calls) between the three repositories. All coupling occurs indirectly via:
 1. Penpot as shared design tool – `hfa-ds` owns master tokens and syncs them to each consumer's Penpot file via MCP scripts.
 2. Manually maintained design conventions (CSS variables in respective HTML files that should mirror `hfa-ds/tokens.json`).

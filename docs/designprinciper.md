@@ -1,0 +1,144 @@
+# Designprinciper: HFA-familjen
+
+*English version: [design-principles.md](design-principles.md)*
+
+Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver hur verktygen ska se ut, och varför.
+
+## 1. Typografi
+
+### 1.1 Grund: Trafikverkets grafiska profil
+
+Trafikverkets grafiska manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), granskad 2025-02-19) har följande regler:
+
+- **Digitala produktioner använder Open Sans** i bara två vikter: **Regular** och **Bold**. Whitney används för tryck och Arial/Georgia för MS Office.
+- Håll **antalet vikter och storlekar så lågt som möjligt**.
+- Undvik **understruken och kursiv** text. Använd andra vikter bara i undantagsfall.
+- **Versaler** är tillåtna i korta rubriker när sammanhanget kräver det, men aldrig i längre rubriker.
+- Text på bild och färgade plattor kräver kontrast på minst 3:1. Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
+
+### 1.2 Typsnittslista: ingen inbäddning
+
+```css
+--font-sans: "Open Sans", Arial, sans-serif;
+--font-mono: ui-monospace, Consolas, "Courier New", monospace;
+```
+
+Varje verktyg är en enda självförsörjande HTML-fil som ska vara **lätt att läsa och uppdatera**, och som ska fungera **air-gapped**. Typsnittet anges därför bara med namn. Det finns ingen `@font-face`, ingen base64-kodad typsnittsdata och inget byggsteg.
+
+| Dator | Typsnitt som visas |
+|---|---|
+| Open Sans installerad | Open Sans, som följer profilen |
+| Open Sans inte installerad | Arial, som är Trafikverkets Office-typsnitt, finns i Windows och fortfarande ingår i profilen |
+
+**Avvägning:** utseendet skiljer sig något mellan datorer. Arial är lite smalare, så radbrytningar kan flytta sig. Det accepteras i utbyte mot enkla filer.
+
+**Varför inte Source Sans 3:** verktygen hade tidigare `"Source Sans 3"` först i listan. Den ingår inte i Trafikverkets profil och är, precis som Open Sans, inte förinstallerad i Windows. I praktiken såg de flesta användare därför reservtypsnittet Segoe UI, som inte heller ingår i profilen.
+
+**Framtida alternativ:** om verktygen måste se exakt likadana ut överallt kan Open Sans bäddas in (Regular och Bold, latinska tecken inklusive å/ä/ö, cirka 25–35 kB per vikt som WOFF2), men bara i `*_offline.html`-filerna och i ett tydligt avgränsat block sist i filen. Källfilerna som redigeras förblir rena. Både Open Sans och Source Sans 3 har licensen SIL Open Font License, som tillåter inbäddning.
+
+### 1.3 Typografisk skala
+
+Sex storlekar och två vikter. Namnen motsvarar tokens i setet `typography` i Penpot-filen **HFA DS**.
+
+| Token | Storlek | Vikt | Radavstånd | Användning i verktygen |
+|---|---|---|---|---|
+| `font.size.xs` *(föreslagen)* | 12 px | Regular / Bold | 1.35 | Sekundär text: ID, metadata, chips, pills, förklaringar, tips, tabellhuvuden, undertexter i diagram |
+| `font.size.sm` / `typography.small` | 14 px | Regular | 1.5 | **Standardtext i gränssnittet**: brödtext, knappar, formulär, tabeller, paneler, statusmeddelanden, etiketter i diagram |
+| `font.size.md` / `typography.body`, `body-bold` | 16 px | Regular / Bold | 1.5 | Panel- och avsnittsrubriker (Bold), längre läsbar text som hjälpdialoger |
+| `font.size.lg` / `typography.heading-3` | 20 px | Bold | 1.3 | Applikationstitel |
+| `font.size.xl` / `typography.heading-2` | 24 px | Bold | 1.25 | Sidrubriker i rapporter och exporter |
+| `font.size.2xl` / `typography.heading-1` | 32 px | Bold | 1.25 | Bara webb och rapporter, används inte i verktygen |
+
+Regler:
+
+1. **14 px är grundstorlek i alla verktyg.** Verktygen är täta arbetsgränssnitt med tabeller, diagram och formulär. STPA och RBD använder redan 14 px, och det gör även det befintliga tokenet `size.normal`.
+2. **12 px är minsta storlek.** Använd inte 10, 10,5 eller 11 px. Text på 12 px måste ha en kontrast på minst 4,5:1.
+3. **Bara hela storlekar från skalan.** Avrunda 12,5 och 13 till 12 (sekundär text) eller 14 (primär text), och 15 och 18 till 16.
+4. **Bara vikterna 400 och 700.** Ersätt 600 (semibold) med 700.
+5. **Skilj nivåer åt med vikt före storlek.** Till exempel en rubrik på 16 px Bold över text på 14 px Regular.
+6. **Versaler** är bara tillåtna i korta etiketter som panelrubriker. Etiketter med versaler är 12 px Bold.
+7. **Monospace** används bara för kod och JSON, i 12 px.
+
+### 1.4 CSS-variabler i verktygen
+
+Varje verktyg deklarerar samma variabler i `:root`, med namn efter tokens. RBD använder redan det här mönstret.
+
+```css
+:root {
+  --font-sans: "Open Sans", Arial, sans-serif;
+  --font-mono: ui-monospace, Consolas, "Courier New", monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+}
+body { font: var(--font-size-sm)/1.5 var(--font-sans); }
+```
+
+Reglerna använder variablerna, inte pixelvärden, till exempel `font-size: var(--font-size-xs)`.
+
+### 1.5 Nuläge och föreslagna ändringar per verktyg
+
+Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
+
+**Alla verktyg:** byt typsnittslistan från Source Sans 3 till `"Open Sans", Arial, sans-serif`.
+
+**hfa-hta** (`HTA.html`; `hta-editor.html` och `hta-editor2.html` följer samma mönster)
+
+| Element | I dag | Förslag |
+|---|---|---|
+| `body` | 16 | 14 |
+| `.help-dialog`, `.help-dialog h3` | 13 | 14 (h3 Bold) |
+| `.tta-table`, `.column-picker`, `.status-message` | 13 | 14 |
+| `.tta-table th` | 11 | 12 Bold |
+| `.task-id` | 10 | 12 |
+| Editortitel (`hta-editor.html`) | 24 | 20 |
+
+**hfa-bowtie** (`Bowtie.html`)
+
+| Element | I dag | Förslag |
+|---|---|---|
+| `body` | 16 | 14 |
+| `.desc-text` | 16 | 14 |
+| `.id-tag` | 16 | 12 |
+| `.legend-row` | 14 | 12 |
+| `.help-dialog`, `.help-dialog h3` | 13 | 14 (h3 Bold) |
+
+**hfa-stpa** (`workbench/index.html`)
+
+| Element | I dag | Förslag |
+|---|---|---|
+| `header h1` | 16 | 20 Bold |
+| `.panel > .bar h2` (versaler) | 13 | 12 Bold |
+| `#issues`, `.msg table`, `#drawer label` | 13 | 14 |
+| `#safetyCaseWrap summary` | 13 / 600 | 14 / 700 |
+| `#safetyCaseWrap table` | 12,5 | 14 |
+| `#drawer h2` | 15 | 16 Bold |
+| `#diagram text` | 12 | 14 (kontrollera diagramlayouten) |
+| `#diagram .sub` | 10,5 | 12 |
+| `.lbl-ca`, `.lbl-fb`, `.chip`, `.pill`, `.msg .meta` | 11 | 12 |
+| Kodvy (`font: 12.5px … mono`) | 12,5 | 12 |
+| Skalning av Penpot-text, `clamp(…, 8, 22)` | 8–22 | 12–20 |
+
+**hfa-rbd** (`styles/rbd.css`, där storleksvariablerna redan följer skalan)
+
+| Element | I dag | Förslag |
+|---|---|---|
+| `h1` | 24 | 20 |
+| `.panel-heading` | 18 | 16 Bold |
+| `.stack-caption` | 13 | 12 |
+| `.analysis-detail` | 13 | 14 |
+
+**Obs:** när brödtexten går från 16 till 14 px i HTA och Bowtie, och diagramtexten från 12 till 14 px i STPA, ändras layouten. Kontrollera nodstorlekar, radbrytningar och avstånd i diagram visuellt när ändringen görs.
+
+### 1.6 Tokens
+
+| Plats | Status |
+|---|---|
+| Penpot **HFA DS**, setet `typography` | `font.family.base`, `font.weight.regular/bold`, `font.size.sm–2xl`, `typography.heading-1/2/3`, `body`, `body-bold` och `small` är skapade. `font.size.xs` är inte skapad än. |
+| `tokens.json` | Innehåller fortfarande bara de äldre tokens `roboto-base` (Source Sans 3-listan) och `size.normal` (14). Den uppdateras via exportflödet i [sync-workflow.md](sync-workflow.md). |
+
+De äldre tokens `roboto-base` och `size.normal` bör därefter peka på `font.family.base` och `font.size.sm`, eller tas bort.

@@ -10,6 +10,8 @@ Detta dokument beskriver arkitekturen för tre relaterade repon inom Human Facto
 
 Gemensamt syfte: stödja säkerhets- och human factors-analys genom separata, fokuserade in-browser-editorer, medan visuell konsekvens (färger, typsnitt, komponentutseende) hålls samman via ett delat designsystem i Penpot, sprunget ur `hfa-ds`.
 
+Visuella designbeslut (typografi, storlekar, typsnittslista) finns i [docs/designprinciper.md](docs/designprinciper.md).
+
 **Viktigt arkitekturdrag:** Det finns **ingen kodkoppling** (inga npm-paket, inga delade JS-moduler, inga API-anrop) mellan de tre repona. All koppling sker indirekt via:
 1. Penpot som delat designverktyg – `hfa-ds` äger master-tokens och synkar dem till varje konsuments Penpot-fil via MCP-skript.
 2. Manuellt underhållna designkonventioner (CSS-variabler i respektive HTML-fil som ska spegla `hfa-ds/tokens.json`).

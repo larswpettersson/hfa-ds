@@ -50,6 +50,7 @@ scripts/penpot/validate.js
 scripts/penpot/generated/import-payload.js   # generated
 scripts/build/embed-for-penpot.mjs
 docs/sync-workflow.md
+docs/design-principles.md                    # design principles (sv: docs/designprinciper.md)
 ```
 
 ## GitHub
