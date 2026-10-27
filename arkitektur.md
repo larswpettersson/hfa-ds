@@ -11,7 +11,7 @@
 | STPA Workbench | [larswpettersson.github.io/hfa-stpa/workbench/](https://larswpettersson.github.io/hfa-stpa/workbench/) | Körbar, under utveckling; anpassas för kumulativ, AI-stödd analys steg för steg |
 | RBD (Reliability Block Diagram) | Ingen liveversion – se [repot hfa-rbd](https://github.com/larswpettersson/hfa-rbd) | Tidigt designstadium, ej körbar |
 
-Liveversionerna publiceras via GitHub Pages. De är statiska sidor utan serverdel: den analysdata som matas in stannar i webbläsaren och lämnar den endast genom att användaren själv exporterar den (se avsnitt 1).
+Liveversionerna publiceras via GitHub Pages. Det är vanliga webbsidor utan server bakom: det man matar in stannar i webbläsaren och lämnar den bara om användaren själv exporterar det (se avsnitt 1).
 
 Visuella designbeslut (typografi, storlekar, typsnittslista) beskrivs i [docs/designprinciper.md](docs/designprinciper.md).
 
@@ -19,41 +19,41 @@ Visuella designbeslut (typografi, storlekar, typsnittslista) beskrivs i [docs/de
 
 Arkitekturen och designen utgår från två krav:
 
-1. **Verktygen ska enkelt kunna köras i isolerade (air-gapped) miljöer och lokalt i företagsnät utan krav på programvaruinstallation.**
+1. **Verktygen ska enkelt kunna köras utan att någon programvara behöver installeras, både lokalt i företagsnät och i isolerade miljöer utan internetanslutning (air-gapped).**
 2. **De analyser som genomförs ska kunna hållas hemliga.**
 
 Dessa krav styr de tekniska valen i samtliga verktygsrepon:
 
 | Krav | Arkitekturval |
 |---|---|
-| Ingen installation | Varje verktyg är en eller ett fåtal statiska HTML-filer med vanilla JavaScript och CSS. Det finns inget byggsteg, ingen pakethanterare, inget ramverk och ingen server. En modern webbläsare räcker. |
-| Körbarhet utan nätverk | Sidorna laddar inga externa resurser (inga CDN-skript, webbtypsnitt eller API-anrop för grundfunktionerna). HTA och Bowtie finns dessutom som en enda fristående fil (`hta_offline.html`, `Bowtie_offline.html`) med inbäddat skript; STPA Workbench är redan en enda fil. Filen kan föras över till en isolerad miljö och öppnas direkt via `file://`. |
-| Sekretess | Det finns ingen serverdel och ingen databas. Analysens tillstånd hålls i webbläsarens minne och sparas genom export till en lokal JSON-fil som användaren själv förvarar. `localStorage` används endast för inställningar (tema, kolumnval, panelbredd m.m.). |
-| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören. För sekretessbelagda analyser ska en lokalt driftad modell användas (Ollama, LM Studio, LocalAI), varvid ingen data lämnar datorn eller det lokala nätet. |
+| Ingen installation | Varje verktyg består av en eller några få HTML-filer med vanlig JavaScript och CSS. Inget behöver byggas, installeras eller köras på en server. En modern webbläsare räcker. |
+| Fungerar utan nätverk | Sidorna hämtar ingenting från internet (inga skript, typsnitt eller tjänster utifrån) för att grundfunktionerna ska fungera. HTA och Bowtie finns dessutom som en enda fristående fil (`hta_offline.html`, `Bowtie_offline.html`) med inbäddat skript; STPA Workbench är redan en enda fil. Filen kan föras över till en isolerad miljö och öppnas direkt via `file://`. |
+| Sekretess | Det finns ingen server och ingen databas. Analysen finns bara i webbläsarens minne och sparas genom att användaren exporterar den till en JSON-fil på den egna datorn. `localStorage` används endast för inställningar (tema, kolumnval, panelbredd m.m.). |
+| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören. För sekretessbelagda analyser ska en modell som körs lokalt användas (Ollama, LM Studio, LocalAI). Då lämnar ingen data datorn eller det egna nätet. |
 
-Avvägningen är medveten: avsaknaden av byggsteg och paketberoenden innebär att designtokens förs in manuellt i verktygens CSS (se avsnitt 4) och att kod inte delas mellan verktygen. I gengäld blir varje verktyg självbärande, granskningsbart och möjligt att använda utan IT-avdelningens medverkan.
+Valet är medvetet. Eftersom verktygen saknar byggsteg och externa paket måste designtokens föras in för hand i varje verktygs CSS (se avsnitt 4), och ingen kod delas mellan verktygen. I gengäld fungerar varje verktyg helt på egen hand, koden är lätt att granska och verktygen kan användas utan hjälp från IT-avdelningen.
 
 ## 2. Syfte och struktur
 
 Dokumentet beskriver arkitekturen för fem relaterade repon inom Human Factors Analysis-familjen (HFA):
 
-- **hfa-ds** – Designsystemrepot. Innehåller inga körbara applikationer utan är den auktoritativa källan för designtokens (färger, typografi, radier m.m.), byggskript och Penpot-synkverktyg som håller ett centralt Penpot-designbibliotek och konsumentprojektens Penpot-filer synkroniserade. Repot innehåller också en gemensam testsvit (Playwright) som körs mot verktygen i syskonrepona. Drivs med Node.js (ESM) utan körtidsberoenden.
+- **hfa-ds** – Designsystemrepot. Innehåller inga körbara applikationer. Repot är källan till sanning för designtokens (färger, typografi, hörnradier m.m.) och innehåller skript som håller ett centralt designbibliotek i Penpot och verktygens egna Penpot-filer uppdaterade. Här finns också gemensamma automatiska tester (Playwright) som körs mot verktygen i de andra repona. Skripten körs med Node.js och kräver inga andra paket.
 - **hfa-hta** – Fristående webbverktyg för Hierarchical Task Analysis (HTA) kombinerad med Tabular Task Analysis (TTA) och HEI-fält. Huvudeditorn är `HTA.html` med logiken i `scripts/hta-app.js`. Export till JSON och till CSV (för Excel och SmartArt), ångra/gör om, kortkommandon och hjälpdialog. Datamodellen är version 2.
 - **hfa-bowtie** – Fristående webbverktyg för att rita och redigera bowtie-diagram (orsaker → topphändelse → konsekvenser, med förebyggande och återställande barriärer). Logiken finns i `scripts/bowtie-app.js`. Exempeldata utgår från obehörig stoppsignalpassage (OSPA). Utskrift skalar diagrammet till en A4-sida i liggande format. Datamodellen är version 1.
-- **hfa-stpa** – Stöd för System-Theoretic Process Analysis (STPA). Kärnan är **STPA Workbench** (`workbench/index.html`), en enfilsapplikation med JSON-editor för styrstrukturen, automatiskt ritat SVG-diagram, tabeller för förluster, faror, osäkra styråtgärder (UCA) och säkerhetskrav samt en analyschatt mot valfri språkmodell. Repot innehåller även `mermaid-stpa`, ett separat Mermaid-diagramtillägg för STPA-styrstrukturer (TypeScript-paket med eget byggsteg, som inte ingår i workbenchens körtid).
+- **hfa-stpa** – Stöd för System-Theoretic Process Analysis (STPA). Kärnan är **STPA Workbench** (`workbench/index.html`), en enfilsapplikation med JSON-editor för styrstrukturen, automatiskt ritat SVG-diagram, tabeller för förluster, faror, osäkra styråtgärder (UCA) och säkerhetskrav samt en analyschatt mot valfri språkmodell. Repot innehåller även `mermaid-stpa`, ett separat Mermaid-diagramtillägg för STPA-styrstrukturer (ett separat TypeScript-paket med eget byggsteg, som workbenchen inte använder).
 - **hfa-rbd** – Verktyg för Reliability Block Diagrams (RBD). Befinner sig i ett **tidigt designstadium och är inte körbart**. Nuvarande innehåll är ett gränssnittsskal i tre paneler (bibliotek, arbetsyta, analys) med statiskt exempelinnehåll, `styles/rbd.css` och ett påbörjat `scripts/rbd-app.js`.
 
 Det gemensamma syftet är att stödja säkerhets- och human factors-analys genom separata, fokuserade editorer i webbläsaren, medan den visuella enhetligheten (färger, typsnitt, komponenternas utseende) upprätthålls via ett gemensamt designsystem i Penpot med `hfa-ds` som källa.
 
-**Centralt arkitekturdrag:** Det finns **ingen kodkoppling vid körning** (inga npm-paket, inga delade JS-moduler, inga API-anrop) mellan repona. Kopplingen sker indirekt via:
+**Viktigt:** Verktygen **delar ingen kod** med varandra (inga npm-paket, inga gemensamma JavaScript-filer, inga anrop mellan verktygen). Det som håller ihop dem är:
 
-1. Penpot som gemensamt designverktyg – `hfa-ds` äger mastertokens och synkroniserar dem till varje konsuments Penpot-fil via MCP-skript.
-2. Manuellt underhållna designkonventioner – CSS-variabler i respektive HTML-fil som ska spegla `hfa-ds/tokens.json`.
-3. Testsviten i `hfa-ds` – den öppnar verktygens HTML-filer från syskonrepona och kontrollerar att de laddas utan fel och att färgerna överensstämmer med `tokens.json`. Kopplingen gäller endast verifiering, inte körning.
+1. Penpot som gemensamt designverktyg – `hfa-ds` äger designtokens och för över dem till varje verktygs Penpot-fil med MCP-skript.
+2. Handskrivna CSS-variabler i varje verktygs HTML-fil, som ska ha samma värden som `hfa-ds/tokens.json`.
+3. Testerna i `hfa-ds` – de öppnar verktygens HTML-filer och kontrollerar att sidorna laddas utan fel och att färgerna stämmer med `tokens.json`. Testerna påverkar inte hur verktygen fungerar.
 
 ## 3. Status per verktyg
 
-| Verktyg | Ingång | Offlinefil | Datamodell | Persistens | Status |
+| Verktyg | Startfil | Offlinefil | Datamodell | Hur data sparas | Status |
 |---|---|---|---|---|---|
 | HTA | `HTA.html` (+ äldre `hta-editor2.html`, `hta-editor.html`) | `hta_offline.html` | JSON v2 (HTA-träd + `ttaRecords`) | JSON-export/import, CSV-export | Körbar, under utveckling |
 | Bowtie | `Bowtie.html` | `Bowtie_offline.html` | JSON v1 | JSON-export/import, utskrift | Körbar, under utveckling |
@@ -67,7 +67,7 @@ Samtliga datamodeller är under utveckling. Exporterade filer kan behöva konver
 ```mermaid
 flowchart TB
     subgraph DS["hfa-ds (designsystem)"]
-        tokens["tokens.json<br/>(auktoritativ källa)"]
+        tokens["tokens.json<br/>(källa till sanning)"]
         buildScripts["scripts/build/*<br/>validate → embed → tokens-to-css"]
         penpotScripts["scripts/penpot/*<br/>export/import/validate (MCP)"]
         dist["dist/<br/>genererad CSS"]
@@ -78,7 +78,7 @@ flowchart TB
     end
 
     subgraph Penpot["Penpot (gemensamt designverktyg)"]
-        masterLib["HFA DS<br/>masterbibliotek"]
+        masterLib["HFA DS<br/>gemensamt bibliotek"]
         bowtieFile["Bowtie<br/>Penpot-fil"]
         htaFile["HTA<br/>Penpot-fil"]
         stpaFile["STPA<br/>Penpot-fil"]
@@ -87,14 +87,14 @@ flowchart TB
 
     subgraph HTA["hfa-hta (app)"]
         htaHtml["HTA.html / hta_offline.html"]
-        htaApp["scripts/hta-app.js<br/>tillstånd i minnet"]
+        htaApp["scripts/hta-app.js<br/>data i minnet"]
         htaData["data/ + fixtures/<br/>JSON (HTA/TTA)"]
         htaHtml --> htaApp --> htaData
     end
 
     subgraph Bowtie["hfa-bowtie (app)"]
         bowtieHtml["Bowtie.html / Bowtie_offline.html"]
-        bowtieApp["scripts/bowtie-app.js<br/>tillstånd i minnet"]
+        bowtieApp["scripts/bowtie-app.js<br/>data i minnet"]
         bowtieData["data/ + fixtures/<br/>JSON (bowtie-diagram)"]
         bowtieHtml --> bowtieApp --> bowtieData
     end
@@ -131,14 +131,14 @@ flowchart TB
 
 **Kommentarer till diagrammet:**
 
-- `hfa-ds` är den enda noden med byggkedja (validering → paketering → CSS-generering) och den enda som kommunicerar med Penpot MCP för synkronisering.
-- Penpot fungerar som nav: tokens flödar in från `hfa-ds` och publiceras som komponentbibliotek till varje konsumentfil (Bowtie, HTA, STPA, RBD).
-- `hfa-hta`, `hfa-bowtie` och STPA Workbench följer samma arkitekturmönster: en HTML-sida, en JavaScript-del som äger hela tillståndet i minnet och JSON-baserad import/export för persistens (ingen serverdel, ingen databas).
-- Streckade linjer visar manuella eller icke-körtidsmässiga kopplingar (design → kod, test → verktyg, valfritt AI-anrop), till skillnad från de skriptdrivna MCP-flödena.
+- `hfa-ds` är det enda repot med byggsteg (kontroll av tokens → paketering för Penpot → generering av CSS) och det enda som skickar ändringar till Penpot via MCP.
+- Penpot är mittpunkten: tokens kommer in från `hfa-ds` och delas sedan ut som ett komponentbibliotek till varje verktygs Penpot-fil (Bowtie, HTA, STPA, RBD).
+- `hfa-hta`, `hfa-bowtie` och STPA Workbench är uppbyggda på samma sätt: en HTML-sida, JavaScript som håller all data i minnet och import/export av JSON-filer för att spara arbetet (ingen server, ingen databas).
+- Streckade linjer visar steg som görs för hand eller som inte behövs när verktyget används (design → kod, test → verktyg, valfritt AI-anrop). Heldragna linjer visar steg som sköts av skript.
 
-## 5. Sekvensdiagram – tokensynk från hfa-ds till ett konsumentverktyg
+## 5. Sekvensdiagram – så förs en ändrad token ut från hfa-ds till ett verktyg
 
-Detta är det primära arkitektoniska användningsfallet för designsystemet: en designer eller utvecklare ändrar en designtoken i `hfa-ds` och för ut ändringen till ett konsumentverktyg (t.ex. `hfa-bowtie`).
+Detta är designsystemets viktigaste flöde: en designer eller utvecklare ändrar en designtoken i `hfa-ds` och för ut ändringen till ett verktyg (här `hfa-bowtie`).
 
 ```mermaid
 sequenceDiagram
@@ -146,22 +146,22 @@ sequenceDiagram
     participant Tokens as hfa-ds/tokens.json
     participant Build as hfa-ds byggskript
     participant MCP as Penpot MCP (execute_code)
-    participant Master as Penpot: HFA DS masterbibliotek
+    participant Master as Penpot: HFA DS gemensamt bibliotek
     participant AppFile as Penpot: Bowtie-fil
     participant Repo as hfa-bowtie (Bowtie.html)
     participant Test as hfa-ds testsvit
 
     Dev->>Tokens: Redigerar token (t.ex. färg, radie)
     Dev->>Build: npm run build
-    Build->>Build: validate-json.mjs (schemakontroll)
-    Build->>Build: embed-for-penpot.mjs (paketerar nyttolast)
+    Build->>Build: validate-json.mjs (kontrollerar filens format)
+    Build->>Build: embed-for-penpot.mjs (paketerar tokens för Penpot)
     Build->>Build: tokens-to-css.mjs (genererar CSS-variabler)
     Build-->>Dev: dist/ uppdaterad + generated/import-payload.js
 
     Dev->>MCP: Kör import-bundle.js via execute_code
-    MCP->>Master: Skriver nya tokens till masterbiblioteket
+    MCP->>Master: Skriver nya tokens till gemensamma biblioteket
     Dev->>MCP: Kör validate.js
-    MCP-->>Dev: Bekräftar att avvikelser saknas
+    MCP-->>Dev: Bekräftar att Penpot och tokens.json stämmer överens
 
     Master->>AppFile: Publicerat bibliotek uppdaterar<br/>komponenterna i Bowtie-filen
     Dev->>AppFile: Verifierar visuellt i Penpot
@@ -169,10 +169,10 @@ sequenceDiagram
     Dev->>Repo: Uppdaterar CSS-variablerna manuellt<br/>i Bowtie.html och Bowtie_offline.html
     Dev->>Test: npm test
     Test->>Repo: Öppnar sidan via file:// och jämför färger med tokens.json
-    Test-->>Dev: Godkänt, eller ny avvikelse som ska åtgärdas
+    Test-->>Dev: Godkänt, eller en skillnad som ska rättas
 ```
 
-**Kommentar:** Eftersom verktygen saknar byggsteg och paketberoenden är kodsteget manuellt. Det är en medveten avvägning för att uppfylla kraven i avsnitt 1, inte en ofullständig integration. Testsviten fångar avvikelser som uppstår; kända avvikelser listas i `knownDrift` i `tests/shared/tokens-sync.spec.mjs`.
+**Kommentar:** Eftersom verktygen saknar byggsteg och externa paket görs kodändringen för hand. Det är ett medvetet val för att uppfylla kraven i avsnitt 1, inte något som saknas. Testerna upptäcker om färgerna i ett verktyg skiljer sig från `tokens.json`; kända skillnader listas i `knownDrift` i `tests/shared/tokens-sync.spec.mjs`.
 
 ## 6. STPA – kumulativ analys med AI-stöd steg för steg
 
@@ -180,11 +180,11 @@ STPA Workbench anpassas för att genomföra analysen **kumulativt**, där varje 
 
 Grundprinciperna i nuvarande version:
 
-- **En gemensam modell:** Hela analysen (förluster, faror, säkerhetskrav, styrstruktur, UCA) hålls i en JSON-struktur som editorn, diagrammet och tabellerna läser från. Varje steg lägger till eller förfinar delar av samma modell.
-- **Ändringar som patchar:** Språkmodellen ombeds returnera endast det som ändras (`"patch": true`, med `remove` för borttagningar). Analytikern väljer aktivt **Apply to editor**; ändringen kan ångras.
-- **Avgränsning till ett urval:** Analytikern kan markera element i diagrammet så att frågan fokuserar på dem, medan hela strukturen skickas som kontext.
-- **Fristående frågor:** Varje fråga skickas som standard med strukturen och avgränsningen, men utan tidigare chatthistorik. Det gör varje steg spårbart mot modellens aktuella tillstånd snarare än mot ett långt samtal.
-- **Snabbåtgärder per analysmoment:** identifiera UCA, förlustscenarier, återkopplingslatens, brister i processmodeller, förslag till omkonfigurering och säkerhetskrav.
+- **En gemensam modell:** Hela analysen (förluster, faror, säkerhetskrav, styrstruktur, UCA) finns i en och samma JSON-struktur, som editorn, diagrammet och tabellerna visar. Varje steg lägger till eller förfinar delar av samma modell.
+- **AI föreslår bara ändringarna:** Språkmodellen ombeds svara med enbart det som ska läggas till, ändras eller tas bort (en så kallad patch). Ändringen förs in först när analytikern trycker på **Apply to editor**, och den kan ångras.
+- **Fråga om en del av strukturen:** Analytikern kan markera element i diagrammet så att frågan gäller just dem. Hela strukturen skickas ändå med som bakgrund.
+- **Varje fråga står för sig:** Som standard skickas varje fråga med strukturen och markeringen, men utan den tidigare chatten. Då bygger varje svar på hur analysen ser ut just nu och inte på ett långt samtal, vilket gör det lättare att följa hur analysen har vuxit fram.
+- **Färdiga frågor för olika moment:** identifiera UCA, förlustscenarier, fördröjning i återkopplingen, brister i styrenheternas processmodeller, förslag på ändrad styrstruktur och säkerhetskrav.
 
 ```mermaid
 sequenceDiagram
@@ -193,9 +193,9 @@ sequenceDiagram
     participant LLM as Språkmodell (helst lokal)
 
     loop Ett STPA-steg i taget
-        An->>WB: Väljer steg/snabbåtgärd och ev. urval i diagrammet
-        WB->>LLM: Systemprompt + aktuell struktur + avgränsning
-        LLM-->>WB: Förslag som patch
+        An->>WB: Väljer steg eller färdig fråga, och markerar ev. element
+        WB->>LLM: Instruktioner + aktuell struktur + markering
+        LLM-->>WB: Förslag på ändringar
         WB-->>An: Visar förslaget
         An->>WB: Granskar och tillämpar (eller avvisar)
         WB->>WB: Validerar, ritar om diagram och tabeller
@@ -207,6 +207,6 @@ Omställningen till ett fullt stegvis arbetsflöde pågår, och datamodellen kom
 
 ## 7. Test och kvalitetssäkring
 
-- **Gemensam testsvit i hfa-ds:** `npm test` kör Playwright mot verktygen i syskonrepona (sökvägen kan styras med `HFA_WORKSPACE`). Sidorna öppnas via `file://`, utan utvecklingsserver, vilket motsvarar hur verktygen används i isolerade miljöer. `tests/shared/` körs mot alla verktyg i `tests/lib/tools.mjs` (felfri laddning och färger enligt `tokens.json`); verktygsspecifika tester finns i `tests/<verktyg>/` (för närvarande STPA: urval, avgränsning, konverteringar och patchar). GitHub Actions-arbetsflödet `test-tools.yml` checkar ut alla repon sida vid sida och kör sviten.
-- **Röktester per verktyg:** `hfa-hta` och `hfa-bowtie` har Python-baserade röktester (`scripts/*-smoke-test.py`).
-- **Tokenvalidering:** `validate-tokens.yml` validerar `tokens.json` i `hfa-ds`.
+- **Gemensamma tester i hfa-ds:** `npm test` kör automatiska tester (Playwright) mot verktygen i de andra repona (sökvägen kan ändras med `HFA_WORKSPACE`). Sidorna öppnas direkt som filer (`file://`), utan webbserver, på samma sätt som när verktygen används i en isolerad miljö. Testerna i `tests/shared/` körs mot alla verktyg i `tests/lib/tools.mjs` och kontrollerar att sidan laddas utan fel och att färgerna stämmer med `tokens.json`. Tester för ett enskilt verktyg ligger i `tests/<verktyg>/` (i dag finns sådana för STPA: markering, frågor om en del av strukturen, omvandling till aktuator/sensor och patchar). På GitHub kör arbetsflödet `test-tools.yml` testerna med alla repon hämtade bredvid varandra.
+- **Snabbtester per verktyg:** `hfa-hta` och `hfa-bowtie` har enkla tester i Python (`scripts/*-smoke-test.py`) som kontrollerar att grundfunktionerna fungerar.
+- **Kontroll av tokens:** arbetsflödet `validate-tokens.yml` kontrollerar att `tokens.json` i `hfa-ds` har rätt format.
