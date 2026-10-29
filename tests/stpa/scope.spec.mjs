@@ -1,31 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool, getEditorJson } from "../lib/page.mjs";
+import { mockClaude } from "../lib/claude.mjs";
 
 const T = tool("stpa-workbench");
 const selected = (page) => page.locator("#diagram .sel[data-sel]").evaluateAll((els) => [...new Set(els.map((e) => e.dataset.sel))].sort());
 const node = (page, id) => page.locator(`#diagram g.node[data-sel="${id}"]`);
-
-/** Answer /v1/messages with a streamed reply and record each request body. */
-async function mockClaude(page, replyText) {
-  const bodies = [];
-  const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST, OPTIONS" };
-  await page.route("https://api.anthropic.com/v1/messages", async (route) => {
-    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
-    bodies.push(JSON.parse(route.request().postData()));
-    const ev = (o) => `event: ${o.type}\ndata: ${JSON.stringify(o)}\n\n`;
-    await route.fulfill({
-      status: 200, headers: { ...cors, "content-type": "text/event-stream" },
-      body: ev({ type: "message_start", message: { usage: { input_tokens: 100, output_tokens: 1 } } })
-        + ev({ type: "content_block_start", index: 0, content_block: { type: "text", text: "" } })
-        + ev({ type: "content_block_delta", index: 0, delta: { type: "text_delta", text: replyText } })
-        + ev({ type: "content_block_stop", index: 0 })
-        + ev({ type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { output_tokens: 42 } })
-        + ev({ type: "message_stop" }),
-    });
-  });
-  return bodies;
-}
 
 test.describe("STPA workbench: selection, scope and conversions", () => {
   let errors;
@@ -86,6 +66,26 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     await page.locator("#selBar button", { hasText: "Clear" }).click();
     await page.locator('#diagram text[data-sel="ca0"]').click({ modifiers: ["Shift"] });
     await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeDisabled();
+  });
+
+  test("switch an actuator to a controlled process and back; the fields of the old type come back", async ({ page }) => {
+    await page.locator('#diagram text[data-sel="ca1"]').click({ modifiers: ["Shift"] });
+    await expect(page.locator("#selBar select")).toBeDisabled(); // only blocks switch type
+    await page.locator("#selBar button", { hasText: "Convert to actuator" }).click();
+    const converted = await getEditorJson(page, "#editor");
+    expect(await selected(page)).toEqual(["a1"]);
+    await page.locator("#selBar select").selectOption("controlled_processes");
+    let m = await getEditorJson(page, "#editor");
+    expect(m.actuators).toBeUndefined();
+    expect(m.controlled_processes.find((p) => p.id === "a1")).toEqual({ id: "a1", name: "ApplyBrakingForce actuator", states: [],
+      switched_from: { section: "actuators", target: "p1", converted_from: "ca1" } });
+    expect(m.control_actions.find((c) => c.id === "ca1").target).toBe("a1"); // links keep the id
+    await expect(node(page, "a1")).toHaveClass(/proc/);
+    expect(await selected(page)).toEqual(["a1"]);
+    await page.locator("#selBar select").selectOption("actuators");
+    m = await getEditorJson(page, "#editor");
+    expect(m).toEqual(converted);
+    await expect(node(page, "a1")).toHaveClass(/act/);
   });
 
   test("a scoped question sends the selection, the chosen model and no earlier turns", async ({ page }) => {
