@@ -29,6 +29,8 @@ test.describe("STPA workbench: safety-case tables", () => {
   test("open/closed state survives a reload", async ({ page }) => {
     await page.locator("#scUcas > summary").click();
     await page.locator("#scLosses > summary").click();
+    // <details> fires "toggle" in a later task; wait until both states are stored before reloading.
+    await page.waitForFunction(() => localStorage.getItem("hfa-stpa:open:scUcas") === "true" && localStorage.getItem("hfa-stpa:open:scLosses") === "false");
     await page.reload();
     await page.waitForSelector("#scLossesBody tr", { state: "attached" });
     expect(await page.locator("#scUcas").evaluate((d) => d.open)).toBe(true);
