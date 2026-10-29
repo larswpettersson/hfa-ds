@@ -61,6 +61,21 @@ test.describe("STPA workbench: analysis log", () => {
     await expect(page.locator(".msg.assistant").first().locator(".fold")).toHaveCount(0);
   });
 
+  test("Compress folds every answer and Expand opens them all", async ({ page }) => {
+    await ask(page, "First", 2);
+    await ask(page, "Second", 3);
+    const answers = page.locator(".msg.assistant:has(.fold)");
+    await expect(answers).toHaveCount(2);
+    await answers.first().locator(".fold").click(); // one folded by hand first
+    await page.click("#foldAll");
+    await expect(page.locator(".msg.assistant.folded")).toHaveCount(2);
+    await expect(answers.locator(".fold[aria-expanded=false]")).toHaveCount(2);
+    expect(await scrollingEntries(page)).toBe(0);
+    await page.click("#unfoldAll");
+    await expect(page.locator(".msg.assistant.folded")).toHaveCount(0);
+    await expect(answers.locator(".body").first()).toBeVisible();
+  });
+
   test("↓ shows while scrolled up and jumps to the latest entry", async ({ page }) => {
     await ask(page, "First", 2);
     const log = page.locator("#log");
