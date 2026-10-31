@@ -24,8 +24,8 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "info",
       "type": "color",
-      "value": "#007FFF",
-      "description": "Action/Info – Azure Blue. Visible to almost everyone; stays blue for red-green CVD."
+      "value": "#18456D",
+      "description": "Action/Info – dark blue. Text on neutral backgrounds (≥4.5:1)."
     },
     {
       "name": "shared_tokens.line_styles.strong",
@@ -48,14 +48,14 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "success",
       "type": "color",
-      "value": "#228B22",
-      "description": "Success/Go – Shamrock Green. Lighter than error in luminance for red-green CVD."
+      "value": "#346E4E",
+      "description": "Success/Go – dark green. Text on neutral backgrounds (≥4.5:1); lighter than error for red-green CVD."
     },
     {
       "name": "warning",
       "type": "color",
-      "value": "#FFC300",
-      "description": "Warning – Saffron Yellow. Warm orange-yellow that doesn't wash out."
+      "value": "#6D4501",
+      "description": "Warning – dark brown, since yellow text is unreadable on light backgrounds. The yellow identity is carried by background.warning."
     },
     {
       "name": "foreground.base",
@@ -72,8 +72,8 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "error",
       "type": "color",
-      "value": "#C70039",
-      "description": "Error/Stop – Venetian Red. Cool red, stays dark for red-green CVD."
+      "value": "#5D1A14",
+      "description": "Error/Stop – dark red-brown. Darker than success for red-green CVD and clearly darker than brand.primary."
     },
     {
       "name": "size.normal",
@@ -84,7 +84,7 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "background.base",
       "type": "color",
-      "value": "#F0F6FC",
+      "value": "#EAF0F6",
       "description": "Base canvas."
     },
     {
@@ -96,37 +96,37 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "background.elevated",
       "type": "color",
-      "value": "#FFFFFF",
-      "description": "Raised surfaces (cards, modals)"
+      "value": "#FAFBFC",
+      "description": "Raised surfaces (cards, modals). Off-white, the lightest layer."
     },
     {
       "name": "background.sunken",
       "type": "color",
-      "value": "#E6EDF3",
-      "description": "Nested or sunken areas"
+      "value": "#E0E6EC",
+      "description": "Nested or sunken areas (toolbars, table headers, legends). The darkest neutral layer."
     },
     {
       "name": "background.info",
       "type": "color",
-      "value": "#78A8DB",
+      "value": "#7CB8F0",
       "description": "Info background (light): deeper blue tint vs base; text = foreground.base."
     },
     {
       "name": "background.success",
       "type": "color",
-      "value": "#6BAF8A",
+      "value": "#B9EDC4",
       "description": "Success background (light): deeper green; lighter than error (CVD); text = foreground.base."
     },
     {
       "name": "background.warning",
       "type": "color",
-      "value": "#D4BD52",
+      "value": "#FAD153",
       "description": "Warning background (light): mustard gold for separation from blue/green; text = foreground.base."
     },
     {
       "name": "background.error",
       "type": "color",
-      "value": "#C96B6B",
+      "value": "#D79A96",
       "description": "Error background (light): dusty red; darker than success (CVD); text = foreground.base."
     },
     {
@@ -224,32 +224,32 @@ var HFA_DS_TOKEN_SETS = {
     {
       "name": "info",
       "type": "color",
-      "value": "#58A6FF",
-      "description": "Action/Info – Brighter blue for dark mode; stays blue for red-green CVD."
+      "value": "#94C7F5",
+      "description": "Action/Info – light blue for dark mode."
     },
     {
       "name": "warning",
       "type": "color",
-      "value": "#FFC300",
-      "description": "Warning – Saffron Yellow. Warm orange-yellow that doesn't wash out."
+      "value": "#EBCB7B",
+      "description": "Warning – light yellow for dark mode."
     },
     {
       "name": "error",
       "type": "color",
-      "value": "#E03E3E",
-      "description": "Error/Stop – Brighter red for dark mode; still darker than success in luminance for CVD."
+      "value": "#EEA090",
+      "description": "Error/Stop – light coral for dark mode; darker than success for red-green CVD."
     },
     {
       "name": "success",
       "type": "color",
-      "value": "#3FB950",
-      "description": "Success/Go – Brighter green for dark mode; lighter than error in luminance for CVD."
+      "value": "#B7FFC6",
+      "description": "Success/Go – light green for dark mode; lighter than error for red-green CVD."
     },
     {
       "name": "background.base",
       "type": "color",
-      "value": "#2D333B",
-      "description": "Base canvas. Lighter than sunken for ~1.65:1 contrast (WCAG UI)."
+      "value": "#272C34",
+      "description": "Base canvas, between sunken and elevated."
     },
     {
       "name": "roboto-base",
@@ -269,36 +269,36 @@ var HFA_DS_TOKEN_SETS = {
       "name": "background.elevated",
       "type": "color",
       "value": "#383D45",
-      "description": "Raised surfaces (cards, modals); lighter than base for hierarchy."
+      "description": "Raised surfaces (cards, modals). The lightest neutral layer."
     },
     {
       "name": "background.sunken",
       "type": "color",
-      "value": "#000000",
-      "description": "Deepest layer, sidebars. Pure black for max contrast with base."
+      "value": "#191E25",
+      "description": "Deepest layer (toolbars, table headers, legends). Not pure black."
     },
     {
       "name": "background.info",
       "type": "color",
-      "value": "#254F7A",
+      "value": "#133B63",
       "description": "Info background (dark): brighter steel blue for hue separation from base; text = foreground.base."
     },
     {
       "name": "background.success",
       "type": "color",
-      "value": "#1A5A42",
+      "value": "#2B5945",
       "description": "Success background (dark): forest green; lighter than error (CVD); text = foreground.base."
     },
     {
       "name": "background.warning",
       "type": "color",
-      "value": "#6B5414",
+      "value": "#544A06",
       "description": "Warning background (dark): warm ochre/gold for clear distinction; text = foreground.base."
     },
     {
       "name": "background.error",
       "type": "color",
-      "value": "#602A36",
+      "value": "#502E24",
       "description": "Error background (dark): wine red; darker than success (CVD); text = foreground.base."
     },
     {

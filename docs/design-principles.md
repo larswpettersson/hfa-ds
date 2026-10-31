@@ -291,5 +291,5 @@ This is how a typical complementary palette, green `#005F37`, blue `#00375F`, or
 - **Yellow and blue** can be used next to brand red.
 - **Green `#005F37` must not be used as the opposite of red**, for example ok/error or two series in a chart. With protanopia it is almost as light as brand red. If a green is needed next to red, it must differ clearly in lightness, at least ΔL\* 15 in every simulation. Either direction works, but a lighter green is the natural choice.
 - **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
-- **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. The Penpot value `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The values in `tokens.json` (`#C70039` light, `#E03E3E` dark) do not, and must be synced with Penpot.
+- **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The earlier `tokens.json` values (`#C70039` light, `#E03E3E` dark) did not and were replaced (2026-10-31).
 - **If the brand colour changes**, recompute the table and check the conclusions again.

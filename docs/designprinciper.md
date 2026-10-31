@@ -291,5 +291,5 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **Gul och blå** går att använda bredvid profilröd.
 - **Grön `#005F37` ska inte användas som motsats till röd**, till exempel ok/fel eller två serier i ett diagram. Vid protanopi är den nästan lika ljus som profilröd. Behövs en grön bredvid röd ska den skilja sig tydligt i ljushet, minst ΔL\* 15 i alla simuleringar. Riktningen spelar ingen roll, men en ljusare grön är det naturliga valet.
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
-- **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. Penpots värde `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Värdena i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gör det inte och ska synkas med Penpot.
+- **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
