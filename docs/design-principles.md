@@ -2,21 +2,140 @@
 
 *Swedish version: [designprinciper.md](designprinciper.md)*
 
-Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](../ARCHITECTURE.md) describes how the repositories fit together. This document describes how the tools should look, and why.
+Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](../ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
 
-## 1. Typography
+## 1. Purpose and simplicity
 
-### 1.1 Basis: Trafikverket's graphic profile
+### 1.1 What the tools are for
 
-Trafikverket's graphic manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), reviewed 2025-02-19) sets these rules:
+The tools are used in two situations:
 
-- **Digital productions use Open Sans**, in two weights only: **Regular** and **Bold**. Whitney is for print and Arial/Georgia for MS Office.
+- **Analysis:** an analyst or a working group builds an STPA, HTA, bowtie or RBD.
+- **Meetings:** the status of safety-related sequences of events is presented and discussed, often on a projector and with participants who do not use the tool themselves.
+
+Both situations require a tool that can be understood at once, without an introduction.
+
+### 1.2 Principles
+
+1. **As simple as possible.** Every feature has to earn its place. A few features that are obvious are better than many that need explaining.
+2. **Intuitive.** What is on the screen can be used without reading the help. The help dialog and keyboard shortcuts are an addition, not a requirement.
+3. **The user does the analysis.** The tool supports the method and makes the structure visible. The conclusions belong to the analyst and the group.
+4. **AI is optional support, not the engine.** The tools are fully usable without a model. A model may review, suggest or phrase, but it does not solve the analysis for the user or take up much of the interface. Suggestions are shown in the diagram and accepted by the user (see 1.3).
+5. **Works in meetings.** Diagrams and status can be read at a distance and understood by people who did not build the analysis: clear hierarchy, few colours and no clutter.
+6. **The same thing looks the same in every tool.** Shared components and tokens from HFA DS.
+7. **One file, no build step.** Each tool is a self-contained HTML file that can be read, changed and run without a network (see 2.2).
+
+A new feature is tested against one question: *does it make the tool easier to use in an analysis or in a meeting?* If the answer is no, the feature does not belong in the tool.
+
+### 1.3 Vision: an AI suggestion shows in the diagram
+
+An AI suggestion should be *visible* before it is accepted: how it changes the HTA tree, the bowtie or the STPA control structure. The suggestion is shown in the same diagram as the analysis, not as JSON or text the user has to translate. The same view works in meetings, where the group compares the current state with the suggestion.
+
+*Direction for future implementation.* None of this is built yet (2026-10-31). New code that shows AI suggestions follows the direction below, and departures from it need a reason.
+
+- **Before / After / Difference.** A suggestion opens a review view with a three-way switch. *Before* shows the analysis as it is and *After* as it would be. *Difference* shows both in one diagram with the changes marked. The view closes with **Accept** or **Reject**.
+- **Changes are marked by shape and symbol, not by colour alone** (colour blindness, projectors):
+
+  | Change | Marking |
+  |---|---|
+  | Added | Dashed outline and a **+** badge |
+  | Removed | Faded, with struck-through text and a **−** badge. It stays in place so the group sees what goes. |
+  | Changed | Outline and a **~** badge. The old value is struck through under the new one. |
+  | Unchanged | As usual, slightly dimmed in *Difference* |
+
+  The colours are the semantic success, error and warning tokens. The marking must still read in greyscale.
+- **Per tool:**
+  - **HTA:** new tasks are dashed in the tree. Removed ones stay, faded. A moved task leaves a ghost at its old place. Changed TTA cells show the old and the new value. Only content is marked, not id renumbering.
+  - **Bowtie:** new and removed causes, consequences and barriers are marked as above. A changed status or strength shows old → new on the barrier. New links are drawn dashed, and removed links dotted and faded.
+  - **STPA:** new and removed blocks, control actions and feedback are marked the same way. A type switch (e.g. actuator → controlled process) gets a badge. Changed rows in the loss, hazard, UCA and constraint tables are marked.
+- **Implementation: one shared way to compute the difference.** The suggestion is applied to a copy, and the copy is compared with the current state by id. The diagram is drawn from "after" plus the removed elements, with one CSS class per kind of change. There is no separate view to maintain.
+
+### 1.4 Consequences for work in progress (2026-10-31)
+
+- **hfa-stpa:** the workbench has become complex. Chat, several model providers, MCP and patches have grown in, and the AI model solves much of the work for the user. It is to be reviewed against the principles above: what is needed in analysis and in meetings, and what can be removed or hidden?
+- **AI in hfa-hta and hfa-bowtie** (branch `claude/ai-assistant`) and the **Hugging Face configuration** in hfa-ds have not been test-run. They are reviewed against the principles before anything is merged.
+
+### 1.5 Scenario: HTA workshop with AI as scribe
+
+The scenario shows how the vision in 1.3 is used in a typical workshop where an HTA and its TTA are worked out in detail. The AI acts as a **technical writer**: it summarises what was said and proposes changes, but does not do analysis of its own. The changes show in the tree and the table before the group accepts them.
+
+**Participants:** Anna (human factors specialist and facilitator, runs the tool on the projector), Erik (train driver), Maria (wagon inspector) and Johan (safety coordinator). The AI scribe gets the discussion as Anna's notes or as a transcript.
+
+#### Phase 1: the hierarchy takes shape
+
+Anna has prepared a rough tree: *1 Carry out brake test before departure* with 1.1 Prepare test, 1.2 Charge brake pipe, 1.3 Check brakes and 1.4 Report result.
+
+> **Maria:** "Check brakes" is really three things. The driver applies them, I walk the train and look at each wagon, and then I signal back.
+>
+> **Erik:** And then the brakes are released and checked again. Analyses often forget that.
+>
+> **Johan:** Reporting, is that really a task of its own? It happens in the same conversation.
+>
+> **Maria:** No, we do it in writing. It should stay.
+
+Anna asks the scribe for a summary. The suggestion shows in the tree in *Difference* view: 1.3.1 Apply brakes from the cab, 1.3.2 Walk the train and check each wagon's brake, 1.3.3 Signal "brakes on" to the driver and 1.4 Release brakes and check show as added (dashed outline and +). "Report result" moving from 1.4 to 1.5 is not marked, because its content is the same.
+
+The scribe also records an **open question**: should reporting be a task of its own? Johan was doubtful and Maria wants to keep it. Nothing is changed.
+
+The group sees at once that 1.4 "Release brakes" should be split the same way as 1.3. Anna accepts 1.3.1–1.3.3, rejects 1.4 in this form and asks for a new breakdown. The open question goes into the minutes.
+
+#### Phase 2: TTA, one leaf at a time
+
+Anna selects the leaf *1.3.2 Walk the train and check each wagon's brake*. Discussion and suggestions now cover that leaf only.
+
+> **Maria:** The most common thing is skipping a wagon. Darkness, rain, being in a hurry.
+>
+> **Erik:** Sometimes people only walk half the train because they "know" the rest is fine.
+>
+> **Johan:** Both happen. The first is a lapse, the second a shortcut.
+>
+> **Erik:** Then a wagon with its brake cut out leaves, and braking is weaker than the driver thinks. It might show in a hard brake application, and then it is too late.
+
+The scribe proposes two TTA rows. New rows and filled-in cells are marked in the table:
+
+| Column | Row 1 | Row 2 |
+|---|---|---|
+| External Error Mode | Omission (a wagon is skipped) | Omission (part of the train is not checked) |
+| Human Error Type | Lapse | Violation (shortcut) |
+| Consequence | A wagon with its brake cut out leaves; braking is weaker than the driver thinks | same |
+| Recovery | *No reliable recovery identified (Erik: "maybe in a hard brake application")* | same |
+| PSFs | Darkness, weather, time pressure | Time pressure, routine |
+| Comments | Johan: checklist and head torch should be looked at as a measure | Johan: happens, extent unknown |
+
+The missing recovery is stated explicitly. The scribe adds no measures of its own; the one in Comments is Johan's and carries his name. The group accepts the rows and moves to the next leaf.
+
+#### Phase 3: wrap-up
+
+The scribe compiles the minutes: accepted and rejected changes to the hierarchy, the TTA rows filled in, open questions, and proposed measures with who raised them. The group reviews the minutes on screen. The analysis in the tool is already up to date and is the starting point for the next workshop.
+
+#### What the scenario requires of the tool
+
+1. **The AI is a scribe, not an analyst.** It only phrases what was said, marks disagreement and uncertainty, and leaves cells empty when the group reached no conclusion.
+2. **Changes show in both tree and table**, in Before / After / Difference view (1.3).
+3. **Each change is accepted or rejected on its own**, not only the suggestion as a whole.
+4. **Open questions are kept as a list** and do not change the analysis.
+5. **Focus on one leaf** limits discussion and suggestions to the selected task.
+6. **The minutes can be exported**, with changes, decisions and open questions.
+7. **Input and privacy are decided later.** The discussion can come in as notes, a transcript or both. A meeting recording sent to a cloud model is sensitive; a local model, or notes only, may be required.
+
+#### Visualisation
+
+The visualisation is made in Penpot (HFA DS), in the HTA tool's own layout, and linked here like this:
+
+- **Image in the document:** boards are exported as SVG or PNG to `docs/img/` and shown with `![…](img/…)`. The image links to the prototype.
+- **Link to the prototype:** a share link from Penpot's View mode (*Share → Get link*), which opens without a Penpot account. *The link is added when the prototype exists.*
+
+## 2. Typography
+
+### 2.1 Basis: typographic simplicity
+
+- **The tools use Open Sans**, in two weights only: **Regular** and **Bold**.
 - Keep the **number of weights and sizes as low as possible**.
 - Avoid **underlined and italic** text. Use other weights only in exceptional cases.
 - **Uppercase** text is acceptable in short headings when the context requires it, but never in longer headings.
-- Text on images and coloured plates needs a contrast of at least 3:1. White text on coloured plates reads better with a larger size or bold weight.
+- Text follows WCAG AA, including on images and coloured plates: contrast of at least 4.5:1, or 3:1 for large text (at least 24 px, or 18.7 px bold). White text on coloured plates reads better with a larger size or bold weight.
 
-### 1.2 Font stack: no embedding
+### 2.2 Font stack: no embedding
 
 ```css
 --font-sans: "Open Sans", Arial, sans-serif;
@@ -27,16 +146,16 @@ Each tool is a single self-contained HTML file that must stay **easy to read and
 
 | Machine | Rendered font |
 |---|---|
-| Open Sans installed | Open Sans, which follows the profile |
-| Open Sans not installed | Arial, which is Trafikverket's Office font, ships with Windows and is still within the profile |
+| Open Sans installed | Open Sans |
+| Open Sans not installed | Arial, which ships with Windows and has similar metrics |
 
 **Trade-off:** rendering differs slightly between machines. Arial is a little narrower, so line breaks can move. This is accepted in exchange for simple files.
 
-**Why not Source Sans 3:** the tools previously listed `"Source Sans 3"` first. It is not part of Trafikverket's profile and, like Open Sans, is not preinstalled on Windows. In practice most users therefore saw the fallback, Segoe UI, which is not in the profile either.
+**Why not Source Sans 3:** the tools previously listed `"Source Sans 3"` first. Like Open Sans, it is not preinstalled on Windows. In practice most users therefore saw the fallback, Segoe UI.
 
 **Future option:** if identical rendering everywhere becomes a requirement, embed Open Sans (Regular and Bold, Latin subset including å/ä/ö, about 25–35 kB per weight as WOFF2) only in the `*_offline.html` files, in a clearly marked block at the end of the file. The editable source files stay clean. Both Open Sans and Source Sans 3 are licensed under the SIL Open Font License, which allows embedding.
 
-### 1.3 Type scale
+### 2.3 Type scale
 
 Six sizes, two weights. The names match the tokens in the `mode/light` and `mode/dark` sets in Penpot **HFA DS**.
 
@@ -62,7 +181,7 @@ Rules:
 6. **Uppercase** is allowed only for short labels such as panel headings. Uppercase labels use 12 px Bold.
 7. **Monospace** is used only for code and JSON, at 12 px.
 
-### 1.4 CSS custom properties in the tools
+### 2.4 CSS custom properties in the tools
 
 Each tool declares the same variables in `:root`, named after the tokens. RBD already uses this pattern.
 
@@ -83,7 +202,7 @@ body { font: var(--font-size-sm)/1.5 var(--font-sans); }
 
 Rules reference the variables, not literal pixel values, for example `font-size: var(--font-size-xs)`.
 
-### 1.5 Current state and proposed changes per tool
+### 2.5 Current state and proposed changes per tool
 
 Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
@@ -141,7 +260,7 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
 **Note:** going from 16 to 14 px base text in HTA and Bowtie, and from 12 to 14 px diagram text in STPA, changes the layout. Check node sizes, line breaks and diagram spacing visually when you make the change.
 
-### 1.6 Tokens
+### 2.6 Tokens
 
 | Location | Status |
 |---|---|
@@ -149,3 +268,28 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 | `tokens.json` | Still contains the older tokens only: `roboto-base` (Source Sans 3 stack) and `size.normal` (14). It is updated through the export flow in [sync-workflow.md](sync-workflow.md). |
 
 The legacy tokens `roboto-base` and `size.normal` can be removed once no Penpot file or tool references them.
+
+## 3. Colour
+
+### 3.1 Adaptable brand colour, accessibility first
+
+HFA DS is an independent project. The brand colour (`brand.*`) and any complementary colours must be replaceable, so that the tools can follow an organisation's graphic profile. **The WCAG and accessibility requirements always take precedence over the profile:** a brand colour that breaks the colour rules in `.claude/skills/penpot-color-a11y` must not be used for text, status or anything else that carries information.
+
+### 3.2 Complementary colours next to brand red
+
+This is how a typical complementary palette, green `#005F37`, blue `#00375F`, orange `#FF5F00` and yellow `#FFD700`, differs from brand red `brand.primary` `#D70000` under simulated colour vision (Machado et al. 2009, severity 1.0, the same method as the colour rules). The values are the lightness difference ΔL\*. ⚠️ and ❌ mark where the difference falls below the HFA DS requirements (ΔL\* ≥ 15 or OKLab ΔE ≥ 0.08).
+
+| Colour | Normal | Protanopia | Deuteranopia | Tritanopia | Greyscale |
+|---|---|---|---|---|---|
+| Yellow `#FFD700` | 42 | 51 | 38 | 34 | 42 |
+| Blue `#00375F` | 23 | ⚠️ 9 (ΔE 0.18, distinguished by hue) | 30 | 25 | 23 |
+| Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0.07) | 16 |
+| Green `#005F37` | 10 (ΔE 0.32) | ❌ 3 (ΔE 0.05) | 17 | 14 | ⚠️ 10 |
+
+**Conclusions:**
+
+- **Yellow and blue** can be used next to brand red.
+- **Green `#005F37` must not be used as the opposite of red**, for example ok/error or two series in a chart. With protanopia it is almost as light as brand red. If a green is needed next to red, it must differ clearly in lightness, at least ΔL\* 15 in every simulation. Either direction works, but a lighter green is the natural choice.
+- **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
+- **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The earlier `tokens.json` values (`#C70039` light, `#E03E3E` dark) did not and were replaced (2026-10-31).
+- **If the brand colour changes**, recompute the table and check the conclusions again.

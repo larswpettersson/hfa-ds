@@ -2,21 +2,140 @@
 
 *English version: [design-principles.md](design-principles.md)*
 
-Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver hur verktygen ska se ut, och varför.
+Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
 
-## 1. Typografi
+## 1. Syfte och enkelhet
 
-### 1.1 Grund: Trafikverkets grafiska profil
+### 1.1 Vad verktygen är till för
 
-Trafikverkets grafiska manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), granskad 2025-02-19) har följande regler:
+Verktygen används i två situationer:
 
-- **Digitala produktioner använder Open Sans** i bara två vikter: **Regular** och **Bold**. Whitney används för tryck och Arial/Georgia för MS Office.
+- **Analys:** en analytiker eller en arbetsgrupp gör en STPA, HTA, bowtie eller RBD.
+- **Möten:** status för säkerhetsrelaterade förlopp presenteras och diskuteras, ofta på projektor och med deltagare som inte själva använder verktyget.
+
+Båda situationerna kräver att verktyget går att förstå direkt, utan introduktion.
+
+### 1.2 Principer
+
+1. **Så enkelt som möjligt.** Varje funktion ska motivera sin plats. Hellre få funktioner som är självklara än många som kräver förklaring.
+2. **Intuitivt.** Det som syns på skärmen ska gå att använda utan att läsa hjälpen. Hjälpdialog och kortkommandon är ett komplement, inte en förutsättning.
+3. **Användaren gör analysen.** Verktyget stödjer metoden och gör strukturen synlig. Slutsatserna är analytikerns och gruppens.
+4. **AI är ett valfritt stöd, inte motorn.** Verktygen ska vara fullt användbara utan modell. En modell kan granska, föreslå eller formulera, men den ska inte lösa analysen åt användaren eller ta stor plats i gränssnittet. Förslag visas i diagrammet och godkänns av användaren (se 1.3).
+5. **Fungerar i möten.** Diagram och status ska gå att läsa på avstånd och förstås av den som inte byggt analysen: tydlig hierarki, få färger och inget brus.
+6. **Samma sak ser likadan ut i alla verktyg.** Gemensamma komponenter och tokens från HFA DS.
+7. **En fil, inget byggsteg.** Varje verktyg är en självförsörjande HTML-fil som går att läsa, ändra och köra utan nätverk (se 2.2).
+
+En ny funktion prövas mot frågan: *blir verktyget enklare att använda i en analys eller i ett möte?* Om svaret är nej hör funktionen inte hemma i verktyget.
+
+### 1.3 Vision: ett AI-förslag syns i diagrammet
+
+Ett förslag från AI ska gå att *se* innan det godkänns: hur det ändrar HTA-trädet, bowtien eller kontrollstrukturen i STPA. Förslaget visas i samma diagram som analysen, inte som JSON eller text som användaren själv måste översätta. Samma visning ska fungera i möten, där gruppen kan jämföra nuläge och förslag.
+
+*Riktning för kommande implementering.* Inget av detta är byggt ännu (2026-10-31). Ny kod som visar AI-förslag ska följa riktningen nedan, och avsteg ska motiveras.
+
+- **Före / Efter / Skillnad.** Ett förslag öppnar en granskningsvy med en omkopplare i tre lägen. *Före* visar analysen som den är och *Efter* som den blir. *Skillnad* visar båda i samma diagram med markerade ändringar. Läget lämnas med **Godkänn** eller **Avvisa**.
+- **Ändringar markeras med form och symbol, inte bara färg** (färgblindhet, projektor):
+
+  | Ändring | Markering |
+  |---|---|
+  | Tillagd | Streckad ram och märket **+** |
+  | Borttagen | Blek, med genomstruken text och märket **−**. Den ligger kvar på sin plats så att man ser vad som försvinner. |
+  | Ändrad | Ram och märket **~**. Gammalt värde står genomstruket under det nya. |
+  | Oförändrad | Som vanligt, något nedtonad i läget *Skillnad* |
+
+  Färgerna är de semantiska tokens för success, error och warning. Markeringen ska gå att läsa även i gråskala.
+- **Per verktyg:**
+  - **HTA:** nya uppgifter syns streckade i trädet. Borttagna ligger kvar blekt. En flyttad uppgift visar en skugga på den gamla platsen. Ändrade TTA-celler visar gammalt och nytt värde. Bara innehåll markeras, inte omnumrering av id.
+  - **Bowtie:** nya och borttagna orsaker, konsekvenser och barriärer markeras som ovan. Ändrad status eller styrka visas som gammalt → nytt på barriären. Nya kopplingar ritas streckade och borttagna prickade och bleka.
+  - **STPA:** nya och borttagna block, styråtgärder och återkopplingar markeras på samma sätt. Byte av typ (t.ex. aktuator → styrd process) visas med ett märke. Ändrade rader i tabellerna för förluster, faror, UCA:er och krav markeras.
+- **Implementering: ett gemensamt sätt att räkna fram skillnaden.** Förslaget tillämpas på en kopia, och kopian jämförs med nuläget per id. Diagrammet ritas från "efter" plus de borttagna elementen, med en CSS-klass per ändringstyp. Det blir ingen separat vy att underhålla.
+
+### 1.4 Följder för pågående arbete (2026-10-31)
+
+- **hfa-stpa:** workbenchen har blivit komplex. Chatt, flera modelleverantörer, MCP och patchar har vuxit fram, och AI-modellen löser mycket åt användaren. Den ska ses över mot principerna ovan: vad behövs vid analys och i möten, och vad kan tas bort eller döljas?
+- **AI i hfa-hta och hfa-bowtie** (grenen `claude/ai-assistant`) och **Hugging Face-konfigurationen** i hfa-ds är inte testkörda. De granskas mot principerna innan något mergas.
+
+### 1.5 Scenario: HTA-workshop med AI som skribent
+
+Scenariot visar hur visionen i 1.3 används i en typisk workshop där en HTA och dess TTA detaljeras. AI:n agerar **teknisk skribent**: den sammanfattar det som sagts och föreslår ändringar, men analyserar inte själv. Ändringarna syns i trädet och tabellen innan gruppen godkänner dem.
+
+**Deltagare:** Anna (HF-specialist och facilitator, styr verktyget på projektorn), Erik (lokförare), Maria (vagnsvisitör) och Johan (säkerhetssamordnare). AI-skribenten får diskussionen som Annas stödanteckningar eller som transkribering.
+
+#### Fas 1: hierarkin tar form
+
+Anna har förberett ett grovt träd: *1 Genomföra bromsprov före avgång* med 1.1 Förbereda prov, 1.2 Fylla huvudledning, 1.3 Kontrollera broms och 1.4 Rapportera resultat.
+
+> **Maria:** "Kontrollera broms" är egentligen tre saker. Föraren ansätter, jag går längs tåget och tittar på varje vagn, och sen signalerar jag tillbaka.
+>
+> **Erik:** Och sen ska bromsen lossas och kontrolleras igen. Det glöms ofta bort i analyser.
+>
+> **Johan:** Rapporteringen, är den verkligen en egen uppgift? Den sker ju i samma samtal.
+>
+> **Maria:** Nej, den är skriftlig hos oss. Den ska vara kvar.
+
+Anna ber skribenten sammanfatta. Förslaget visas i trädet i läget *Skillnad*: 1.3.1 Ansätta broms från förarplats, 1.3.2 Gå längs tåget och kontrollera varje vagns broms, 1.3.3 Signalera "broms till" till föraren och 1.4 Lossa broms och kontrollera visas som tillagda (streckad ram och +). Att "Rapportera resultat" numreras om från 1.4 till 1.5 markeras inte, eftersom innehållet är detsamma.
+
+Skribenten noterar också en **öppen fråga**: ska rapporteringen vara en egen uppgift? Johan var tveksam och Maria vill behålla den. Ingen ändring görs.
+
+Gruppen ser direkt att 1.4 "Lossa broms" borde delas upp på samma sätt som 1.3. Anna godkänner 1.3.1–1.3.3, avvisar 1.4 i den här formen och ber om en ny uppdelning. Den öppna frågan sparas i protokollet.
+
+#### Fas 2: TTA, ett löv i taget
+
+Anna markerar lövet *1.3.2 Gå längs tåget och kontrollera varje vagns broms*. Diskussion och förslag gäller nu bara det lövet.
+
+> **Maria:** Det vanligaste är att man hoppar över en vagn. Mörker, regn, det är bråttom.
+>
+> **Erik:** Ibland går man bara halva tåget för att man "vet" att resten är okej.
+>
+> **Johan:** Båda förekommer. Det första är en glömska, det andra en genväg.
+>
+> **Erik:** Då går en vagn med urkopplad broms ut, och bromsförmågan blir sämre än föraren tror. Det upptäcks kanske vid en hård inbromsning, och då är det för sent.
+
+Skribenten föreslår två TTA-rader. Nya rader och ifyllda celler markeras i tabellen:
+
+| Kolumn | Rad 1 | Rad 2 |
+|---|---|---|
+| External Error Mode | Omission (vagn hoppas över) | Omission (delar av tåget kontrolleras inte) |
+| Human Error Type | Lapse | Violation (genväg) |
+| Consequence | Vagn med urkopplad broms går ut, sämre bromsförmåga än föraren tror | samma |
+| Recovery | *Ingen säker återhämtning identifierad (Erik: "kanske vid hård inbromsning")* | samma |
+| PSFs | Mörker, väder, tidspress | Tidspress, rutin |
+| Comments | Johan: checklista och pannlampa bör ses över som åtgärd | Johan: förekommer, omfattningen okänd |
+
+Att Recovery saknas står kvar uttryckligen. Skribenten lägger inte till egna åtgärder; förslaget i Comments är Johans och står med hans namn. Gruppen godkänner raderna och går vidare till nästa löv.
+
+#### Fas 3: avslut
+
+Skribenten sammanställer ett protokoll: godkända och avvisade ändringar i hierarkin, de TTA-rader som fyllts i, öppna frågor och föreslagna åtgärder med vem som tog upp dem. Gruppen går igenom protokollet på skärmen. Analysen i verktyget är redan uppdaterad och blir underlag för nästa workshop.
+
+#### Vad scenariot kräver av verktyget
+
+1. **AI:n är skribent, inte analytiker.** Den formulerar bara det som sagts, markerar oenighet och osäkerhet och lämnar celler tomma när gruppen inte kom fram till något.
+2. **Ändringarna syns i både träd och tabell** i lägena Före / Efter / Skillnad (1.3).
+3. **Varje ändring godkänns eller avvisas för sig**, inte bara hela förslaget.
+4. **Öppna frågor sparas som en lista** och ändrar inte analysen.
+5. **Fokus på ett löv** begränsar diskussion och förslag till den markerade uppgiften.
+6. **Protokollet kan exporteras** med ändringar, beslut och öppna frågor.
+7. **Inmatning och integritet avgörs senare.** Diskussionen kan komma in som anteckningar, transkribering eller båda. En inspelning av ett möte som skickas till en molnmodell är känslig; en lokal modell eller bara anteckningar kan vara ett krav.
+
+#### Visualisering
+
+Visualiseringen görs i Penpot (HFA DS), med HTA-verktygets egen layout, och kopplas hit så här:
+
+- **Bild i dokumentet:** boards exporteras som SVG eller PNG till `docs/img/` och visas med `![…](img/…)`. Bilden länkar till prototypen.
+- **Länk till prototypen:** en delningslänk från Penpots View mode (*Share → Get link*), som kan öppnas utan Penpot-konto. *Länk läggs in när prototypen finns.*
+
+## 2. Typografi
+
+### 2.1 Grund: typografisk enkelhet
+
+- **Verktygen använder Open Sans** i bara två vikter: **Regular** och **Bold**.
 - Håll **antalet vikter och storlekar så lågt som möjligt**.
 - Undvik **understruken och kursiv** text. Använd andra vikter bara i undantagsfall.
 - **Versaler** är tillåtna i korta rubriker när sammanhanget kräver det, men aldrig i längre rubriker.
-- Text på bild och färgade plattor kräver kontrast på minst 3:1. Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
+- Text följer WCAG AA, även på bild och färgade plattor: kontrast minst 4,5:1, eller 3:1 för stor text (minst 24 px, eller 18,7 px fet). Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
 
-### 1.2 Typsnittslista: ingen inbäddning
+### 2.2 Typsnittslista: ingen inbäddning
 
 ```css
 --font-sans: "Open Sans", Arial, sans-serif;
@@ -27,16 +146,16 @@ Varje verktyg är en enda självförsörjande HTML-fil som ska vara **lätt att 
 
 | Dator | Typsnitt som visas |
 |---|---|
-| Open Sans installerad | Open Sans, som följer profilen |
-| Open Sans inte installerad | Arial, som är Trafikverkets Office-typsnitt, finns i Windows och fortfarande ingår i profilen |
+| Open Sans installerad | Open Sans |
+| Open Sans inte installerad | Arial, som finns i Windows och har liknande mått |
 
 **Avvägning:** utseendet skiljer sig något mellan datorer. Arial är lite smalare, så radbrytningar kan flytta sig. Det accepteras i utbyte mot enkla filer.
 
-**Varför inte Source Sans 3:** verktygen hade tidigare `"Source Sans 3"` först i listan. Den ingår inte i Trafikverkets profil och är, precis som Open Sans, inte förinstallerad i Windows. I praktiken såg de flesta användare därför reservtypsnittet Segoe UI, som inte heller ingår i profilen.
+**Varför inte Source Sans 3:** verktygen hade tidigare `"Source Sans 3"` först i listan. Den är, precis som Open Sans, inte förinstallerad i Windows. I praktiken såg de flesta användare därför reservtypsnittet Segoe UI.
 
 **Framtida alternativ:** om verktygen måste se exakt likadana ut överallt kan Open Sans bäddas in (Regular och Bold, latinska tecken inklusive å/ä/ö, cirka 25–35 kB per vikt som WOFF2), men bara i `*_offline.html`-filerna och i ett tydligt avgränsat block sist i filen. Källfilerna som redigeras förblir rena. Både Open Sans och Source Sans 3 har licensen SIL Open Font License, som tillåter inbäddning.
 
-### 1.3 Typografisk skala
+### 2.3 Typografisk skala
 
 Sex storlekar och två vikter. Namnen motsvarar tokens i seten `mode/light` och `mode/dark` i Penpot-filen **HFA DS**.
 
@@ -62,7 +181,7 @@ Regler:
 6. **Versaler** är bara tillåtna i korta etiketter som panelrubriker. Etiketter med versaler är 12 px Bold.
 7. **Monospace** används bara för kod och JSON, i 12 px.
 
-### 1.4 CSS-variabler i verktygen
+### 2.4 CSS-variabler i verktygen
 
 Varje verktyg deklarerar samma variabler i `:root`, med namn efter tokens. RBD använder redan det här mönstret.
 
@@ -83,7 +202,7 @@ body { font: var(--font-size-sm)/1.5 var(--font-sans); }
 
 Reglerna använder variablerna, inte pixelvärden, till exempel `font-size: var(--font-size-xs)`.
 
-### 1.5 Nuläge och föreslagna ändringar per verktyg
+### 2.5 Nuläge och föreslagna ändringar per verktyg
 
 Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
@@ -141,7 +260,7 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
 **Obs:** när brödtexten går från 16 till 14 px i HTA och Bowtie, och diagramtexten från 12 till 14 px i STPA, ändras layouten. Kontrollera nodstorlekar, radbrytningar och avstånd i diagram visuellt när ändringen görs.
 
-### 1.6 Tokens
+### 2.6 Tokens
 
 | Plats | Status |
 |---|---|
@@ -149,3 +268,28 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 | `tokens.json` | Innehåller fortfarande bara de äldre tokens `roboto-base` (Source Sans 3-listan) och `size.normal` (14). Den uppdateras via exportflödet i [sync-workflow.md](sync-workflow.md). |
 
 De äldre tokens `roboto-base` och `size.normal` kan tas bort när inga Penpot-filer eller verktyg längre refererar till dem.
+
+## 3. Färg
+
+### 3.1 Anpassningsbar profilfärg, tillgänglighet först
+
+HFA DS är ett fristående projekt. Profilfärgen (`brand.*`) och eventuella kompletterande färger ska gå att byta, så att verktygen kan följa en organisations grafiska profil. **Kraven på WCAG och tillgänglighet gäller alltid före profilen:** en profilfärg som bryter mot färgreglerna i `.claude/skills/penpot-color-a11y` får inte användas för text, status eller annat som bär information.
+
+### 3.2 Kompletterande färger mot profilröd
+
+Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00375F`, orange `#FF5F00` och gul `#FFD700`, från profilröd `brand.primary` `#D70000` vid simulerat färgseende (Machado m.fl. 2009, svårighetsgrad 1,0, samma metod som färgreglerna). Värdena är ljushetsskillnaden ΔL\*. ⚠️ och ❌ visar var skillnaden understiger kraven i HFA DS (ΔL\* ≥ 15 eller OKLab ΔE ≥ 0,08).
+
+| Färg | Normalt | Protanopi | Deuteranopi | Tritanopi | Gråskala |
+|---|---|---|---|---|---|
+| Gul `#FFD700` | 42 | 51 | 38 | 34 | 42 |
+| Blå `#00375F` | 23 | ⚠️ 9 (ΔE 0,18, skiljs på nyans) | 30 | 25 | 23 |
+| Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0,07) | 16 |
+| Grön `#005F37` | 10 (ΔE 0,32) | ❌ 3 (ΔE 0,05) | 17 | 14 | ⚠️ 10 |
+
+**Slutsatser:**
+
+- **Gul och blå** går att använda bredvid profilröd.
+- **Grön `#005F37` ska inte användas som motsats till röd**, till exempel ok/fel eller två serier i ett diagram. Vid protanopi är den nästan lika ljus som profilröd. Behövs en grön bredvid röd ska den skilja sig tydligt i ljushet, minst ΔL\* 15 i alla simuleringar. Riktningen spelar ingen roll, men en ljusare grön är det naturliga valet.
+- **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
+- **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
+- **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
