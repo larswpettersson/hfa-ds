@@ -270,3 +270,27 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 | `tokens.json` | Still contains the older tokens only: `roboto-base` (Source Sans 3 stack) and `size.normal` (14). It is updated through the export flow in [sync-workflow.md](sync-workflow.md). |
 
 The legacy tokens `roboto-base` and `size.normal` can be removed once no Penpot file or tool references them.
+
+## 3. Colour
+
+### 3.1 Complementary colours next to Trafikverket red
+
+Trafikverket's graphic manual ([Färger](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/farger/), section *Kompletterande färger*, quoted 2026-10-31) has four complementary colours: green `#005F37`, blue `#00375F`, orange `#FF5F00` and yellow `#FFD700`. They may only be used to distinguish a function or create contrast, never for branding. The manual also says (translated): *"If these do not solve the problem, we choose a colour or tone that does."*
+
+This is how the colours differ from Trafikverket red `#D70000` under simulated colour vision (Machado et al. 2009, severity 1.0, the same method as the colour rules in `.claude/skills/penpot-color-a11y`). The values are the lightness difference ΔL\*. ⚠️ and ❌ mark where the difference falls below the HFA DS requirements (ΔL\* ≥ 15 or OKLab ΔE ≥ 0.08).
+
+| Colour | Normal | Protanopia | Deuteranopia | Tritanopia | Greyscale |
+|---|---|---|---|---|---|
+| Yellow `#FFD700` | 42 | 51 | 38 | 34 | 42 |
+| Blue `#00375F` | 23 | ⚠️ 9 (ΔE 0.18, distinguished by hue) | 30 | 25 | 23 |
+| Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0.07) | 16 |
+| Green `#005F37` | 10 (ΔE 0.32) | ❌ 3 (ΔE 0.05) | 17 | 14 | ⚠️ 10 |
+
+**Conclusion for HFA DS** (our assessment from the simulation, not a rule in the manual):
+
+- **Yellow and blue** can be used next to Trafikverket red.
+- **Green `#005F37` must not be used as the opposite of red**, for example ok/error or two series in a chart. With protanopia it is almost as light as Trafikverket red. If a green is needed next to red, it must differ clearly in lightness, at least ΔL\* 15 in every simulation. Either direction works, but a lighter green is the natural choice.
+- **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
+- **`error` must differ from Trafikverket red**, so that errors are not mistaken for the brand colour. The Penpot value `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The values in `tokens.json` (`#C70039` light, `#E03E3E` dark) do not, and must be synced with Penpot.
+
+**Open question:** the manual says "**we** choose". It is not settled whether HFA DS may choose its own green tone or whether the choice belongs to whoever owns Trafikverket's graphic profile. Check before a custom tone is added as a token.

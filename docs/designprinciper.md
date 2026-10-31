@@ -270,3 +270,27 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 | `tokens.json` | Innehåller fortfarande bara de äldre tokens `roboto-base` (Source Sans 3-listan) och `size.normal` (14). Den uppdateras via exportflödet i [sync-workflow.md](sync-workflow.md). |
 
 De äldre tokens `roboto-base` och `size.normal` kan tas bort när inga Penpot-filer eller verktyg längre refererar till dem.
+
+## 3. Färg
+
+### 3.1 Kompletterande färger mot trafikverksröd
+
+Trafikverkets grafiska manual ([Färger](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/farger/), stycket *Kompletterande färger*, citerat 2026-10-31) har fyra kompletterande färger: grön `#005F37`, blå `#00375F`, orange `#FF5F00` och gul `#FFD700`. De får bara användas för att särskilja en funktion eller skapa kontrast, aldrig i profilerande syfte. Manualen säger också: *"Skulle dessa inte lösa problemet, väljer vi en färg eller ton som gör det."*
+
+Så här skiljer sig färgerna från trafikverksröd `#D70000` vid simulerat färgseende (Machado m.fl. 2009, svårighetsgrad 1,0, samma metod som färgreglerna i `.claude/skills/penpot-color-a11y`). Värdena är ljushetsskillnaden ΔL\*. ⚠️ och ❌ visar var skillnaden understiger kraven i HFA DS (ΔL\* ≥ 15 eller OKLab ΔE ≥ 0,08).
+
+| Färg | Normalt | Protanopi | Deuteranopi | Tritanopi | Gråskala |
+|---|---|---|---|---|---|
+| Gul `#FFD700` | 42 | 51 | 38 | 34 | 42 |
+| Blå `#00375F` | 23 | ⚠️ 9 (ΔE 0,18, skiljs på nyans) | 30 | 25 | 23 |
+| Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0,07) | 16 |
+| Grön `#005F37` | 10 (ΔE 0,32) | ❌ 3 (ΔE 0,05) | 17 | 14 | ⚠️ 10 |
+
+**Slutsats för HFA DS** (vår bedömning utifrån simuleringen, inte en regel i manualen):
+
+- **Gul och blå** går att använda bredvid trafikverksröd.
+- **Grön `#005F37` ska inte användas som motsats till röd**, till exempel ok/fel eller två serier i ett diagram. Vid protanopi är den nästan lika ljus som trafikverksröd. Behövs en grön bredvid röd ska den skilja sig tydligt i ljushet, minst ΔL\* 15 i alla simuleringar. Riktningen spelar ingen roll, men en ljusare grön är det naturliga valet.
+- **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
+- **`error` ska skilja sig från trafikverksröd**, så att fel inte förväxlas med profilfärgen. Penpots värde `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Värdena i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gör det inte och ska synkas med Penpot.
+
+**Öppen fråga:** manualen säger "väljer **vi**". Det är inte klarlagt om HFA DS själv får välja en egen grön ton eller om valet ska göras av den som ansvarar för Trafikverkets grafiska profil. Stäm av innan en egen ton läggs in som token.
