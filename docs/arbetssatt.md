@@ -44,9 +44,42 @@ Utseende beskrivs bäst i Penpot. Beteende beskrivs bäst i text och data i repo
 
 Viktigast är exempeldata: ett exempel på en analys före och efter en ändring, och vilka markeringar som ska synas. Det gör det tydligt både vad koden ska göra och hur den ska testas.
 
-### 1.4 Arbetsgång
+### 1.4 Annotationer på komponenter
 
-1. **Designa i Penpot** med namngivna komponenter, varianter och tokens, och en board per tillstånd.
+Hur en komponent ska implementeras beskrivs i dess **annotation** i Penpot. Det är det primära sättet; prototyper med länkade flöden byggs inte för närvarande. Annotationen går att läsa via MCP (`LibraryComponent.annotation` i Plugin API:t, kontrollerat 2026-10-31 på Action Button). Ett textlager `_not` på boarden (1.2) är reserv där en annotation inte räcker.
+
+Regler:
+
+- **Högst 300 tecken.**
+- **Skriv på engelska**, som koden.
+- **Fast ordning:** kodkoppling, tillstånd, beteende, tokens, hänvisning. Utelämna det som inte behövs.
+
+Mall (134 tecken):
+
+```
+Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
+```
+
+**Exempel: Action Button, som den står i HFA DS i dag** (264 tecken):
+
+```
+Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
+```
+
+Den beskriver tillstånden kort och tydligt och skiljer på utseende i designen och beteende som bara finns i appen (`App:`). Jämfört med mallen saknas två saker:
+
+- **Kodkoppling.** Det står inte vilken CSS-klass och vilka verktyg komponenten motsvarar.
+- **Exakta tokennamn.** "elevated", "sunken", "muted" och "base" pekar ut tokens, men inte entydigt: är "muted border" `foreground.muted`?
+
+**Samma annotation enligt mallen** (239 tecken):
+
+```
+Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted. Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+```
+
+### 1.5 Arbetsgång
+
+1. **Designa i Penpot** med namngivna komponenter, varianter och tokens, och beskriv implementationen i komponentens annotation (1.4).
 2. **Beskriv flödet i repot**: en kort text med tillståndstabell och exempeldata före och efter, som hänvisar till boardnamnen och delningslänken.
 3. **Vid en ändring:** markera det ändrade i Penpot och skriv en mening om vad som ändrades. AI:n läser markeringen via MCP och ändrar koden.
 4. **Kontrollera** resultatet i verktyget och med testerna (`npm test` i hfa-ds).

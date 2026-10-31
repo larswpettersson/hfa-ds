@@ -44,9 +44,42 @@ Appearance is best described in Penpot. Behaviour is best described in text and 
 
 Example data matters most: an example of an analysis before and after a change, and which markings should show. It makes clear both what the code should do and how to test it.
 
-### 1.4 Workflow
+### 1.4 Annotations on components
 
-1. **Design in Penpot** with named components, variants and tokens, and one board per state.
+How a component should be implemented is described in its **annotation** in Penpot. This is the primary way; prototypes with linked flows are not built for now. The annotation can be read through the MCP (`LibraryComponent.annotation` in the Plugin API, checked 2026-10-31 on Action Button). A `_note` text layer on the board (1.2) is the fallback where an annotation is not enough.
+
+Rules:
+
+- **At most 300 characters.**
+- **Write in English**, like the code.
+- **Fixed order:** code mapping, states, behaviour, tokens, reference. Leave out what is not needed.
+
+Template (134 characters):
+
+```
+Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
+```
+
+**Example: Action Button, as it is in HFA DS today** (264 characters):
+
+```
+Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
+```
+
+It describes the states briefly and clearly, and separates the look in the design from behaviour that only exists in the app (`App:`). Compared with the template, two things are missing:
+
+- **Code mapping.** It does not say which CSS class and which tools the component corresponds to.
+- **Exact token names.** "elevated", "sunken", "muted" and "base" point at tokens, but not unambiguously: is "muted border" `foreground.muted`?
+
+**The same annotation following the template** (239 characters):
+
+```
+Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted. Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+```
+
+### 1.5 Workflow
+
+1. **Design in Penpot** with named components, variants and tokens, and describe the implementation in the component's annotation (1.4).
 2. **Describe the flow in the repository**: a short text with a state table and example data before and after, referring to the board names and the share link.
 3. **When something changes:** select the changed part in Penpot and write one sentence on what changed. The AI reads the selection through the MCP and changes the code.
 4. **Check** the result in the tool and with the tests (`npm test` in hfa-ds).
