@@ -46,35 +46,27 @@ Example data matters most: an example of an analysis before and after a change, 
 
 ### 1.4 Annotations on components
 
-How a component should be implemented is described in its **annotation** in Penpot. This is the primary way; prototypes with linked flows are not built for now. The annotation can be read through the MCP (`LibraryComponent.annotation` in the Plugin API, checked 2026-10-31 on Action Button). A `_note` text layer on the board (1.2) is the fallback where an annotation is not enough.
+How a component should be implemented is described in its **annotation** in Penpot. This is the primary way; prototypes with linked flows are not built for now. The annotation can be read through the MCP (`LibraryComponent.annotation` in the Plugin API, checked 2026-10-31). A `_note` text layer on the board (1.2) is the fallback where an annotation is not enough.
 
 Rules:
 
 - **At most 300 characters.**
 - **Write in English**, like the code.
-- **Fixed order:** code mapping, states, behaviour, tokens, reference. Leave out what is not needed.
+- **Design first, then `App:`.** Start with what the design shows that the component itself does not make clear, preferably with the reason (sizes, states, why). After `App:` comes what exists only in the code: behaviour, focus, tooltip, accessibility, text handling.
+- **Write only what the component needs.** There is no fixed set of fields; a button describes its states, a barrier its size and text handling.
 
-Template (134 characters):
+**Examples from HFA DS** (2026-10-31):
 
-```
-Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
-```
-
-**Example: Action Button, as it was in HFA DS before the template** (264 characters):
+Action Button (264 characters):
 
 ```
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
 ```
 
-It describes the states briefly and clearly, and separates the look in the design from behaviour that only exists in the app (`App:`). Compared with the template, two things are missing:
-
-- **Code mapping.** It does not say which CSS class and which tools the component corresponds to.
-- **Exact token names.** "elevated", "sunken", "muted" and "base" point at tokens, but not unambiguously: is "muted border" `foreground.muted`?
-
-**The same annotation following the template**, as it now is in HFA DS (266 characters):
+Barrier (284 characters):
 
 ```
-Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted (base fill, elevated text). Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+78 px wide (= --barrier-width) so many barriers fit side by side. Padding 8 px, gap 8 px, text left-aligned. App: show the description truncated to a couple of sentences ending in "…"; full text when editing and in the tooltip (hover and keyboard focus). Use hyphens: auto, lang="sv".
 ```
 
 ### 1.5 Workflow

@@ -46,35 +46,27 @@ Viktigast är exempeldata: ett exempel på en analys före och efter en ändring
 
 ### 1.4 Annotationer på komponenter
 
-Hur en komponent ska implementeras beskrivs i dess **annotation** i Penpot. Det är det primära sättet; prototyper med länkade flöden byggs inte för närvarande. Annotationen går att läsa via MCP (`LibraryComponent.annotation` i Plugin API:t, kontrollerat 2026-10-31 på Action Button). Ett textlager `_not` på boarden (1.2) är reserv där en annotation inte räcker.
+Hur en komponent ska implementeras beskrivs i dess **annotation** i Penpot. Det är det primära sättet; prototyper med länkade flöden byggs inte för närvarande. Annotationen går att läsa via MCP (`LibraryComponent.annotation` i Plugin API:t, kontrollerat 2026-10-31). Ett textlager `_not` på boarden (1.2) är reserv där en annotation inte räcker.
 
 Regler:
 
 - **Högst 300 tecken.**
 - **Skriv på engelska**, som koden.
-- **Fast ordning:** kodkoppling, tillstånd, beteende, tokens, hänvisning. Utelämna det som inte behövs.
+- **Först designen, sedan `App:`.** Inled med det som syns i designen och som inte framgår av komponenten själv, gärna med skälet (mått, tillstånd, varför). Efter `App:` står det som bara finns i koden: beteende, fokus, tooltip, tillgänglighet, textbehandling.
+- **Skriv bara det som behövs för komponenten.** Det finns ingen fast uppsättning fält; en knapp beskriver tillstånd, en barriär mått och textbehandling.
 
-Mall (134 tecken):
+**Exempel från HFA DS** (2026-10-31):
 
-```
-Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
-```
-
-**Exempel: Action Button, som den stod i HFA DS före mallen** (264 tecken):
+Action Button (264 tecken):
 
 ```
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
 ```
 
-Den beskriver tillstånden kort och tydligt och skiljer på utseende i designen och beteende som bara finns i appen (`App:`). Jämfört med mallen saknas två saker:
-
-- **Kodkoppling.** Det står inte vilken CSS-klass och vilka verktyg komponenten motsvarar.
-- **Exakta tokennamn.** "elevated", "sunken", "muted" och "base" pekar ut tokens, men inte entydigt: är "muted border" `foreground.muted`?
-
-**Samma annotation enligt mallen**, som den nu står i HFA DS (266 tecken):
+Barrier (284 tecken):
 
 ```
-Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted (base fill, elevated text). Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+78 px wide (= --barrier-width) so many barriers fit side by side. Padding 8 px, gap 8 px, text left-aligned. App: show the description truncated to a couple of sentences ending in "…"; full text when editing and in the tooltip (hover and keyboard focus). Use hyphens: auto, lang="sv".
 ```
 
 ### 1.5 Arbetsgång
