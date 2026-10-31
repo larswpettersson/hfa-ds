@@ -145,7 +145,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "brand.primary",
       "type": "color",
       "value": "#D70000",
-      "description": "Trafikverket profilröd; logotyp, knappar, borders."
+      "description": "Profilröd; logotyp, knappar, kanter."
     },
     {
       "name": "brand.primary.subtle",
@@ -317,7 +317,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "brand.primary",
       "type": "color",
       "value": "#FF4444",
-      "description": "Trafikverket profilröd; ljusare för kontrast på mörk."
+      "description": "Profilröd; ljusare för kontrast på mörk bakgrund."
     },
     {
       "name": "brand.primary.subtle",
