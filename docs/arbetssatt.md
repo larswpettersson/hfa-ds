@@ -1,0 +1,53 @@
+# Arbetssätt: HFA-familjen
+
+*English version: [ways-of-working.md](ways-of-working.md)*
+
+Det här dokumentet beskriver hur vi arbetar med HFA-verktygen (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [designprinciper.md](designprinciper.md) beskriver vad verktygen ska vara och hur de ska se ut. Det här dokumentet beskriver hur vi tar oss dit.
+
+Varje kapitel beskriver ett arbetssätt. Fler kapitel läggs till efter hand.
+
+## 1. Penpot och AI-stödd kodgenerering
+
+Designändringar görs i Penpot. En AI-assistent (till exempel Claude Code) läser designen och genererar eller ändrar koden i verktygen. Ju tydligare designen är, desto mindre behöver AI:n gissa.
+
+### 1.1 Vad AI:n kan läsa
+
+| Källa | Vad AI:n får ut | Bedömning |
+|---|---|---|
+| **Penpot-filen via Penpot-MCP** | Boards, lager och namn, komponenter och varianter, tokens, färger, typsnitt, storlekar och layout (flex och grid) | Bäst. Exakt information som går att översätta till kod. Kräver att MCP-servern är kopplad på datorn där arbetet görs. |
+| **Skärmbilder och exporterade bilder** | Vad som visas, hierarki och markeringar | Bra komplement. Mått och avstånd blir uppskattningar, och beteende syns inte. |
+| **Delningslänk till en prototyp** | Nästan ingenting. Prototypen ritas av JavaScript i webbläsaren. | Till för människor, inte för AI. |
+| **Prototypens interaktioner** ("klick → gå till board X") | Osäkert om de går att läsa via MCP | Lita inte på dem som enda beskrivning av ett flöde. |
+
+Vid arbete via MCP utgår AI:n från **det som är markerat** i Penpot (se [CLAUDE.md](../CLAUDE.md)). Markera det som ska ändras innan du ber om en ändring.
+
+### 1.2 Principer i Penpot
+
+1. **Namnge lager och komponenter som i koden**, till exempel `review-switch`, `badge/added` eller `task-box`. Ett lager som heter "Rectangle 23" går inte att koppla till kod.
+2. **Använd varianter för tillstånd.** En komponent med till exempel `change=added|removed|changed|none` och `state=default|hover|selected` motsvarar direkt CSS-klasser i verktygen.
+3. **Använd bara tokens från HFA DS.** Inga fria färg- eller storleksvärden. Då kan varje värde mappas till `tokens.json` och CSS-variablerna.
+4. **Använd flex- eller grid-layout i stället för fria positioner.** Då kan AI:n läsa ut regeln ("jämnt avstånd 8 px, radbrytning") i stället för koordinater.
+5. **Gör en board per tillstånd i ett flöde**, till exempel "HTA – Före", "HTA – Efter" och "HTA – Skillnad". Låt boardnamnen följa avsnitten i [designprinciper.md](designprinciper.md), så hittar både människor och AI rätt.
+6. **Skriv anteckningar i ett textlager på boarden**, med prefixet `_not`. Penpots kommentarer går sannolikt inte att läsa via MCP, men ett textlager på boarden gör det.
+7. **Beskriv vad du ändrade.** AI:n ser hur designen ser ut nu, inte vad som ändrats sedan sist. En mening som "badge för borttagen: från röd fyllning till genomstruken text" gör att rätt sak ändras i koden.
+
+### 1.3 Beskriv flöden och beteende utanför Penpot
+
+Utseende beskrivs bäst i Penpot. Beteende beskrivs bäst i text och data i repot, med hänvisning till boardnamnen.
+
+| Beskrivning | Passar för | Hur väl AI tolkar den |
+|---|---|---|
+| **Tillstånd och övergångar i en tabell**: tillstånd → händelse → nästa tillstånd → vad som syns | Flöden, till exempel Före/Efter/Skillnad och Godkänn/Avvisa | Mycket bra och entydig |
+| **Exempeldata före och efter** (JSON), med vilka markeringar som ska synas | Det mesta i en implementation | Bäst av allt. Exemplen kan direkt bli tester. |
+| **Scenarier i text**, som avsnitt 1.5 i designprinciperna | Syfte och sammanhang | Bra för att förstå varför något behövs, mindre bra för detaljer |
+| **Exporterade bilder och delningslänk** | Dokumentation och möten | För människor, komplement för AI |
+
+Viktigast är exempeldata: ett exempel på en analys före och efter en ändring, och vilka markeringar som ska synas. Det gör det tydligt både vad koden ska göra och hur den ska testas.
+
+### 1.4 Arbetsgång
+
+1. **Designa i Penpot** med namngivna komponenter, varianter och tokens, och en board per tillstånd.
+2. **Beskriv flödet i repot**: en kort text med tillståndstabell och exempeldata före och efter, som hänvisar till boardnamnen och delningslänken.
+3. **Vid en ändring:** markera det ändrade i Penpot och skriv en mening om vad som ändrades. AI:n läser markeringen via MCP och ändrar koden.
+4. **Kontrollera** resultatet i verktyget och med testerna (`npm test` i hfa-ds).
+5. **Dokumentera för människor**: exportera bilder av boards till `docs/img/` och länka till prototypen från dokumentationen.
