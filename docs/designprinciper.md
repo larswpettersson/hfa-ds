@@ -55,6 +55,97 @@ Ett förslag från AI ska gå att *se* innan det godkänns: hur det ändrar HTA-
 - **hfa-stpa:** workbenchen har blivit komplex. Chatt, flera modelleverantörer, MCP och patchar har vuxit fram, och AI-modellen löser mycket åt användaren. Den ska ses över mot principerna ovan: vad behövs vid analys och i möten, och vad kan tas bort eller döljas?
 - **AI i hfa-hta och hfa-bowtie** (grenen `claude/ai-assistant`) och **Hugging Face-konfigurationen** i hfa-ds är inte testkörda. De granskas mot principerna innan något mergas.
 
+### 1.5 Scenario: HTA-workshop med AI som skribent
+
+Scenariot visar hur visionen i 1.3 används i en typisk workshop där en HTA och dess TTA detaljeras. AI:n agerar **teknisk skribent**: den sammanfattar det som sagts och föreslår ändringar, men analyserar inte själv. Ändringarna syns i trädet och tabellen innan gruppen godkänner dem.
+
+**Deltagare:** Anna (HF-specialist och facilitator, styr verktyget på projektorn), Erik (lokförare), Maria (vagnsvisitör) och Johan (säkerhetssamordnare). AI-skribenten får diskussionen som Annas stödanteckningar eller som transkribering.
+
+#### Fas 1: hierarkin tar form
+
+Anna har förberett ett grovt träd: *1 Genomföra bromsprov före avgång* med 1.1 Förbereda prov, 1.2 Fylla huvudledning, 1.3 Kontrollera broms och 1.4 Rapportera resultat.
+
+> **Maria:** "Kontrollera broms" är egentligen tre saker. Föraren ansätter, jag går längs tåget och tittar på varje vagn, och sen signalerar jag tillbaka.
+>
+> **Erik:** Och sen ska bromsen lossas och kontrolleras igen. Det glöms ofta bort i analyser.
+>
+> **Johan:** Rapporteringen, är den verkligen en egen uppgift? Den sker ju i samma samtal.
+>
+> **Maria:** Nej, den är skriftlig hos oss. Den ska vara kvar.
+
+Anna ber skribenten sammanfatta. Förslaget visas i läget *Skillnad*:
+
+```mermaid
+flowchart TD
+  T1["1 Genomföra bromsprov före avgång"]
+  T11["1.1 Förbereda prov"]
+  T12["1.2 Fylla huvudledning"]
+  T13["1.3 Kontrollera broms"]
+  T131["#43; 1.3.1 Ansätta broms från förarplats"]
+  T132["#43; 1.3.2 Gå längs tåget och kontrollera varje vagns broms"]
+  T133["#43; 1.3.3 Signalera 'broms till' till föraren"]
+  T14["#43; 1.4 Lossa broms och kontrollera"]
+  T15["1.5 Rapportera resultat"]
+  T1 --> T11 & T12 & T13 & T14 & T15
+  T13 --> T131 & T132 & T133
+  classDef added fill:#E3F3E8,stroke:#228B22,stroke-width:2px,stroke-dasharray:6 3,color:#0D1117
+  classDef same fill:#F0F6FC,stroke:#8B949E,color:#57606A
+  class T131,T132,T133,T14 added
+  class T1,T11,T12,T13,T15 same
+```
+
+*Skiss: tillagda uppgifter har streckad ram och +. Omnumreringen av "Rapportera resultat" från 1.4 till 1.5 markeras inte, eftersom den inte ändrar innehållet.*
+
+Skribenten noterar också en **öppen fråga**: ska rapporteringen vara en egen uppgift? Johan var tveksam och Maria vill behålla den. Ingen ändring görs.
+
+Gruppen ser direkt att 1.4 "Lossa broms" borde delas upp på samma sätt som 1.3. Anna godkänner 1.3.1–1.3.3, avvisar 1.4 i den här formen och ber om en ny uppdelning. Den öppna frågan sparas i protokollet.
+
+#### Fas 2: TTA, ett löv i taget
+
+Anna markerar lövet *1.3.2 Gå längs tåget och kontrollera varje vagns broms*. Diskussion och förslag gäller nu bara det lövet.
+
+> **Maria:** Det vanligaste är att man hoppar över en vagn. Mörker, regn, det är bråttom.
+>
+> **Erik:** Ibland går man bara halva tåget för att man "vet" att resten är okej.
+>
+> **Johan:** Båda förekommer. Det första är en glömska, det andra en genväg.
+>
+> **Erik:** Då går en vagn med urkopplad broms ut, och bromsförmågan blir sämre än föraren tror. Det upptäcks kanske vid en hård inbromsning, och då är det för sent.
+
+Skribenten föreslår två TTA-rader. Nya rader och ifyllda celler markeras i tabellen:
+
+| Kolumn | Rad 1 | Rad 2 |
+|---|---|---|
+| External Error Mode | Omission (vagn hoppas över) | Omission (delar av tåget kontrolleras inte) |
+| Human Error Type | Lapse | Violation (genväg) |
+| Consequence | Vagn med urkopplad broms går ut, sämre bromsförmåga än föraren tror | samma |
+| Recovery | *Ingen säker återhämtning identifierad (Erik: "kanske vid hård inbromsning")* | samma |
+| PSFs | Mörker, väder, tidspress | Tidspress, rutin |
+| Comments | Johan: checklista och pannlampa bör ses över som åtgärd | Johan: förekommer, omfattningen okänd |
+
+Att Recovery saknas står kvar uttryckligen. Skribenten lägger inte till egna åtgärder; förslaget i Comments är Johans och står med hans namn. Gruppen godkänner raderna och går vidare till nästa löv.
+
+#### Fas 3: avslut
+
+Skribenten sammanställer ett protokoll: godkända och avvisade ändringar i hierarkin, de TTA-rader som fyllts i, öppna frågor och föreslagna åtgärder med vem som tog upp dem. Gruppen går igenom protokollet på skärmen. Analysen i verktyget är redan uppdaterad och blir underlag för nästa workshop.
+
+#### Vad scenariot kräver av verktyget
+
+1. **AI:n är skribent, inte analytiker.** Den formulerar bara det som sagts, markerar oenighet och osäkerhet och lämnar celler tomma när gruppen inte kom fram till något.
+2. **Ändringarna syns i både träd och tabell** i lägena Före / Efter / Skillnad (1.3).
+3. **Varje ändring godkänns eller avvisas för sig**, inte bara hela förslaget.
+4. **Öppna frågor sparas som en lista** och ändrar inte analysen.
+5. **Fokus på ett löv** begränsar diskussion och förslag till den markerade uppgiften.
+6. **Protokollet kan exporteras** med ändringar, beslut och öppna frågor.
+7. **Inmatning och integritet avgörs senare.** Diskussionen kan komma in som anteckningar, transkribering eller båda. En inspelning av ett möte som skickas till en molnmodell är känslig; en lokal modell eller bara anteckningar kan vara ett krav.
+
+#### Visualisering
+
+Skissen ovan är [Mermaid](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams), som GitHub ritar direkt i Markdown. Den detaljerade visualiseringen görs i Penpot (HFA DS) och kopplas hit så här:
+
+- **Bild i dokumentet:** boards exporteras som SVG eller PNG till `docs/img/` och visas med `![…](img/…)`. Bilden länkar till prototypen.
+- **Länk till prototypen:** en delningslänk från Penpots View mode (*Share → Get link*), som kan öppnas utan Penpot-konto. *Länk läggs in när prototypen finns.*
+
 ## 2. Typografi
 
 ### 2.1 Grund: Trafikverkets grafiska profil

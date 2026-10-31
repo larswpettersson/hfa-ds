@@ -55,6 +55,97 @@ An AI suggestion should be *visible* before it is accepted: how it changes the H
 - **hfa-stpa:** the workbench has become complex. Chat, several model providers, MCP and patches have grown in, and the AI model solves much of the work for the user. It is to be reviewed against the principles above: what is needed in analysis and in meetings, and what can be removed or hidden?
 - **AI in hfa-hta and hfa-bowtie** (branch `claude/ai-assistant`) and the **Hugging Face configuration** in hfa-ds have not been test-run. They are reviewed against the principles before anything is merged.
 
+### 1.5 Scenario: HTA workshop with AI as scribe
+
+The scenario shows how the vision in 1.3 is used in a typical workshop where an HTA and its TTA are worked out in detail. The AI acts as a **technical writer**: it summarises what was said and proposes changes, but does not do analysis of its own. The changes show in the tree and the table before the group accepts them.
+
+**Participants:** Anna (human factors specialist and facilitator, runs the tool on the projector), Erik (train driver), Maria (wagon inspector) and Johan (safety coordinator). The AI scribe gets the discussion as Anna's notes or as a transcript.
+
+#### Phase 1: the hierarchy takes shape
+
+Anna has prepared a rough tree: *1 Carry out brake test before departure* with 1.1 Prepare test, 1.2 Charge brake pipe, 1.3 Check brakes and 1.4 Report result.
+
+> **Maria:** "Check brakes" is really three things. The driver applies them, I walk the train and look at each wagon, and then I signal back.
+>
+> **Erik:** And then the brakes are released and checked again. Analyses often forget that.
+>
+> **Johan:** Reporting, is that really a task of its own? It happens in the same conversation.
+>
+> **Maria:** No, we do it in writing. It should stay.
+
+Anna asks the scribe for a summary. The suggestion shows in *Difference* view:
+
+```mermaid
+flowchart TD
+  T1["1 Carry out brake test before departure"]
+  T11["1.1 Prepare test"]
+  T12["1.2 Charge brake pipe"]
+  T13["1.3 Check brakes"]
+  T131["#43; 1.3.1 Apply brakes from the cab"]
+  T132["#43; 1.3.2 Walk the train and check each wagon's brake"]
+  T133["#43; 1.3.3 Signal 'brakes on' to the driver"]
+  T14["#43; 1.4 Release brakes and check"]
+  T15["1.5 Report result"]
+  T1 --> T11 & T12 & T13 & T14 & T15
+  T13 --> T131 & T132 & T133
+  classDef added fill:#E3F3E8,stroke:#228B22,stroke-width:2px,stroke-dasharray:6 3,color:#0D1117
+  classDef same fill:#F0F6FC,stroke:#8B949E,color:#57606A
+  class T131,T132,T133,T14 added
+  class T1,T11,T12,T13,T15 same
+```
+
+*Sketch: added tasks have a dashed outline and +. "Report result" moving from 1.4 to 1.5 is not marked, because renumbering does not change content.*
+
+The scribe also records an **open question**: should reporting be a task of its own? Johan was doubtful and Maria wants to keep it. Nothing is changed.
+
+The group sees at once that 1.4 "Release brakes" should be split the same way as 1.3. Anna accepts 1.3.1–1.3.3, rejects 1.4 in this form and asks for a new breakdown. The open question goes into the minutes.
+
+#### Phase 2: TTA, one leaf at a time
+
+Anna selects the leaf *1.3.2 Walk the train and check each wagon's brake*. Discussion and suggestions now cover that leaf only.
+
+> **Maria:** The most common thing is skipping a wagon. Darkness, rain, being in a hurry.
+>
+> **Erik:** Sometimes people only walk half the train because they "know" the rest is fine.
+>
+> **Johan:** Both happen. The first is a lapse, the second a shortcut.
+>
+> **Erik:** Then a wagon with its brake cut out leaves, and braking is weaker than the driver thinks. It might show in a hard brake application, and then it is too late.
+
+The scribe proposes two TTA rows. New rows and filled-in cells are marked in the table:
+
+| Column | Row 1 | Row 2 |
+|---|---|---|
+| External Error Mode | Omission (a wagon is skipped) | Omission (part of the train is not checked) |
+| Human Error Type | Lapse | Violation (shortcut) |
+| Consequence | A wagon with its brake cut out leaves; braking is weaker than the driver thinks | same |
+| Recovery | *No reliable recovery identified (Erik: "maybe in a hard brake application")* | same |
+| PSFs | Darkness, weather, time pressure | Time pressure, routine |
+| Comments | Johan: checklist and head torch should be looked at as a measure | Johan: happens, extent unknown |
+
+The missing recovery is stated explicitly. The scribe adds no measures of its own; the one in Comments is Johan's and carries his name. The group accepts the rows and moves to the next leaf.
+
+#### Phase 3: wrap-up
+
+The scribe compiles the minutes: accepted and rejected changes to the hierarchy, the TTA rows filled in, open questions, and proposed measures with who raised them. The group reviews the minutes on screen. The analysis in the tool is already up to date and is the starting point for the next workshop.
+
+#### What the scenario requires of the tool
+
+1. **The AI is a scribe, not an analyst.** It only phrases what was said, marks disagreement and uncertainty, and leaves cells empty when the group reached no conclusion.
+2. **Changes show in both tree and table**, in Before / After / Difference view (1.3).
+3. **Each change is accepted or rejected on its own**, not only the suggestion as a whole.
+4. **Open questions are kept as a list** and do not change the analysis.
+5. **Focus on one leaf** limits discussion and suggestions to the selected task.
+6. **The minutes can be exported**, with changes, decisions and open questions.
+7. **Input and privacy are decided later.** The discussion can come in as notes, a transcript or both. A meeting recording sent to a cloud model is sensitive; a local model, or notes only, may be required.
+
+#### Visualisation
+
+The sketch above is [Mermaid](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams), which GitHub draws directly in Markdown. The detailed visualisation is made in Penpot (HFA DS) and linked here like this:
+
+- **Image in the document:** boards are exported as SVG or PNG to `docs/img/` and shown with `![…](img/…)`. The image links to the prototype.
+- **Link to the prototype:** a share link from Penpot's View mode (*Share → Get link*), which opens without a Penpot account. *The link is added when the prototype exists.*
+
 ## 2. Typography
 
 ### 2.1 Basis: Trafikverket's graphic profile
