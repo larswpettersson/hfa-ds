@@ -127,15 +127,13 @@ The visualisation is made in Penpot (HFA DS), in the HTA tool's own layout, and 
 
 ## 2. Typography
 
-### 2.1 Basis: Trafikverket's graphic profile
+### 2.1 Basis: typographic simplicity
 
-Trafikverket's graphic manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), reviewed 2025-02-19) sets these rules:
-
-- **Digital productions use Open Sans**, in two weights only: **Regular** and **Bold**. Whitney is for print and Arial/Georgia for MS Office.
+- **The tools use Open Sans**, in two weights only: **Regular** and **Bold**.
 - Keep the **number of weights and sizes as low as possible**.
 - Avoid **underlined and italic** text. Use other weights only in exceptional cases.
 - **Uppercase** text is acceptable in short headings when the context requires it, but never in longer headings.
-- Text on images and coloured plates needs a contrast of at least 3:1. White text on coloured plates reads better with a larger size or bold weight.
+- Text follows WCAG AA, including on images and coloured plates: contrast of at least 4.5:1, or 3:1 for large text (at least 24 px, or 18.7 px bold). White text on coloured plates reads better with a larger size or bold weight.
 
 ### 2.2 Font stack: no embedding
 
@@ -148,12 +146,12 @@ Each tool is a single self-contained HTML file that must stay **easy to read and
 
 | Machine | Rendered font |
 |---|---|
-| Open Sans installed | Open Sans, which follows the profile |
-| Open Sans not installed | Arial, which is Trafikverket's Office font, ships with Windows and is still within the profile |
+| Open Sans installed | Open Sans |
+| Open Sans not installed | Arial, which ships with Windows and has similar metrics |
 
 **Trade-off:** rendering differs slightly between machines. Arial is a little narrower, so line breaks can move. This is accepted in exchange for simple files.
 
-**Why not Source Sans 3:** the tools previously listed `"Source Sans 3"` first. It is not part of Trafikverket's profile and, like Open Sans, is not preinstalled on Windows. In practice most users therefore saw the fallback, Segoe UI, which is not in the profile either.
+**Why not Source Sans 3:** the tools previously listed `"Source Sans 3"` first. Like Open Sans, it is not preinstalled on Windows. In practice most users therefore saw the fallback, Segoe UI.
 
 **Future option:** if identical rendering everywhere becomes a requirement, embed Open Sans (Regular and Bold, Latin subset including å/ä/ö, about 25–35 kB per weight as WOFF2) only in the `*_offline.html` files, in a clearly marked block at the end of the file. The editable source files stay clean. Both Open Sans and Source Sans 3 are licensed under the SIL Open Font License, which allows embedding.
 
@@ -273,11 +271,13 @@ The legacy tokens `roboto-base` and `size.normal` can be removed once no Penpot 
 
 ## 3. Colour
 
-### 3.1 Complementary colours next to Trafikverket red
+### 3.1 Adaptable brand colour, accessibility first
 
-Trafikverket's graphic manual ([Färger](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/farger/), section *Kompletterande färger*, quoted 2026-10-31) has four complementary colours: green `#005F37`, blue `#00375F`, orange `#FF5F00` and yellow `#FFD700`. They may only be used to distinguish a function or create contrast, never for branding. The manual also says (translated): *"If these do not solve the problem, we choose a colour or tone that does."*
+HFA DS is an independent project. The brand colour (`brand.*`) and any complementary colours must be replaceable, so that the tools can follow an organisation's graphic profile. **The WCAG and accessibility requirements always take precedence over the profile:** a brand colour that breaks the colour rules in `.claude/skills/penpot-color-a11y` must not be used for text, status or anything else that carries information.
 
-This is how the colours differ from Trafikverket red `#D70000` under simulated colour vision (Machado et al. 2009, severity 1.0, the same method as the colour rules in `.claude/skills/penpot-color-a11y`). The values are the lightness difference ΔL\*. ⚠️ and ❌ mark where the difference falls below the HFA DS requirements (ΔL\* ≥ 15 or OKLab ΔE ≥ 0.08).
+### 3.2 Complementary colours next to brand red
+
+This is how a typical complementary palette, green `#005F37`, blue `#00375F`, orange `#FF5F00` and yellow `#FFD700`, differs from brand red `brand.primary` `#D70000` under simulated colour vision (Machado et al. 2009, severity 1.0, the same method as the colour rules). The values are the lightness difference ΔL\*. ⚠️ and ❌ mark where the difference falls below the HFA DS requirements (ΔL\* ≥ 15 or OKLab ΔE ≥ 0.08).
 
 | Colour | Normal | Protanopia | Deuteranopia | Tritanopia | Greyscale |
 |---|---|---|---|---|---|
@@ -286,11 +286,10 @@ This is how the colours differ from Trafikverket red `#D70000` under simulated c
 | Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0.07) | 16 |
 | Green `#005F37` | 10 (ΔE 0.32) | ❌ 3 (ΔE 0.05) | 17 | 14 | ⚠️ 10 |
 
-**Conclusion for HFA DS** (our assessment from the simulation, not a rule in the manual):
+**Conclusions:**
 
-- **Yellow and blue** can be used next to Trafikverket red.
-- **Green `#005F37` must not be used as the opposite of red**, for example ok/error or two series in a chart. With protanopia it is almost as light as Trafikverket red. If a green is needed next to red, it must differ clearly in lightness, at least ΔL\* 15 in every simulation. Either direction works, but a lighter green is the natural choice.
+- **Yellow and blue** can be used next to brand red.
+- **Green `#005F37` must not be used as the opposite of red**, for example ok/error or two series in a chart. With protanopia it is almost as light as brand red. If a green is needed next to red, it must differ clearly in lightness, at least ΔL\* 15 in every simulation. Either direction works, but a lighter green is the natural choice.
 - **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
-- **`error` must differ from Trafikverket red**, so that errors are not mistaken for the brand colour. The Penpot value `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The values in `tokens.json` (`#C70039` light, `#E03E3E` dark) do not, and must be synced with Penpot.
-
-**Open question:** the manual says "**we** choose". It is not settled whether HFA DS may choose its own green tone or whether the choice belongs to whoever owns Trafikverket's graphic profile. Check before a custom tone is added as a token.
+- **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. The Penpot value `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The values in `tokens.json` (`#C70039` light, `#E03E3E` dark) do not, and must be synced with Penpot.
+- **If the brand colour changes**, recompute the table and check the conclusions again.

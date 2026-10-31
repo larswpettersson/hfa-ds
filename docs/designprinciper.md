@@ -127,15 +127,13 @@ Visualiseringen görs i Penpot (HFA DS), med HTA-verktygets egen layout, och kop
 
 ## 2. Typografi
 
-### 2.1 Grund: Trafikverkets grafiska profil
+### 2.1 Grund: typografisk enkelhet
 
-Trafikverkets grafiska manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), granskad 2025-02-19) har följande regler:
-
-- **Digitala produktioner använder Open Sans** i bara två vikter: **Regular** och **Bold**. Whitney används för tryck och Arial/Georgia för MS Office.
+- **Verktygen använder Open Sans** i bara två vikter: **Regular** och **Bold**.
 - Håll **antalet vikter och storlekar så lågt som möjligt**.
 - Undvik **understruken och kursiv** text. Använd andra vikter bara i undantagsfall.
 - **Versaler** är tillåtna i korta rubriker när sammanhanget kräver det, men aldrig i längre rubriker.
-- Text på bild och färgade plattor kräver kontrast på minst 3:1. Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
+- Text följer WCAG AA, även på bild och färgade plattor: kontrast minst 4,5:1, eller 3:1 för stor text (minst 24 px, eller 18,7 px fet). Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
 
 ### 2.2 Typsnittslista: ingen inbäddning
 
@@ -148,12 +146,12 @@ Varje verktyg är en enda självförsörjande HTML-fil som ska vara **lätt att 
 
 | Dator | Typsnitt som visas |
 |---|---|
-| Open Sans installerad | Open Sans, som följer profilen |
-| Open Sans inte installerad | Arial, som är Trafikverkets Office-typsnitt, finns i Windows och fortfarande ingår i profilen |
+| Open Sans installerad | Open Sans |
+| Open Sans inte installerad | Arial, som finns i Windows och har liknande mått |
 
 **Avvägning:** utseendet skiljer sig något mellan datorer. Arial är lite smalare, så radbrytningar kan flytta sig. Det accepteras i utbyte mot enkla filer.
 
-**Varför inte Source Sans 3:** verktygen hade tidigare `"Source Sans 3"` först i listan. Den ingår inte i Trafikverkets profil och är, precis som Open Sans, inte förinstallerad i Windows. I praktiken såg de flesta användare därför reservtypsnittet Segoe UI, som inte heller ingår i profilen.
+**Varför inte Source Sans 3:** verktygen hade tidigare `"Source Sans 3"` först i listan. Den är, precis som Open Sans, inte förinstallerad i Windows. I praktiken såg de flesta användare därför reservtypsnittet Segoe UI.
 
 **Framtida alternativ:** om verktygen måste se exakt likadana ut överallt kan Open Sans bäddas in (Regular och Bold, latinska tecken inklusive å/ä/ö, cirka 25–35 kB per vikt som WOFF2), men bara i `*_offline.html`-filerna och i ett tydligt avgränsat block sist i filen. Källfilerna som redigeras förblir rena. Både Open Sans och Source Sans 3 har licensen SIL Open Font License, som tillåter inbäddning.
 
@@ -273,11 +271,13 @@ De äldre tokens `roboto-base` och `size.normal` kan tas bort när inga Penpot-f
 
 ## 3. Färg
 
-### 3.1 Kompletterande färger mot trafikverksröd
+### 3.1 Anpassningsbar profilfärg, tillgänglighet först
 
-Trafikverkets grafiska manual ([Färger](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/farger/), stycket *Kompletterande färger*, citerat 2026-10-31) har fyra kompletterande färger: grön `#005F37`, blå `#00375F`, orange `#FF5F00` och gul `#FFD700`. De får bara användas för att särskilja en funktion eller skapa kontrast, aldrig i profilerande syfte. Manualen säger också: *"Skulle dessa inte lösa problemet, väljer vi en färg eller ton som gör det."*
+HFA DS är ett fristående projekt. Profilfärgen (`brand.*`) och eventuella kompletterande färger ska gå att byta, så att verktygen kan följa en organisations grafiska profil. **Kraven på WCAG och tillgänglighet gäller alltid före profilen:** en profilfärg som bryter mot färgreglerna i `.claude/skills/penpot-color-a11y` får inte användas för text, status eller annat som bär information.
 
-Så här skiljer sig färgerna från trafikverksröd `#D70000` vid simulerat färgseende (Machado m.fl. 2009, svårighetsgrad 1,0, samma metod som färgreglerna i `.claude/skills/penpot-color-a11y`). Värdena är ljushetsskillnaden ΔL\*. ⚠️ och ❌ visar var skillnaden understiger kraven i HFA DS (ΔL\* ≥ 15 eller OKLab ΔE ≥ 0,08).
+### 3.2 Kompletterande färger mot profilröd
+
+Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00375F`, orange `#FF5F00` och gul `#FFD700`, från profilröd `brand.primary` `#D70000` vid simulerat färgseende (Machado m.fl. 2009, svårighetsgrad 1,0, samma metod som färgreglerna). Värdena är ljushetsskillnaden ΔL\*. ⚠️ och ❌ visar var skillnaden understiger kraven i HFA DS (ΔL\* ≥ 15 eller OKLab ΔE ≥ 0,08).
 
 | Färg | Normalt | Protanopi | Deuteranopi | Tritanopi | Gråskala |
 |---|---|---|---|---|---|
@@ -286,11 +286,10 @@ Så här skiljer sig färgerna från trafikverksröd `#D70000` vid simulerat fä
 | Orange `#FF5F00` | 16 | 19 | 15 | ❌ 6 (ΔE 0,07) | 16 |
 | Grön `#005F37` | 10 (ΔE 0,32) | ❌ 3 (ΔE 0,05) | 17 | 14 | ⚠️ 10 |
 
-**Slutsats för HFA DS** (vår bedömning utifrån simuleringen, inte en regel i manualen):
+**Slutsatser:**
 
-- **Gul och blå** går att använda bredvid trafikverksröd.
-- **Grön `#005F37` ska inte användas som motsats till röd**, till exempel ok/fel eller två serier i ett diagram. Vid protanopi är den nästan lika ljus som trafikverksröd. Behövs en grön bredvid röd ska den skilja sig tydligt i ljushet, minst ΔL\* 15 i alla simuleringar. Riktningen spelar ingen roll, men en ljusare grön är det naturliga valet.
+- **Gul och blå** går att använda bredvid profilröd.
+- **Grön `#005F37` ska inte användas som motsats till röd**, till exempel ok/fel eller två serier i ett diagram. Vid protanopi är den nästan lika ljus som profilröd. Behövs en grön bredvid röd ska den skilja sig tydligt i ljushet, minst ΔL\* 15 i alla simuleringar. Riktningen spelar ingen roll, men en ljusare grön är det naturliga valet.
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
-- **`error` ska skilja sig från trafikverksröd**, så att fel inte förväxlas med profilfärgen. Penpots värde `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Värdena i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gör det inte och ska synkas med Penpot.
-
-**Öppen fråga:** manualen säger "väljer **vi**". Det är inte klarlagt om HFA DS själv får välja en egen grön ton eller om valet ska göras av den som ansvarar för Trafikverkets grafiska profil. Stäm av innan en egen ton läggs in som token.
+- **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. Penpots värde `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Värdena i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gör det inte och ska synkas med Penpot.
+- **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
