@@ -20,14 +20,37 @@ Both situations require a tool that can be understood at once, without an introd
 1. **As simple as possible.** Every feature has to earn its place. A few features that are obvious are better than many that need explaining.
 2. **Intuitive.** What is on the screen can be used without reading the help. The help dialog and keyboard shortcuts are an addition, not a requirement.
 3. **The user does the analysis.** The tool supports the method and makes the structure visible. The conclusions belong to the analyst and the group.
-4. **AI is optional support, not the engine.** The tools are fully usable without a model. A model may review, suggest or phrase, but it does not solve the analysis for the user or take up much of the interface. Suggestions are shown to the user and accepted by them.
+4. **AI is optional support, not the engine.** The tools are fully usable without a model. A model may review, suggest or phrase, but it does not solve the analysis for the user or take up much of the interface. Suggestions are shown in the diagram and accepted by the user (see 1.3).
 5. **Works in meetings.** Diagrams and status can be read at a distance and understood by people who did not build the analysis: clear hierarchy, few colours and no clutter.
 6. **The same thing looks the same in every tool.** Shared components and tokens from HFA DS.
 7. **One file, no build step.** Each tool is a self-contained HTML file that can be read, changed and run without a network (see 2.2).
 
 A new feature is tested against one question: *does it make the tool easier to use in an analysis or in a meeting?* If the answer is no, the feature does not belong in the tool.
 
-### 1.3 Consequences for work in progress (2026-10-31)
+### 1.3 Vision: an AI suggestion shows in the diagram
+
+An AI suggestion should be *visible* before it is accepted: how it changes the HTA tree, the bowtie or the STPA control structure. The suggestion is shown in the same diagram as the analysis, not as JSON or text the user has to translate. The same view works in meetings, where the group compares the current state with the suggestion.
+
+*Proposed design (not decided):*
+
+- **Before / After / Difference.** A suggestion opens a review view with a three-way switch. *Before* shows the analysis as it is and *After* as it would be. *Difference* shows both in one diagram with the changes marked. The view closes with **Accept** or **Reject**.
+- **Changes are marked by shape and symbol, not by colour alone** (colour blindness, projectors):
+
+  | Change | Marking |
+  |---|---|
+  | Added | Dashed outline and a **+** badge |
+  | Removed | Faded, with struck-through text and a **−** badge. It stays in place so the group sees what goes. |
+  | Changed | Outline and a **~** badge. The old value is struck through under the new one. |
+  | Unchanged | As usual, slightly dimmed in *Difference* |
+
+  The colours are the semantic success, error and warning tokens. The marking must still read in greyscale.
+- **Per tool:**
+  - **HTA:** new tasks are dashed in the tree. Removed ones stay, faded. A moved task leaves a ghost at its old place. Changed TTA cells show the old and the new value. Only content is marked, not id renumbering.
+  - **Bowtie:** new and removed causes, consequences and barriers are marked as above. A changed status or strength shows old → new on the barrier. New links are drawn dashed, and removed links dotted and faded.
+  - **STPA:** new and removed blocks, control actions and feedback are marked the same way. A type switch (e.g. actuator → controlled process) gets a badge. Changed rows in the loss, hazard, UCA and constraint tables are marked.
+- **One shared way to compute the difference.** The suggestion is applied to a copy, and the copy is compared with the current state by id. The diagram is drawn from "after" plus the removed elements, with one CSS class per kind of change. There is no separate view to maintain.
+
+### 1.4 Consequences for work in progress (2026-10-31)
 
 - **hfa-stpa:** the workbench has become complex. Chat, several model providers, MCP and patches have grown in, and the AI model solves much of the work for the user. It is to be reviewed against the principles above: what is needed in analysis and in meetings, and what can be removed or hidden?
 - **AI in hfa-hta and hfa-bowtie** (branch `claude/ai-assistant`) and the **Hugging Face configuration** in hfa-ds have not been test-run. They are reviewed against the principles before anything is merged.

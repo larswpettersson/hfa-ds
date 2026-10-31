@@ -20,14 +20,37 @@ Båda situationerna kräver att verktyget går att förstå direkt, utan introdu
 1. **Så enkelt som möjligt.** Varje funktion ska motivera sin plats. Hellre få funktioner som är självklara än många som kräver förklaring.
 2. **Intuitivt.** Det som syns på skärmen ska gå att använda utan att läsa hjälpen. Hjälpdialog och kortkommandon är ett komplement, inte en förutsättning.
 3. **Användaren gör analysen.** Verktyget stödjer metoden och gör strukturen synlig. Slutsatserna är analytikerns och gruppens.
-4. **AI är ett valfritt stöd, inte motorn.** Verktygen ska vara fullt användbara utan modell. En modell kan granska, föreslå eller formulera, men den ska inte lösa analysen åt användaren eller ta stor plats i gränssnittet. Förslag visas och godkänns av användaren.
+4. **AI är ett valfritt stöd, inte motorn.** Verktygen ska vara fullt användbara utan modell. En modell kan granska, föreslå eller formulera, men den ska inte lösa analysen åt användaren eller ta stor plats i gränssnittet. Förslag visas i diagrammet och godkänns av användaren (se 1.3).
 5. **Fungerar i möten.** Diagram och status ska gå att läsa på avstånd och förstås av den som inte byggt analysen: tydlig hierarki, få färger och inget brus.
 6. **Samma sak ser likadan ut i alla verktyg.** Gemensamma komponenter och tokens från HFA DS.
 7. **En fil, inget byggsteg.** Varje verktyg är en självförsörjande HTML-fil som går att läsa, ändra och köra utan nätverk (se 2.2).
 
 En ny funktion prövas mot frågan: *blir verktyget enklare att använda i en analys eller i ett möte?* Om svaret är nej hör funktionen inte hemma i verktyget.
 
-### 1.3 Följder för pågående arbete (2026-10-31)
+### 1.3 Vision: ett AI-förslag syns i diagrammet
+
+Ett förslag från AI ska gå att *se* innan det godkänns: hur det ändrar HTA-trädet, bowtien eller kontrollstrukturen i STPA. Förslaget visas i samma diagram som analysen, inte som JSON eller text som användaren själv måste översätta. Samma visning ska fungera i möten, där gruppen kan jämföra nuläge och förslag.
+
+*Förslag på utformning (inte beslutat):*
+
+- **Före / Efter / Skillnad.** Ett förslag öppnar en granskningsvy med en omkopplare i tre lägen. *Före* visar analysen som den är och *Efter* som den blir. *Skillnad* visar båda i samma diagram med markerade ändringar. Läget lämnas med **Godkänn** eller **Avvisa**.
+- **Ändringar markeras med form och symbol, inte bara färg** (färgblindhet, projektor):
+
+  | Ändring | Markering |
+  |---|---|
+  | Tillagd | Streckad ram och märket **+** |
+  | Borttagen | Blek, med genomstruken text och märket **−**. Den ligger kvar på sin plats så att man ser vad som försvinner. |
+  | Ändrad | Ram och märket **~**. Gammalt värde står genomstruket under det nya. |
+  | Oförändrad | Som vanligt, något nedtonad i läget *Skillnad* |
+
+  Färgerna är de semantiska tokens för success, error och warning. Markeringen ska gå att läsa även i gråskala.
+- **Per verktyg:**
+  - **HTA:** nya uppgifter syns streckade i trädet. Borttagna ligger kvar blekt. En flyttad uppgift visar en skugga på den gamla platsen. Ändrade TTA-celler visar gammalt och nytt värde. Bara innehåll markeras, inte omnumrering av id.
+  - **Bowtie:** nya och borttagna orsaker, konsekvenser och barriärer markeras som ovan. Ändrad status eller styrka visas som gammalt → nytt på barriären. Nya kopplingar ritas streckade och borttagna prickade och bleka.
+  - **STPA:** nya och borttagna block, styråtgärder och återkopplingar markeras på samma sätt. Byte av typ (t.ex. aktuator → styrd process) visas med ett märke. Ändrade rader i tabellerna för förluster, faror, UCA:er och krav markeras.
+- **Ett gemensamt sätt att räkna fram skillnaden.** Förslaget tillämpas på en kopia, och kopian jämförs med nuläget per id. Diagrammet ritas från "efter" plus de borttagna elementen, med en CSS-klass per ändringstyp. Det blir ingen separat vy att underhålla.
+
+### 1.4 Följder för pågående arbete (2026-10-31)
 
 - **hfa-stpa:** workbenchen har blivit komplex. Chatt, flera modelleverantörer, MCP och patchar har vuxit fram, och AI-modellen löser mycket åt användaren. Den ska ses över mot principerna ovan: vad behövs vid analys och i möten, och vad kan tas bort eller döljas?
 - **AI i hfa-hta och hfa-bowtie** (grenen `claude/ai-assistant`) och **Hugging Face-konfigurationen** i hfa-ds är inte testkörda. De granskas mot principerna innan något mergas.
