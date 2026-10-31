@@ -31,7 +31,7 @@ En ny funktion prövas mot frågan: *blir verktyget enklare att använda i en an
 
 Ett förslag från AI ska gå att *se* innan det godkänns: hur det ändrar HTA-trädet, bowtien eller kontrollstrukturen i STPA. Förslaget visas i samma diagram som analysen, inte som JSON eller text som användaren själv måste översätta. Samma visning ska fungera i möten, där gruppen kan jämföra nuläge och förslag.
 
-*Förslag på utformning (inte beslutat):*
+*Riktning för kommande implementering.* Inget av detta är byggt ännu (2026-10-31). Ny kod som visar AI-förslag ska följa riktningen nedan, och avsteg ska motiveras.
 
 - **Före / Efter / Skillnad.** Ett förslag öppnar en granskningsvy med en omkopplare i tre lägen. *Före* visar analysen som den är och *Efter* som den blir. *Skillnad* visar båda i samma diagram med markerade ändringar. Läget lämnas med **Godkänn** eller **Avvisa**.
 - **Ändringar markeras med form och symbol, inte bara färg** (färgblindhet, projektor):
@@ -48,7 +48,7 @@ Ett förslag från AI ska gå att *se* innan det godkänns: hur det ändrar HTA-
   - **HTA:** nya uppgifter syns streckade i trädet. Borttagna ligger kvar blekt. En flyttad uppgift visar en skugga på den gamla platsen. Ändrade TTA-celler visar gammalt och nytt värde. Bara innehåll markeras, inte omnumrering av id.
   - **Bowtie:** nya och borttagna orsaker, konsekvenser och barriärer markeras som ovan. Ändrad status eller styrka visas som gammalt → nytt på barriären. Nya kopplingar ritas streckade och borttagna prickade och bleka.
   - **STPA:** nya och borttagna block, styråtgärder och återkopplingar markeras på samma sätt. Byte av typ (t.ex. aktuator → styrd process) visas med ett märke. Ändrade rader i tabellerna för förluster, faror, UCA:er och krav markeras.
-- **Ett gemensamt sätt att räkna fram skillnaden.** Förslaget tillämpas på en kopia, och kopian jämförs med nuläget per id. Diagrammet ritas från "efter" plus de borttagna elementen, med en CSS-klass per ändringstyp. Det blir ingen separat vy att underhålla.
+- **Implementering: ett gemensamt sätt att räkna fram skillnaden.** Förslaget tillämpas på en kopia, och kopian jämförs med nuläget per id. Diagrammet ritas från "efter" plus de borttagna elementen, med en CSS-klass per ändringstyp. Det blir ingen separat vy att underhålla.
 
 ### 1.4 Följder för pågående arbete (2026-10-31)
 
