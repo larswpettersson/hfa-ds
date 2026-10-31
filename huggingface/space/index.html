@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HFA Tools</title>
+<style>
+  :root {
+    --bg: #F0F6FC; --bg-elev: #FFFFFF; --fg: #0D1117; --fg-muted: #57606A; --border: #D0D7DE; --brand: #D70000;
+    --font: "Source Sans 3", "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #2D333B; --bg-elev: #383D45; --fg: #FAFBFC; --fg-muted: #C9D1D9; --border: #444C56; --brand: #FF4444; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 var(--font); }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  p.lead { color: var(--fg-muted); margin: 0 0 24px; }
+  .tools { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  a.tool { display: block; padding: 16px; background: var(--bg-elev); border: 1px solid var(--border); border-left: 4px solid var(--brand);
+    border-radius: 8px; color: inherit; text-decoration: none; }
+  a.tool:hover, a.tool:focus-visible { border-color: var(--fg); }
+  a.tool strong { display: block; font-size: 18px; }
+  a.tool span { color: var(--fg-muted); font-size: 14px; }
+  section { margin-top: 28px; font-size: 15px; }
+  section h2 { font-size: 17px; margin: 0 0 6px; }
+  code { font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>HFA Tools</h1>
+  <p class="lead">Human factors and safety analysis in the browser, with an LLM to help.</p>
+  <div class="tools">
+    <a class="tool" href="stpa/index.html"><strong>STPA workbench</strong><span>Control structure, unsafe control actions, loss scenarios and safety constraints.</span></a>
+    <a class="tool" href="hta/index.html"><strong>HTA + TTA</strong><span>Hierarchical task analysis with human error identification per task.</span></a>
+    <a class="tool" href="bowtie/index.html"><strong>Bowtie</strong><span>Hazard, top event, causes, barriers and consequences.</span></a>
+  </div>
+  <section>
+    <h2>AI analysis</h2>
+    <p>Open a tool, press <strong>AI</strong> (STPA: the panel on the right) and pick a provider under <strong>Settings</strong>.
+      For Hugging Face, create a fine-grained token with <em>Make calls to Inference Providers</em> at
+      <a href="https://huggingface.co/settings/tokens">huggingface.co/settings/tokens</a> and use a model such as <code>google/gemma-4-31B-it</code>.
+      Requests go from your browser straight to the provider; this page stores nothing on a server.</p>
+  </section>
+</main>
+</body>
+</html>
