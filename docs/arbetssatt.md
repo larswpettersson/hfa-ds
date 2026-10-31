@@ -63,16 +63,10 @@ Action Button (264 tecken):
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
 ```
 
-Barrier (284 tecken):
-
-```
-78 px wide (= --barrier-width) so many barriers fit side by side. Padding 8 px, gap 8 px, text left-aligned. App: show the description truncated to a couple of sentences ending in "…"; full text when editing and in the tooltip (hover and keyboard focus). Use hyphens: auto, lang="sv".
-```
-
 ### 1.5 Arbetsgång
 
 1. **Designa i Penpot** med namngivna komponenter, varianter och tokens, och beskriv implementationen i komponentens annotation (1.4).
 2. **Beskriv flödet i repot**: en kort text med tillståndstabell och exempeldata före och efter, som hänvisar till boardnamnen och delningslänken.
 3. **Vid en ändring:** markera det ändrade i Penpot och skriv en mening om vad som ändrades. AI:n läser markeringen via MCP och ändrar koden.
 4. **Kontrollera** resultatet i verktyget och med testerna (`npm test` i hfa-ds).
-5. **Dokumentera för människor**: exportera bilder av boards till `docs/img/` och länka till prototypen från dokumentationen.
+
