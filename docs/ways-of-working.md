@@ -63,11 +63,6 @@ Action Button (264 characters):
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
 ```
 
-Barrier (284 characters):
-
-```
-78 px wide (= --barrier-width) so many barriers fit side by side. Padding 8 px, gap 8 px, text left-aligned. App: show the description truncated to a couple of sentences ending in "…"; full text when editing and in the tooltip (hover and keyboard focus). Use hyphens: auto, lang="sv".
-```
 
 ### 1.5 Workflow
 
@@ -75,4 +70,4 @@ Barrier (284 characters):
 2. **Describe the flow in the repository**: a short text with a state table and example data before and after, referring to the board names and the share link.
 3. **When something changes:** select the changed part in Penpot and write one sentence on what changed. The AI reads the selection through the MCP and changes the code.
 4. **Check** the result in the tool and with the tests (`npm test` in hfa-ds).
-5. **Document for people**: export board images to `docs/img/` and link to the prototype from the documentation.
+
