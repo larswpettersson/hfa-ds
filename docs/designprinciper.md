@@ -2,11 +2,39 @@
 
 *English version: [design-principles.md](design-principles.md)*
 
-Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver hur verktygen ska se ut, och varför.
+Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
 
-## 1. Typografi
+## 1. Syfte och enkelhet
 
-### 1.1 Grund: Trafikverkets grafiska profil
+### 1.1 Vad verktygen är till för
+
+Verktygen används i två situationer:
+
+- **Analys:** en analytiker eller en arbetsgrupp gör en STPA, HTA, bowtie eller RBD.
+- **Möten:** status för säkerhetsrelaterade förlopp presenteras och diskuteras, ofta på projektor och med deltagare som inte själva använder verktyget.
+
+Båda situationerna kräver att verktyget går att förstå direkt, utan introduktion.
+
+### 1.2 Principer
+
+1. **Så enkelt som möjligt.** Varje funktion ska motivera sin plats. Hellre få funktioner som är självklara än många som kräver förklaring.
+2. **Intuitivt.** Det som syns på skärmen ska gå att använda utan att läsa hjälpen. Hjälpdialog och kortkommandon är ett komplement, inte en förutsättning.
+3. **Användaren gör analysen.** Verktyget stödjer metoden och gör strukturen synlig. Slutsatserna är analytikerns och gruppens.
+4. **AI är ett valfritt stöd, inte motorn.** Verktygen ska vara fullt användbara utan modell. En modell kan granska, föreslå eller formulera, men den ska inte lösa analysen åt användaren eller ta stor plats i gränssnittet. Förslag visas och godkänns av användaren.
+5. **Fungerar i möten.** Diagram och status ska gå att läsa på avstånd och förstås av den som inte byggt analysen: tydlig hierarki, få färger och inget brus.
+6. **Samma sak ser likadan ut i alla verktyg.** Gemensamma komponenter och tokens från HFA DS.
+7. **En fil, inget byggsteg.** Varje verktyg är en självförsörjande HTML-fil som går att läsa, ändra och köra utan nätverk (se 2.2).
+
+En ny funktion prövas mot frågan: *blir verktyget enklare att använda i en analys eller i ett möte?* Om svaret är nej hör funktionen inte hemma i verktyget.
+
+### 1.3 Följder för pågående arbete (2026-10-31)
+
+- **hfa-stpa:** workbenchen har blivit komplex. Chatt, flera modelleverantörer, MCP och patchar har vuxit fram, och AI-modellen löser mycket åt användaren. Den ska ses över mot principerna ovan: vad behövs vid analys och i möten, och vad kan tas bort eller döljas?
+- **AI i hfa-hta och hfa-bowtie** (grenen `claude/ai-assistant`) och **Hugging Face-konfigurationen** i hfa-ds är inte testkörda. De granskas mot principerna innan något mergas.
+
+## 2. Typografi
+
+### 2.1 Grund: Trafikverkets grafiska profil
 
 Trafikverkets grafiska manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), granskad 2025-02-19) har följande regler:
 
@@ -16,7 +44,7 @@ Trafikverkets grafiska manual ([Typografisk enkelhet](https://bransch.trafikverk
 - **Versaler** är tillåtna i korta rubriker när sammanhanget kräver det, men aldrig i längre rubriker.
 - Text på bild och färgade plattor kräver kontrast på minst 3:1. Vit text på färgade plattor blir mer lättläst med större storlek eller fet vikt.
 
-### 1.2 Typsnittslista: ingen inbäddning
+### 2.2 Typsnittslista: ingen inbäddning
 
 ```css
 --font-sans: "Open Sans", Arial, sans-serif;
@@ -36,7 +64,7 @@ Varje verktyg är en enda självförsörjande HTML-fil som ska vara **lätt att 
 
 **Framtida alternativ:** om verktygen måste se exakt likadana ut överallt kan Open Sans bäddas in (Regular och Bold, latinska tecken inklusive å/ä/ö, cirka 25–35 kB per vikt som WOFF2), men bara i `*_offline.html`-filerna och i ett tydligt avgränsat block sist i filen. Källfilerna som redigeras förblir rena. Både Open Sans och Source Sans 3 har licensen SIL Open Font License, som tillåter inbäddning.
 
-### 1.3 Typografisk skala
+### 2.3 Typografisk skala
 
 Sex storlekar och två vikter. Namnen motsvarar tokens i seten `mode/light` och `mode/dark` i Penpot-filen **HFA DS**.
 
@@ -62,7 +90,7 @@ Regler:
 6. **Versaler** är bara tillåtna i korta etiketter som panelrubriker. Etiketter med versaler är 12 px Bold.
 7. **Monospace** används bara för kod och JSON, i 12 px.
 
-### 1.4 CSS-variabler i verktygen
+### 2.4 CSS-variabler i verktygen
 
 Varje verktyg deklarerar samma variabler i `:root`, med namn efter tokens. RBD använder redan det här mönstret.
 
@@ -83,7 +111,7 @@ body { font: var(--font-size-sm)/1.5 var(--font-sans); }
 
 Reglerna använder variablerna, inte pixelvärden, till exempel `font-size: var(--font-size-xs)`.
 
-### 1.5 Nuläge och föreslagna ändringar per verktyg
+### 2.5 Nuläge och föreslagna ändringar per verktyg
 
 Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
@@ -141,7 +169,7 @@ Inventering av huvudfilerna 2026-10-26. Värden som inte ändras finns inte med.
 
 **Obs:** när brödtexten går från 16 till 14 px i HTA och Bowtie, och diagramtexten från 12 till 14 px i STPA, ändras layouten. Kontrollera nodstorlekar, radbrytningar och avstånd i diagram visuellt när ändringen görs.
 
-### 1.6 Tokens
+### 2.6 Tokens
 
 | Plats | Status |
 |---|---|

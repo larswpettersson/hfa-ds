@@ -2,11 +2,39 @@
 
 *Swedish version: [designprinciper.md](designprinciper.md)*
 
-Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](../ARCHITECTURE.md) describes how the repositories fit together. This document describes how the tools should look, and why.
+Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](../ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
 
-## 1. Typography
+## 1. Purpose and simplicity
 
-### 1.1 Basis: Trafikverket's graphic profile
+### 1.1 What the tools are for
+
+The tools are used in two situations:
+
+- **Analysis:** an analyst or a working group builds an STPA, HTA, bowtie or RBD.
+- **Meetings:** the status of safety-related sequences of events is presented and discussed, often on a projector and with participants who do not use the tool themselves.
+
+Both situations require a tool that can be understood at once, without an introduction.
+
+### 1.2 Principles
+
+1. **As simple as possible.** Every feature has to earn its place. A few features that are obvious are better than many that need explaining.
+2. **Intuitive.** What is on the screen can be used without reading the help. The help dialog and keyboard shortcuts are an addition, not a requirement.
+3. **The user does the analysis.** The tool supports the method and makes the structure visible. The conclusions belong to the analyst and the group.
+4. **AI is optional support, not the engine.** The tools are fully usable without a model. A model may review, suggest or phrase, but it does not solve the analysis for the user or take up much of the interface. Suggestions are shown to the user and accepted by them.
+5. **Works in meetings.** Diagrams and status can be read at a distance and understood by people who did not build the analysis: clear hierarchy, few colours and no clutter.
+6. **The same thing looks the same in every tool.** Shared components and tokens from HFA DS.
+7. **One file, no build step.** Each tool is a self-contained HTML file that can be read, changed and run without a network (see 2.2).
+
+A new feature is tested against one question: *does it make the tool easier to use in an analysis or in a meeting?* If the answer is no, the feature does not belong in the tool.
+
+### 1.3 Consequences for work in progress (2026-10-31)
+
+- **hfa-stpa:** the workbench has become complex. Chat, several model providers, MCP and patches have grown in, and the AI model solves much of the work for the user. It is to be reviewed against the principles above: what is needed in analysis and in meetings, and what can be removed or hidden?
+- **AI in hfa-hta and hfa-bowtie** (branch `claude/ai-assistant`) and the **Hugging Face configuration** in hfa-ds have not been test-run. They are reviewed against the principles before anything is merged.
+
+## 2. Typography
+
+### 2.1 Basis: Trafikverket's graphic profile
 
 Trafikverket's graphic manual ([Typografisk enkelhet](https://bransch.trafikverket.se/grafisk-profil/trafikverkets-grafiska-profil/grafisk-manual/typografi/), reviewed 2025-02-19) sets these rules:
 
@@ -16,7 +44,7 @@ Trafikverket's graphic manual ([Typografisk enkelhet](https://bransch.trafikverk
 - **Uppercase** text is acceptable in short headings when the context requires it, but never in longer headings.
 - Text on images and coloured plates needs a contrast of at least 3:1. White text on coloured plates reads better with a larger size or bold weight.
 
-### 1.2 Font stack: no embedding
+### 2.2 Font stack: no embedding
 
 ```css
 --font-sans: "Open Sans", Arial, sans-serif;
@@ -36,7 +64,7 @@ Each tool is a single self-contained HTML file that must stay **easy to read and
 
 **Future option:** if identical rendering everywhere becomes a requirement, embed Open Sans (Regular and Bold, Latin subset including å/ä/ö, about 25–35 kB per weight as WOFF2) only in the `*_offline.html` files, in a clearly marked block at the end of the file. The editable source files stay clean. Both Open Sans and Source Sans 3 are licensed under the SIL Open Font License, which allows embedding.
 
-### 1.3 Type scale
+### 2.3 Type scale
 
 Six sizes, two weights. The names match the tokens in the `mode/light` and `mode/dark` sets in Penpot **HFA DS**.
 
@@ -62,7 +90,7 @@ Rules:
 6. **Uppercase** is allowed only for short labels such as panel headings. Uppercase labels use 12 px Bold.
 7. **Monospace** is used only for code and JSON, at 12 px.
 
-### 1.4 CSS custom properties in the tools
+### 2.4 CSS custom properties in the tools
 
 Each tool declares the same variables in `:root`, named after the tokens. RBD already uses this pattern.
 
@@ -83,7 +111,7 @@ body { font: var(--font-size-sm)/1.5 var(--font-sans); }
 
 Rules reference the variables, not literal pixel values, for example `font-size: var(--font-size-xs)`.
 
-### 1.5 Current state and proposed changes per tool
+### 2.5 Current state and proposed changes per tool
 
 Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
@@ -141,7 +169,7 @@ Survey of the main files, 2026-10-26. Unchanged values are not listed.
 
 **Note:** going from 16 to 14 px base text in HTA and Bowtie, and from 12 to 14 px diagram text in STPA, changes the layout. Check node sizes, line breaks and diagram spacing visually when you make the change.
 
-### 1.6 Tokens
+### 2.6 Tokens
 
 | Location | Status |
 |---|---|
