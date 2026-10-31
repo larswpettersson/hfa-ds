@@ -60,7 +60,7 @@ Template (134 characters):
 Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
 ```
 
-**Example: Action Button, as it is in HFA DS today** (264 characters):
+**Example: Action Button, as it was in HFA DS before the template** (264 characters):
 
 ```
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
@@ -71,10 +71,10 @@ It describes the states briefly and clearly, and separates the look in the desig
 - **Code mapping.** It does not say which CSS class and which tools the component corresponds to.
 - **Exact token names.** "elevated", "sunken", "muted" and "base" point at tokens, but not unambiguously: is "muted border" `foreground.muted`?
 
-**The same annotation following the template** (239 characters):
+**The same annotation following the template**, as it now is in HFA DS (266 characters):
 
 ```
-Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted. Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted (base fill, elevated text). Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
 ```
 
 ### 1.5 Workflow

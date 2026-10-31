@@ -60,7 +60,7 @@ Mall (134 tecken):
 Code: <class> (<tools>). States: <variant=a|b> or <state: look>. Behaviour: <what happens>. Tokens: <token names>. See: <doc section>.
 ```
 
-**Exempel: Action Button, som den står i HFA DS i dag** (264 tecken):
+**Exempel: Action Button, som den stod i HFA DS före mallen** (264 tecken):
 
 ```
 Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base border. Pressed/selected: inverted (base fill, elevated text). App: 2 px info focus ring with 2 px offset on :focus-visible; tooltip and aria-label with the full name (e.g. "Add cause").
@@ -71,10 +71,10 @@ Den beskriver tillstånden kort och tydligt och skiljer på utseende i designen 
 - **Kodkoppling.** Det står inte vilken CSS-klass och vilka verktyg komponenten motsvarar.
 - **Exakta tokennamn.** "elevated", "sunken", "muted" och "base" pekar ut tokens, men inte entydigt: är "muted border" `foreground.muted`?
 
-**Samma annotation enligt mallen** (239 tecken):
+**Samma annotation enligt mallen**, som den nu står i HFA DS (266 tecken):
 
 ```
-Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted. Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
+Code: .action-btn (HTA, Bowtie). Default: background.elevated, 1 px foreground.muted border. Hover: background.sunken, foreground.base border. Pressed/selected: inverted (base fill, elevated text). Focus: 2 px info ring, 2 px offset. Tooltip + aria-label: full name.
 ```
 
 ### 1.5 Arbetsgång
