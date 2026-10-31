@@ -73,28 +73,7 @@ Anna har förberett ett grovt träd: *1 Genomföra bromsprov före avgång* med 
 >
 > **Maria:** Nej, den är skriftlig hos oss. Den ska vara kvar.
 
-Anna ber skribenten sammanfatta. Förslaget visas i läget *Skillnad*:
-
-```mermaid
-flowchart TD
-  T1["1 Genomföra bromsprov före avgång"]
-  T11["1.1 Förbereda prov"]
-  T12["1.2 Fylla huvudledning"]
-  T13["1.3 Kontrollera broms"]
-  T131["#43; 1.3.1 Ansätta broms från förarplats"]
-  T132["#43; 1.3.2 Gå längs tåget och kontrollera varje vagns broms"]
-  T133["#43; 1.3.3 Signalera 'broms till' till föraren"]
-  T14["#43; 1.4 Lossa broms och kontrollera"]
-  T15["1.5 Rapportera resultat"]
-  T1 --> T11 & T12 & T13 & T14 & T15
-  T13 --> T131 & T132 & T133
-  classDef added fill:#E3F3E8,stroke:#228B22,stroke-width:2px,stroke-dasharray:6 3,color:#0D1117
-  classDef same fill:#F0F6FC,stroke:#8B949E,color:#57606A
-  class T131,T132,T133,T14 added
-  class T1,T11,T12,T13,T15 same
-```
-
-*Skiss: tillagda uppgifter har streckad ram och +. Omnumreringen av "Rapportera resultat" från 1.4 till 1.5 markeras inte, eftersom den inte ändrar innehållet.*
+Anna ber skribenten sammanfatta. Förslaget visas i trädet i läget *Skillnad*: 1.3.1 Ansätta broms från förarplats, 1.3.2 Gå längs tåget och kontrollera varje vagns broms, 1.3.3 Signalera "broms till" till föraren och 1.4 Lossa broms och kontrollera visas som tillagda (streckad ram och +). Att "Rapportera resultat" numreras om från 1.4 till 1.5 markeras inte, eftersom innehållet är detsamma.
 
 Skribenten noterar också en **öppen fråga**: ska rapporteringen vara en egen uppgift? Johan var tveksam och Maria vill behålla den. Ingen ändring görs.
 
@@ -141,7 +120,7 @@ Skribenten sammanställer ett protokoll: godkända och avvisade ändringar i hie
 
 #### Visualisering
 
-Skissen ovan är [Mermaid](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams), som GitHub ritar direkt i Markdown. Den detaljerade visualiseringen görs i Penpot (HFA DS) och kopplas hit så här:
+Visualiseringen görs i Penpot (HFA DS), med HTA-verktygets egen layout, och kopplas hit så här:
 
 - **Bild i dokumentet:** boards exporteras som SVG eller PNG till `docs/img/` och visas med `![…](img/…)`. Bilden länkar till prototypen.
 - **Länk till prototypen:** en delningslänk från Penpots View mode (*Share → Get link*), som kan öppnas utan Penpot-konto. *Länk läggs in när prototypen finns.*

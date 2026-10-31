@@ -73,28 +73,7 @@ Anna has prepared a rough tree: *1 Carry out brake test before departure* with 1
 >
 > **Maria:** No, we do it in writing. It should stay.
 
-Anna asks the scribe for a summary. The suggestion shows in *Difference* view:
-
-```mermaid
-flowchart TD
-  T1["1 Carry out brake test before departure"]
-  T11["1.1 Prepare test"]
-  T12["1.2 Charge brake pipe"]
-  T13["1.3 Check brakes"]
-  T131["#43; 1.3.1 Apply brakes from the cab"]
-  T132["#43; 1.3.2 Walk the train and check each wagon's brake"]
-  T133["#43; 1.3.3 Signal 'brakes on' to the driver"]
-  T14["#43; 1.4 Release brakes and check"]
-  T15["1.5 Report result"]
-  T1 --> T11 & T12 & T13 & T14 & T15
-  T13 --> T131 & T132 & T133
-  classDef added fill:#E3F3E8,stroke:#228B22,stroke-width:2px,stroke-dasharray:6 3,color:#0D1117
-  classDef same fill:#F0F6FC,stroke:#8B949E,color:#57606A
-  class T131,T132,T133,T14 added
-  class T1,T11,T12,T13,T15 same
-```
-
-*Sketch: added tasks have a dashed outline and +. "Report result" moving from 1.4 to 1.5 is not marked, because renumbering does not change content.*
+Anna asks the scribe for a summary. The suggestion shows in the tree in *Difference* view: 1.3.1 Apply brakes from the cab, 1.3.2 Walk the train and check each wagon's brake, 1.3.3 Signal "brakes on" to the driver and 1.4 Release brakes and check show as added (dashed outline and +). "Report result" moving from 1.4 to 1.5 is not marked, because its content is the same.
 
 The scribe also records an **open question**: should reporting be a task of its own? Johan was doubtful and Maria wants to keep it. Nothing is changed.
 
@@ -141,7 +120,7 @@ The scribe compiles the minutes: accepted and rejected changes to the hierarchy,
 
 #### Visualisation
 
-The sketch above is [Mermaid](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams), which GitHub draws directly in Markdown. The detailed visualisation is made in Penpot (HFA DS) and linked here like this:
+The visualisation is made in Penpot (HFA DS), in the HTA tool's own layout, and linked here like this:
 
 - **Image in the document:** boards are exported as SVG or PNG to `docs/img/` and shown with `![…](img/…)`. The image links to the prototype.
 - **Link to the prototype:** a share link from Penpot's View mode (*Share → Get link*), which opens without a Penpot account. *The link is added when the prototype exists.*
