@@ -29,7 +29,7 @@ These requirements drive the technical choices in every tool repository:
 | No installation | Each tool consists of one or a few HTML files with plain JavaScript and CSS. Nothing needs to be built, installed or run on a server. A modern web browser is enough. |
 | Works without a network | The pages fetch nothing from the internet (no outside scripts, fonts or services) for their basic functions. HTA and Bowtie are also available as a single self-contained file (`hta_offline.html`, `Bowtie_offline.html`) with the script inlined; the STPA Workbench is already a single file. The file can be transferred to an isolated environment and opened directly via `file://`. |
 | Confidentiality | There is no server and no database. The analysis exists only in the browser's memory and is saved when the user exports it to a JSON file on their own computer. `localStorage` is used only for preferences (theme, column selection, panel width, etc.). |
-| Confidentiality with AI support | AI support in the STPA Workbench is optional; the editor, diagram and safety-case tables work without a language model. If a cloud provider (Claude, Gemini) is selected, the structure is sent to that provider. For confidential analyses, a model running locally (Ollama, LM Studio, LocalAI) should be used. Then no data leaves the computer or the organisation's own network. |
+| Confidentiality with AI support | AI support in the STPA Workbench is optional; the editor, diagram and safety-case tables work without a language model. If a cloud provider (Claude, Gemini) is selected, the structure is sent to that provider, and so are images attached to a question (planned, section 7). For confidential analyses, a model running locally (Ollama, LM Studio, LocalAI) should be used. Then no data leaves the computer or the organisation's own network. Images require a local model that reads images. |
 
 This choice is deliberate. Because the tools have no build step and use no external packages, design tokens must be copied by hand into each tool's CSS (see section 4), and no code is shared between the tools. In return, each tool works entirely on its own, its code is easy to review, and it can be used without help from the IT department.
 
@@ -205,7 +205,28 @@ sequenceDiagram
 
 The transition to a fully step-by-step workflow is in progress, and the data model will change along with it.
 
-## 7. Testing and Quality Assurance
+## 7. AI Support: Images in the Question (Planned)
+
+Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel in HTA and Bowtie exists only on the `claude/ai-assistant` branch so far.
+
+**In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>` to at most about 1,568 px on its longest side and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
+
+| Provider | Image format |
+|---|---|
+| Claude | Content block `{type: "image", source: {type: "base64", media_type, data}}` before the text block. PNG, JPEG, GIF or WebP. |
+| Gemini | `parts: [{inline_data: {mime_type, data}}, {text}]`. Inline images are limited to about 20 MB per request. |
+| Hugging Face and local OpenAI-compatible servers (LM Studio, LiteLLM) | `{type: "image_url", image_url: {url: "data:image/png;base64,…"}}` in the message content |
+| Ollama (`/api/chat`, `/api/generate`) | `images: ["<base64>"]` on the message, without the `data:` prefix |
+
+**Decisions:**
+
+- **Scale down before sending.** Smaller requests and lower cost. Claude scales larger images down itself, so the result is the same.
+- **Images are not stored.** Not in `localStorage`, not in the analysis JSON and not in the Markdown export, which only notes that an image was attached.
+- **Images are not sent again.** When earlier questions are included, older images are replaced with a placeholder.
+- **Models without image support.** A text-only model's error is explained in the panel, and the attachment is unavailable where this can be known in advance.
+- **Confidentiality.** The image takes the same path as the structure (section 1): to the cloud provider if one is selected, otherwise it stays in the organisation's network with a local model that reads images.
+
+## 8. Testing and Quality Assurance
 
 - **Shared tests in hfa-ds:** `npm test` runs automated tests (Playwright) against the tools in the other repositories (the location can be changed with `HFA_WORKSPACE`). Pages are opened directly as files (`file://`), without a web server, just as when the tools are used in an isolated environment. The tests in `tests/shared/` run against every tool in `tests/lib/tools.mjs` and check that the page loads without errors and that its colours match `tokens.json`. Tests for a single tool live in `tests/<tool>/` (today there are such tests for STPA: selection, questions about part of the structure, conversion to actuator/sensor, and patches). On GitHub, the `test-tools.yml` workflow runs the tests with all repositories fetched side by side.
 - **Quick tests per tool:** `hfa-hta` and `hfa-bowtie` have simple Python tests (`scripts/*-smoke-test.py`) that check that the basic functions work.

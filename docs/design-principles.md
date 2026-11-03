@@ -125,6 +125,18 @@ The visualisation is made in Penpot (HFA DS), in the HTA tool's own layout, and 
 - **Image in the document:** boards are exported as SVG or PNG to `docs/img/` and shown with `![…](img/…)`. The image links to the prototype.
 - **Link to the prototype:** a share link from Penpot's View mode (*Share → Get link*), which opens without a Penpot account. *The link is added when the prototype exists.*
 
+### 1.6 Images in the AI support (planned)
+
+The user should be able to give the AI an image along with the question: a photo of the whiteboard from a workshop, a screenshot of an instruction or a regulation, or a sketch of a bowtie from an earlier meeting. This fits the AI as scribe in 1.5: it phrases what the group has already worked out, for example an HTA tree drawn on the board.
+
+- **Easy to add.** Paste a screenshot (Ctrl/⌘+V) or drag an image file into the question field. A small thumbnail with ✕ shows what will be sent.
+- **Images from outside.** The tool's own structure is already sent as data, so an image of the tool's own diagram adds little.
+- **The suggestion is shown and accepted like any other** (1.3). The AI interprets the image, but the group decides what goes into the analysis.
+- **The image does not stay.** It is not saved in the tool or in the export, and it is not sent again with follow-up questions.
+- **Clear about what leaves the computer.** A screenshot can contain more than intended. With a cloud provider this is stated at the attachment; confidential analyses require a local model that reads images.
+
+None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](../ARCHITECTURE.md), section 7.
+
 ## 2. Typography
 
 ### 2.1 Basis: typographic simplicity

@@ -29,7 +29,7 @@ Dessa krav styr de tekniska valen i samtliga verktygsrepon:
 | Ingen installation | Varje verktyg består av en eller några få HTML-filer med vanlig JavaScript och CSS. Inget behöver byggas, installeras eller köras på en server. En modern webbläsare räcker. |
 | Fungerar utan nätverk | Sidorna hämtar ingenting från internet (inga skript, typsnitt eller tjänster utifrån) för att grundfunktionerna ska fungera. HTA och Bowtie finns dessutom som en enda fristående fil (`hta_offline.html`, `Bowtie_offline.html`) med inbäddat skript; STPA Workbench är redan en enda fil. Filen kan föras över till en isolerad miljö och öppnas direkt via `file://`. |
 | Sekretess | Det finns ingen server och ingen databas. Analysen finns bara i webbläsarens minne och sparas genom att användaren exporterar den till en JSON-fil på den egna datorn. `localStorage` används endast för inställningar (tema, kolumnval, panelbredd m.m.). |
-| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören. För sekretessbelagda analyser ska en modell som körs lokalt användas (Ollama, LM Studio, LocalAI). Då lämnar ingen data datorn eller det egna nätet. |
+| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören, och likaså bilder som bifogas en fråga (planerat, avsnitt 7). För sekretessbelagda analyser ska en modell som körs lokalt användas (Ollama, LM Studio, LocalAI). Då lämnar ingen data datorn eller det egna nätet. Bilder kräver en lokal modell som kan läsa bilder. |
 
 Valet är medvetet. Eftersom verktygen saknar byggsteg och externa paket måste designtokens föras in för hand i varje verktygs CSS (se avsnitt 4), och ingen kod delas mellan verktygen. I gengäld fungerar varje verktyg helt på egen hand, koden är lätt att granska och verktygen kan användas utan hjälp från IT-avdelningen.
 
@@ -205,7 +205,28 @@ sequenceDiagram
 
 Omställningen till ett fullt stegvis arbetsflöde pågår, och datamodellen kommer att förändras i takt med den.
 
-## 7. Test och kvalitetssäkring
+## 7. AI-stöd: bilder i frågan (planerat)
+
+Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga till språkmodellen. Syftet och gränserna beskrivs i [designprinciperna, avsnitt 1.6](docs/designprinciper.md). Inget av detta är byggt (2026-11-03); AI-panelen i HTA och Bowtie finns ännu bara på grenen `claude/ai-assistant`.
+
+**I webbläsaren.** Bilden kommer in genom att klistras in (`paste`-händelsen, `clipboardData`), dras in (`drop`) eller väljas med en filknapp. Den skalas ned med `<canvas>` till högst cirka 1 568 px på längsta sidan och görs om till base64. Inget bibliotek behövs, och offlinefilerna fortsätter att fungera; bara själva AI-anropet kräver nätverk, som tidigare. En fråga består då av text och noll eller flera bilder, och varje leverantör översätter det till sitt format:
+
+| Leverantör | Format för bilden |
+|---|---|
+| Claude | Innehållsblock `{type: "image", source: {type: "base64", media_type, data}}` före textblocket. PNG, JPEG, GIF eller WebP. |
+| Gemini | `parts: [{inline_data: {mime_type, data}}, {text}]`. Inbäddade bilder är begränsade till cirka 20 MB per anrop. |
+| Hugging Face och lokala OpenAI-kompatibla servrar (LM Studio, LiteLLM) | `{type: "image_url", image_url: {url: "data:image/png;base64,…"}}` i meddelandets innehåll |
+| Ollama (`/api/chat`, `/api/generate`) | `images: ["<base64>"]` på meddelandet, utan `data:`-prefix |
+
+**Beslut:**
+
+- **Nedskalning före sändning.** Mindre anrop och lägre kostnad. Claude skalar själv ned större bilder, så resultatet blir detsamma.
+- **Bilder sparas inte.** Inte i `localStorage`, inte i analysens JSON och inte i Markdown-exporten, som bara noterar att en bild bifogades.
+- **Bilder skickas inte om.** När tidigare frågor skickas med ersätts äldre bilder med en platshållare.
+- **Modell utan bildstöd.** Ett textmodellsfel förklaras i panelen, och bilagan kan inte väljas där det går att avgöra i förväg.
+- **Sekretess.** Bilden går samma väg som strukturen (avsnitt 1): till molnleverantören om en sådan valts, annars stannar den i det egna nätet med en lokal modell som kan läsa bilder.
+
+## 8. Test och kvalitetssäkring
 
 - **Gemensamma tester i hfa-ds:** `npm test` kör automatiska tester (Playwright) mot verktygen i de andra repona (sökvägen kan ändras med `HFA_WORKSPACE`). Sidorna öppnas direkt som filer (`file://`), utan webbserver, på samma sätt som när verktygen används i en isolerad miljö. Testerna i `tests/shared/` körs mot alla verktyg i `tests/lib/tools.mjs` och kontrollerar att sidan laddas utan fel och att färgerna stämmer med `tokens.json`. Tester för ett enskilt verktyg ligger i `tests/<verktyg>/` (i dag finns sådana för STPA: markering, frågor om en del av strukturen, omvandling till aktuator/sensor och patchar). På GitHub kör arbetsflödet `test-tools.yml` testerna med alla repon hämtade bredvid varandra.
 - **Snabbtester per verktyg:** `hfa-hta` och `hfa-bowtie` har enkla tester i Python (`scripts/*-smoke-test.py`) som kontrollerar att grundfunktionerna fungerar.
