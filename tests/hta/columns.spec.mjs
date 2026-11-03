@@ -49,6 +49,9 @@ test.describe("HTA: customisable TTA columns", () => {
     const r1 = await page.evaluate(() => HTAEditor.getState().ttaRecords.find((r) => r.id === "r1"));
     expect(r1.hazards).toEqual(["H1"]); // a list column keeps its list
     expect(r1).not.toHaveProperty("recovery");
+    // The row the editor adds for the root task has the file's columns, not the previous analysis' ones.
+    const rootRow = await page.evaluate(() => HTAEditor.getState().ttaRecords.find((r) => r.taskId === "1"));
+    expect(Object.keys(rootRow).sort()).toEqual(["comments", "externalErrorMode", "hazards", "id", "taskId"]);
     expect((await column(page, "externalErrorMode")).description).toBe("");
     expect((await column(page, "comments")).description).toMatch(/Notes/);
     expect((await column(page, "hazards")).description).toBe("Hazard ids the UCA can lead to, e.g. H1.");
