@@ -139,12 +139,12 @@ Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i 
 
 ### 1.7 Anpassningsbara TTA-kolumner (planerat)
 
-TTA-tabellen i HTA används för olika syften: felidentifiering enligt HEI (SHERPA), men också som underlag till en STPA, där kolumnerna i stället heter till exempel *Controller*, *Unsafe Control Action* och *Hazards*. Kolumnerna ska därför gå att anpassa, och AI-stödet ska följa dem.
+TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI (HRA t.ex. SHERPA/HEART/Railway Action Reliability Assessment), men till exempel också som underlag till en STPA, som kan användas för att sötta framtagningen av kontrollstruktur med kolumner som *Description of the task*, *Controller*, *Control and feedback*, *Related Hazards*. Kolumnerna ska därför gå att anpassa, och AI-stödet ska följa dem.
 
 - **Kolumnerna hör till analysen.** Deras namn och betydelse sparas i analysfilen och följer med när den skickas vidare. Det finns bara ett ställe där kolumnerna beskrivs; AI-stödet har ingen egen kolumnlista.
 - **Varje kolumn har en kort beskrivning** av vad den betyder och hur den fylls i. Beskrivningen hjälper både människor (som verktygstips på rubriken) och AI:n.
 - **Användaren ändrar kolumnerna i tabellen.** Klicka på en rubrik för att ändra namn och beskrivning, och lägg till eller ta bort egna kolumner. Ändringar går att ångra.
-- **Mallar som utgångspunkt.** Ett val som "HEI (SHERPA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
+- **Mallar som utgångspunkt.** Ett val som "HEI (HRA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
 - **AI:n följer kolumnerna, den bestämmer dem inte.** Den formulerar innehåll i de kolumner som finns. Ett förslag om nya kolumner visas och godkänns som andra förslag (1.3) och kommer i så fall senare.
 
 Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 8.
