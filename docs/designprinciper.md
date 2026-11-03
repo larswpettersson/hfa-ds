@@ -320,3 +320,18 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
 - **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
+
+## 4. Knappar och dialoger
+
+### 4.1 Knappar som öppnar en dialog slutar med …
+
+En knapp som öppnar en dialog, en panel eller ett filval, där användaren behöver göra något mer innan något händer, slutar med **…**. Då syns det i förväg att knappen inte gör något direkt.
+
+| Knappen | Exempel |
+|---|---|
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
+| Gör något direkt: inget … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+
+- Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
+- Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
+- Införs i verktygen efter hand (2026-11-03).
