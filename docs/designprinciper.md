@@ -125,6 +125,18 @@ Visualiseringen görs i Penpot (HFA DS), med HTA-verktygets egen layout, och kop
 - **Bild i dokumentet:** boards exporteras som SVG eller PNG till `docs/img/` och visas med `![…](img/…)`. Bilden länkar till prototypen.
 - **Länk till prototypen:** en delningslänk från Penpots View mode (*Share → Get link*), som kan öppnas utan Penpot-konto. *Länk läggs in när prototypen finns.*
 
+### 1.6 Bilder i AI-stödet (planerat)
+
+Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av whiteboarden från en workshop, ett skärmklipp av en instruktion eller ett regelverk, eller en skiss av en bowtie från ett tidigare möte. Det passar AI:n som skribent i 1.5: den formulerar det gruppen redan har tagit fram, till exempel ett HTA-träd som ritats på tavlan.
+
+- **Enkelt att lägga till.** Klistra in ett skärmklipp (Ctrl/⌘+V) eller dra in en bildfil i frågefältet. En liten miniatyr med ✕ visar vad som skickas med.
+- **Bilder utifrån.** Verktygets egen struktur skickas redan som data, så en bild av verktygets eget diagram tillför lite.
+- **Förslaget visas och godkänns som andra förslag** (1.3). AI:n tolkar bilden, men gruppen avgör vad som förs in.
+- **Bilden stannar inte kvar.** Den sparas inte i verktyget eller i exporten och skickas inte om vid följdfrågor.
+- **Tydligt vad som lämnar datorn.** Ett skärmklipp kan innehålla mer än man tänkt. Vid en molnleverantör ska det framgå vid bilagan; för sekretessbelagda analyser krävs en lokal modell med bildstöd.
+
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 7.
+
 ## 2. Typografi
 
 ### 2.1 Grund: typografisk enkelhet
