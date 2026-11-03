@@ -336,3 +336,14 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 - Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
 - **Undantag:** knappar som bara visar en symbol, som hjälpknappen **?**, får inget ….
 - Införs i verktygen efter hand (2026-11-03).
+
+### 4.2 Ta bort rader i tabeller
+
+- **Redigerbara tabeller har ett ✕ sist på varje rad.** Det är dämpat men alltid synligt, så att det går att upptäcka, fungerar på pekskärm och syns för den som följer med på projektorn.
+- **Verktygstipset säger vad som tas bort**, även kopplade data, till exempel "Delete c1 and its control actions and feedback".
+- **Ångra i stället för att fråga.** Raden tas bort direkt, och ett statusmeddelande säger vad som togs bort och att Ctrl/⌘+Z ångrar. Verktyget frågar först bara när borttagningen påverkar mycket utanför raden, till exempel en kolumn med värden på många rader.
+- **Kräver en regel raden töms den i stället.** I HTA har varje uppgift minst en TTA-rad; för uppgiftens sista rad heter knappen *Clear*.
+- **Tabeller som räknas fram ur annan data har inget ✕.** De ändras där datan finns, som säkerhetstabellerna i STPA.
+- **✕ är en riktig knapp**, som nås med Tab och fungerar med tangentbordet.
+
+STPA-workbenchens strukturtabeller följer redan principen (2026-11-03). TTA-tabellen i HTA får den i samma veva som de anpassningsbara kolumnerna.
