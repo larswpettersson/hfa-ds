@@ -334,4 +334,5 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 
 - Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
 - Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
+- **Undantag:** knappar som bara visar en symbol, som hjälpknappen **?**, får inget ….
 - Införs i verktygen efter hand (2026-11-03).

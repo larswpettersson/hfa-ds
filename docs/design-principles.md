@@ -334,4 +334,5 @@ A button that opens a dialog, a panel or a file chooser, where the user has to d
 
 - Use the character **…** (U+2026), not three full stops, with no space before it.
 - The rule applies to the button's text. Tooltips and `aria-label` are written without ….
+- **Exception:** buttons that show only a symbol, such as the help button **?**, get no ….
 - Introduced in the tools step by step (2026-11-03).
