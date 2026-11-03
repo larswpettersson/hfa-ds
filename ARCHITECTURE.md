@@ -209,7 +209,7 @@ The transition to a fully step-by-step workflow is in progress, and the data mod
 
 Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel in HTA and Bowtie exists only on the `claude/ai-assistant` branch so far.
 
-**In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>` to at most about 1,568 px on its longest side and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
+**In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>`, keeping its proportions, to the size that is set (see below) and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
 
 | Provider | Image format |
 |---|---|
@@ -220,7 +220,15 @@ Planned support for sending an image or screenshot along with a question to the 
 
 **Decisions:**
 
-- **Scale down before sending.** Smaller requests and lower cost. Claude scales larger images down itself, so the result is the same.
+- **Image size: default from Gemma 4, higher in Settings.** The limit is an area in megapixels, because that is how the models count. The default is **0.65 megapixels**, which matches Gemma 4's default budget of 280 image tokens (16 px patches, pooled 3 × 3); a server on default settings scales a larger image down to that size anyway. Under **Settings** the user can choose a higher value when detail matters, for example handwriting on a whiteboard:
+
+  | Value | Corresponds to |
+  |---|---|
+  | 0.65 MP (default) | Gemma 4, default budget of 280 image tokens. About 1,070 × 600 px at 16:9. |
+  | 2.6 MP | Gemma 4, highest budget of 1,120 image tokens, if the server is set to it |
+  | 3.75 MP | Claude from Opus 4.7, Sonnet 5 and later: at most 2,576 px on the longest side |
+
+  The longest side is always limited to 2,576 px, because none of the models benefit from more. A higher value means more image tokens and a higher cost per question.
 - **Images are not stored.** Not in `localStorage`, not in the analysis JSON and not in the Markdown export, which only notes that an image was attached.
 - **Images are not sent again.** When earlier questions are included, older images are replaced with a placeholder.
 - **Models without image support.** A text-only model's error is explained in the panel, and the attachment is unavailable where this can be known in advance.

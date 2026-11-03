@@ -209,7 +209,7 @@ Omställningen till ett fullt stegvis arbetsflöde pågår, och datamodellen kom
 
 Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga till språkmodellen. Syftet och gränserna beskrivs i [designprinciperna, avsnitt 1.6](docs/designprinciper.md). Inget av detta är byggt (2026-11-03); AI-panelen i HTA och Bowtie finns ännu bara på grenen `claude/ai-assistant`.
 
-**I webbläsaren.** Bilden kommer in genom att klistras in (`paste`-händelsen, `clipboardData`), dras in (`drop`) eller väljas med en filknapp. Den skalas ned med `<canvas>` till högst cirka 1 568 px på längsta sidan och görs om till base64. Inget bibliotek behövs, och offlinefilerna fortsätter att fungera; bara själva AI-anropet kräver nätverk, som tidigare. En fråga består då av text och noll eller flera bilder, och varje leverantör översätter det till sitt format:
+**I webbläsaren.** Bilden kommer in genom att klistras in (`paste`-händelsen, `clipboardData`), dras in (`drop`) eller väljas med en filknapp. Den skalas ned med `<canvas>` med bibehållna proportioner till den storlek som är inställd (se nedan) och görs om till base64. Inget bibliotek behövs, och offlinefilerna fortsätter att fungera; bara själva AI-anropet kräver nätverk, som tidigare. En fråga består då av text och noll eller flera bilder, och varje leverantör översätter det till sitt format:
 
 | Leverantör | Format för bilden |
 |---|---|
@@ -220,7 +220,15 @@ Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga til
 
 **Beslut:**
 
-- **Nedskalning före sändning.** Mindre anrop och lägre kostnad. Claude skalar själv ned större bilder, så resultatet blir detsamma.
+- **Bildstorlek: standard efter Gemma 4, högre i Settings.** Gränsen anges som yta i megapixel, eftersom modellerna räknar så. Standard är **0,65 megapixel**, vilket motsvarar Gemma 4:s standardbudget på 280 bildtoken (patchar på 16 px, sammanslagna 3 × 3); en större bild skalas ändå ned till den storleken av en server med standardinställning. Under **Settings** kan användaren välja ett högre värde när detaljer behövs, till exempel handskrift på en whiteboard:
+
+  | Värde | Motsvarar |
+  |---|---|
+  | 0,65 MP (standard) | Gemma 4, standardbudget 280 bildtoken. Ungefär 1 070 × 600 px i 16:9. |
+  | 2,6 MP | Gemma 4, högsta budget 1 120 bildtoken, om servern är inställd på det |
+  | 3,75 MP | Claude från Opus 4.7, Sonnet 5 och senare: högst 2 576 px på längsta sidan |
+
+  Längsta sidan begränsas alltid till 2 576 px, eftersom ingen av modellerna har nytta av mer. Ett högre värde ger fler bildtoken och högre kostnad per fråga.
 - **Bilder sparas inte.** Inte i `localStorage`, inte i analysens JSON och inte i Markdown-exporten, som bara noterar att en bild bifogades.
 - **Bilder skickas inte om.** När tidigare frågor skickas med ersätts äldre bilder med en platshållare.
 - **Modell utan bildstöd.** Ett textmodellsfel förklaras i panelen, och bilagan kan inte väljas där det går att avgöra i förväg.
