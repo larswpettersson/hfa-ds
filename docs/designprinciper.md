@@ -145,7 +145,7 @@ TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI
 - **Varje kolumn har en kort beskrivning** av vad den betyder och hur den fylls i. Beskrivningen hjälper både människor (som verktygstips på rubriken) och AI:n.
 - **Användaren ändrar kolumnerna i tabellen.**
   - Klicka på en rubrik, eller välj kolumnen i panelen *Columns*, för att ändra namn och beskrivning. Beskrivningen visas som verktygstips på rubriken.
-  - **+ Kolumn** lägger till en egen kolumn. Egna kolumner kan tas bort; de inbyggda kan bara döljas.
+  - **+ Kolumn** lägger till en kolumn. Alla kolumner är likvärdiga och kan döpas om eller tas bort, utom *Task Step*, som är kopplingen till uppgiften i HTA-trädet. En ny analys börjar med HEI-kolumnerna, och **Reset** tar tillbaka dem.
   - Ändringar går att ångra och följer med när analysen exporteras.
 - **Mallar som utgångspunkt.** Ett val som "HEI (HRA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
 - **AI:n följer kolumnerna, den bestämmer dem inte.** Den formulerar innehåll i de kolumner som finns. Ett förslag om nya kolumner visas och godkänns som andra förslag (1.3) och kommer i så fall senare.

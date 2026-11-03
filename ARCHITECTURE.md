@@ -252,6 +252,7 @@ The purpose is described in the [design principles, section 1.7](docs/design-pri
 | Part | Change |
 |---|---|
 | `hta-app.js`: headers and columns | Editing as in the design principles, section 1.7. A new column gets an id made from its label. Column changes go through `commit`, so they enter the undo history and are saved in `meta.columns` on export. |
+| `hta-app.js`: column model | No built-in columns: `meta.columns` is used as the file gives it, and only `taskStep` is added if it is missing. The HEI columns are the default for a new analysis and for files without `meta.columns`. Each column has a `type` (`text`, `list`, or `select` with `options`); an HEI column without a type of its own gets the HEI type, so older files work as before. TTA rows keep all their fields on import, and list columns are stored as lists. |
 | `hta-ai.js`: system prompt | Split into a method-independent part (HTA, the scribe role, the patch format) and a column part built from `meta.columns` with label, description, type and options. |
 | `hta-ai.js`: context and patch | The AI gets every visible column and its values, custom ones included. A patch is checked against the columns: unknown fields are rejected, and for `select` the value must be one of the options. |
 | `hta-app.js`: `replaceState` | Passes the column list to `normalizeTtaRecords`, so custom columns are not deleted. |
