@@ -234,7 +234,39 @@ Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga til
 - **Modell utan bildstöd.** Ett textmodellsfel förklaras i panelen, och bilagan kan inte väljas där det går att avgöra i förväg.
 - **Sekretess.** Bilden går samma väg som strukturen (avsnitt 1): till molnleverantören om en sådan valts, annars stannar den i det egna nätet med en lokal modell som kan läsa bilder.
 
-## 8. Test och kvalitetssäkring
+## 8. HTA: anpassningsbara TTA-kolumner och AI-stödet (planerat)
+
+Syftet beskrivs i [designprinciperna, avsnitt 1.7](docs/designprinciper.md). Inget av detta är byggt (2026-11-03).
+
+**Utgångsläge.** Grenen `stpa-input` i hfa-hta låter analysfilen ange kolumnerna i `meta.columns`: `id`, `label`, `type` (`text`, `list` eller `select`), `options`, `visible` och `order`. Inbyggda kolumner kan döpas om, och andra id blir egna textkolumner som sparas på varje TTA-rad. I verktyget kan kolumner bara visas och döljas. AI-panelen på grenen `claude/ai-assistant` har de sex inbyggda HEI-fälten och deras betydelse fasta i systemprompten, ser inte egna kolumner och raderar dem när ett förslag tillämpas (`replaceState` anropar `normalizeTtaRecords` utan kolumnlistan).
+
+**Datamodell.** Varje kolumn i `meta.columns` får ett fält `description`:
+
+```json
+{ "id": "hazards", "label": "Hazards (H)", "type": "list",
+  "description": "Hazard ids from the STPA analysis that the UCA can lead to, e.g. H1, H3." }
+```
+
+**Ändringar:**
+
+| Del | Ändring |
+|---|---|
+| `hta-app.js`: rubriker och kolumner | Redigering enligt designprinciperna, avsnitt 1.7. En ny kolumn får ett id som skapas från etiketten. Ändringar av kolumner går via `commit`, så att de hamnar i ångra-historiken och sparas i `meta.columns` vid export. |
+| `hta-ai.js`: systemprompt | Delas i en del som inte beror på metoden (HTA, skribentrollen, patchformatet) och en kolumndel som byggs från `meta.columns` med etikett, beskrivning, typ och alternativ. |
+| `hta-ai.js`: kontext och patch | AI:n får alla synliga kolumner och deras värden, även egna. En patch kontrolleras mot kolumnerna: okända fält avvisas, och för `select` måste värdet vara ett av alternativen. |
+| `hta-app.js`: `replaceState` | Skickar med kolumnlistan till `normalizeTtaRecords`, så att egna kolumner inte raderas. |
+| `data/`: mallar | Mallar som JSON, till exempel HEI (HRA) och Underlag till STPA. En mall fyller i `meta.columns` och kolumnernas beskrivningar. |
+
+**Ordning:**
+
+1. Merga `stpa-input` till `main` i hfa-hta.
+2. Fältet `description` och redigering av rubriker och kolumner.
+3. AI-adaptern läser kolumnerna, och `replaceState` rättas.
+4. Mallar.
+
+Ett förslag från AI:n om nya kolumner (en patch med `columns`) väntar tills förslag kan visas som Före/Efter/Skillnad (designprinciperna, 1.3).
+
+## 9. Test och kvalitetssäkring
 
 - **Gemensamma tester i hfa-ds:** `npm test` kör automatiska tester (Playwright) mot verktygen i de andra repona (sökvägen kan ändras med `HFA_WORKSPACE`). Sidorna öppnas direkt som filer (`file://`), utan webbserver, på samma sätt som när verktygen används i en isolerad miljö. Testerna i `tests/shared/` körs mot alla verktyg i `tests/lib/tools.mjs` och kontrollerar att sidan laddas utan fel och att färgerna stämmer med `tokens.json`. Tester för ett enskilt verktyg ligger i `tests/<verktyg>/` (i dag finns sådana för STPA: markering, frågor om en del av strukturen, omvandling till aktuator/sensor och patchar). På GitHub kör arbetsflödet `test-tools.yml` testerna med alla repon hämtade bredvid varandra.
 - **Snabbtester per verktyg:** `hfa-hta` och `hfa-bowtie` har enkla tester i Python (`scripts/*-smoke-test.py`) som kontrollerar att grundfunktionerna fungerar.

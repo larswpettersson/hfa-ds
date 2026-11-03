@@ -234,7 +234,39 @@ Planned support for sending an image or screenshot along with a question to the 
 - **Models without image support.** A text-only model's error is explained in the panel, and the attachment is unavailable where this can be known in advance.
 - **Confidentiality.** The image takes the same path as the structure (section 1): to the cloud provider if one is selected, otherwise it stays in the organisation's network with a local model that reads images.
 
-## 8. Testing and Quality Assurance
+## 8. HTA: Customisable TTA Columns and the AI Support (Planned)
+
+The purpose is described in the [design principles, section 1.7](docs/design-principles.md). None of this is built (2026-11-03).
+
+**Starting point.** The `stpa-input` branch in hfa-hta lets the analysis file define the columns in `meta.columns`: `id`, `label`, `type` (`text`, `list` or `select`), `options`, `visible` and `order`. Built-in columns can be relabelled, and other ids become custom text columns stored on each TTA row. In the tool, columns can only be shown and hidden. The AI panel on the `claude/ai-assistant` branch has the six built-in HEI fields and their meaning fixed in its system prompt, does not see custom columns, and deletes them when a suggestion is applied (`replaceState` calls `normalizeTtaRecords` without the column list).
+
+**Data model.** Each column in `meta.columns` gets a `description` field:
+
+```json
+{ "id": "hazards", "label": "Hazards (H)", "type": "list",
+  "description": "Hazard ids from the STPA analysis that the UCA can lead to, e.g. H1, H3." }
+```
+
+**Changes:**
+
+| Part | Change |
+|---|---|
+| `hta-app.js`: headers and columns | Editing as in the design principles, section 1.7. A new column gets an id made from its label. Column changes go through `commit`, so they enter the undo history and are saved in `meta.columns` on export. |
+| `hta-ai.js`: system prompt | Split into a method-independent part (HTA, the scribe role, the patch format) and a column part built from `meta.columns` with label, description, type and options. |
+| `hta-ai.js`: context and patch | The AI gets every visible column and its values, custom ones included. A patch is checked against the columns: unknown fields are rejected, and for `select` the value must be one of the options. |
+| `hta-app.js`: `replaceState` | Passes the column list to `normalizeTtaRecords`, so custom columns are not deleted. |
+| `data/`: templates | Templates as JSON, for example HEI (HRA) and Input to STPA. A template fills in `meta.columns` and the column descriptions. |
+
+**Order:**
+
+1. Merge `stpa-input` into `main` in hfa-hta.
+2. The `description` field and editing of headers and columns.
+3. The AI adapter reads the columns, and `replaceState` is fixed.
+4. Templates.
+
+An AI suggestion of new columns (a patch with `columns`) waits until suggestions can be shown as Before/After/Difference (design principles, 1.3).
+
+## 9. Testing and Quality Assurance
 
 - **Shared tests in hfa-ds:** `npm test` runs automated tests (Playwright) against the tools in the other repositories (the location can be changed with `HFA_WORKSPACE`). Pages are opened directly as files (`file://`), without a web server, just as when the tools are used in an isolated environment. The tests in `tests/shared/` run against every tool in `tests/lib/tools.mjs` and check that the page loads without errors and that its colours match `tokens.json`. Tests for a single tool live in `tests/<tool>/` (today there are such tests for STPA: selection, questions about part of the structure, conversion to actuator/sensor, and patches). On GitHub, the `test-tools.yml` workflow runs the tests with all repositories fetched side by side.
 - **Quick tests per tool:** `hfa-hta` and `hfa-bowtie` have simple Python tests (`scripts/*-smoke-test.py`) that check that the basic functions work.

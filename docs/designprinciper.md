@@ -137,6 +137,21 @@ Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av white
 
 Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 7.
 
+### 1.7 Anpassningsbara TTA-kolumner (planerat)
+
+TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI (HRA t.ex. SHERPA/HEART/Railway Action Reliability Assessment), men till exempel också som underlag till en STPA, som kan användas för att stötta framtagningen av kontrollstruktur med kolumner som *Description of the task*, *Controller*, *Control and feedback*, *Related Hazards*. Kolumnerna ska därför gå att anpassa, och AI-stödet ska följa dem.
+
+- **Kolumnerna hör till analysen.** Deras namn och betydelse sparas i analysfilen och följer med när den skickas vidare. Det finns bara ett ställe där kolumnerna beskrivs; AI-stödet har ingen egen kolumnlista.
+- **Varje kolumn har en kort beskrivning** av vad den betyder och hur den fylls i. Beskrivningen hjälper både människor (som verktygstips på rubriken) och AI:n.
+- **Användaren ändrar kolumnerna i tabellen.**
+  - Klicka på en rubrik, eller välj kolumnen i panelen *Columns*, för att ändra namn och beskrivning. Beskrivningen visas som verktygstips på rubriken.
+  - **+ Kolumn** lägger till en egen kolumn. Egna kolumner kan tas bort; de inbyggda kan bara döljas.
+  - Ändringar går att ångra och följer med när analysen exporteras.
+- **Mallar som utgångspunkt.** Ett val som "HEI (HRA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
+- **AI:n följer kolumnerna, den bestämmer dem inte.** Den formulerar innehåll i de kolumner som finns. Ett förslag om nya kolumner visas och godkänns som andra förslag (1.3) och kommer i så fall senare.
+
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 8.
+
 ## 2. Typografi
 
 ### 2.1 Grund: typografisk enkelhet
