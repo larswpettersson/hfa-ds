@@ -125,6 +125,33 @@ Visualiseringen görs i Penpot (HFA DS), med HTA-verktygets egen layout, och kop
 - **Bild i dokumentet:** boards exporteras som SVG eller PNG till `docs/img/` och visas med `![…](img/…)`. Bilden länkar till prototypen.
 - **Länk till prototypen:** en delningslänk från Penpots View mode (*Share → Get link*), som kan öppnas utan Penpot-konto. *Länk läggs in när prototypen finns.*
 
+### 1.6 Bilder i AI-stödet (planerat)
+
+Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av whiteboarden från en workshop, ett skärmklipp av en instruktion eller ett regelverk, eller en skiss av en bowtie från ett tidigare möte. Det passar AI:n som skribent i 1.5: den formulerar det gruppen redan har tagit fram, till exempel ett HTA-träd som ritats på tavlan.
+
+- **Enkelt att lägga till.** Klistra in ett skärmklipp (Ctrl/⌘+V) eller dra in en bildfil i frågefältet. En liten miniatyr med ✕ visar vad som skickas med.
+- **Bilder utifrån.** Verktygets egen struktur skickas redan som data, så en bild av verktygets eget diagram tillför lite.
+- **Förslaget visas och godkänns som andra förslag** (1.3). AI:n tolkar bilden, men gruppen avgör vad som förs in.
+- **Bilden stannar inte kvar.** Den sparas inte i verktyget eller i exporten och skickas inte om vid följdfrågor.
+- **Tydligt vad som lämnar datorn.** Ett skärmklipp kan innehålla mer än man tänkt. Vid en molnleverantör ska det framgå vid bilagan; för sekretessbelagda analyser krävs en lokal modell med bildstöd.
+
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 7.
+
+### 1.7 Anpassningsbara TTA-kolumner (planerat)
+
+TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI (HRA t.ex. SHERPA/HEART/Railway Action Reliability Assessment), men till exempel också som underlag till en STPA, som kan användas för att stötta framtagningen av kontrollstruktur med kolumner som *Description of the task*, *Controller*, *Control and feedback*, *Related Hazards*. Kolumnerna ska därför gå att anpassa, och AI-stödet ska följa dem.
+
+- **Kolumnerna hör till analysen.** Deras namn och betydelse sparas i analysfilen och följer med när den skickas vidare. Det finns bara ett ställe där kolumnerna beskrivs; AI-stödet har ingen egen kolumnlista.
+- **Varje kolumn har en kort beskrivning** av vad den betyder och hur den fylls i. Beskrivningen hjälper både människor (som verktygstips på rubriken) och AI:n.
+- **Användaren ändrar kolumnerna i tabellen.**
+  - Klicka på en rubrik, eller välj kolumnen i panelen *Columns*, för att ändra namn och beskrivning. Beskrivningen visas som verktygstips på rubriken.
+  - **+ Kolumn** lägger till en kolumn. Alla kolumner är likvärdiga och kan döpas om eller tas bort, utom *Task Step*, som är kopplingen till uppgiften i HTA-trädet. En ny analys börjar med HEI-kolumnerna, och **Reset** tar tillbaka dem.
+  - Ändringar går att ångra och följer med när analysen exporteras.
+- **Mallar som utgångspunkt.** Ett val som "HEI (HRA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
+- **AI:n följer kolumnerna, den bestämmer dem inte.** Den formulerar innehåll i de kolumner som finns. Ett förslag om nya kolumner visas och godkänns som andra förslag (1.3) och kommer i så fall senare.
+
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 8.
+
 ## 2. Typografi
 
 ### 2.1 Grund: typografisk enkelhet
@@ -293,3 +320,30 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
 - **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
+
+## 4. Knappar och dialoger
+
+### 4.1 Knappar som öppnar en dialog slutar med …
+
+En knapp som öppnar en dialog, en panel eller ett filval, där användaren behöver göra något mer innan något händer, slutar med **…**. Då syns det i förväg att knappen inte gör något direkt.
+
+| Knappen | Exempel |
+|---|---|
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
+| Gör något direkt: inget … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+
+- Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
+- Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
+- **Undantag:** knappar som bara visar en symbol, som hjälpknappen **?**, får inget ….
+- Införs i verktygen efter hand (2026-11-03).
+
+### 4.2 Ta bort rader i tabeller
+
+- **Redigerbara tabeller har ett ✕ sist på varje rad.** Det är dämpat men alltid synligt, så att det går att upptäcka, fungerar på pekskärm och syns för den som följer med på projektorn.
+- **Verktygstipset säger vad som tas bort**, även kopplade data, till exempel "Delete c1 and its control actions and feedback".
+- **Ångra i stället för att fråga.** Raden tas bort direkt, och ett statusmeddelande säger vad som togs bort och att Ctrl/⌘+Z ångrar. Verktyget frågar först bara när borttagningen påverkar mycket utanför raden, till exempel en kolumn med värden på många rader.
+- **Kräver en regel raden töms den i stället.** I HTA har varje uppgift minst en TTA-rad; för uppgiftens sista rad heter knappen *Clear*.
+- **Tabeller som räknas fram ur annan data har inget ✕.** De ändras där datan finns, som säkerhetstabellerna i STPA.
+- **✕ är en riktig knapp**, som nås med Tab och fungerar med tangentbordet.
+
+STPA-workbenchens strukturtabeller följer redan principen (2026-11-03). TTA-tabellen i HTA får den i samma veva som de anpassningsbara kolumnerna.

@@ -29,7 +29,7 @@ These requirements drive the technical choices in every tool repository:
 | No installation | Each tool consists of one or a few HTML files with plain JavaScript and CSS. Nothing needs to be built, installed or run on a server. A modern web browser is enough. |
 | Works without a network | The pages fetch nothing from the internet (no outside scripts, fonts or services) for their basic functions. HTA and Bowtie are also available as a single self-contained file (`hta_offline.html`, `Bowtie_offline.html`) with the script inlined; the STPA Workbench is already a single file. The file can be transferred to an isolated environment and opened directly via `file://`. |
 | Confidentiality | There is no server and no database. The analysis exists only in the browser's memory and is saved when the user exports it to a JSON file on their own computer. `localStorage` is used only for preferences (theme, column selection, panel width, etc.). |
-| Confidentiality with AI support | AI support in the STPA Workbench is optional; the editor, diagram and safety-case tables work without a language model. If a cloud provider (Claude, Gemini) is selected, the structure is sent to that provider. For confidential analyses, a model running locally (Ollama, LM Studio, LocalAI) should be used. Then no data leaves the computer or the organisation's own network. |
+| Confidentiality with AI support | AI support in the STPA Workbench is optional; the editor, diagram and safety-case tables work without a language model. If a cloud provider (Claude, Gemini) is selected, the structure is sent to that provider, and so are images attached to a question (planned, section 7). For confidential analyses, a model running locally (Ollama, LM Studio, LocalAI) should be used. Then no data leaves the computer or the organisation's own network. Images require a local model that reads images. |
 
 This choice is deliberate. Because the tools have no build step and use no external packages, design tokens must be copied by hand into each tool's CSS (see section 4), and no code is shared between the tools. In return, each tool works entirely on its own, its code is easy to review, and it can be used without help from the IT department.
 
@@ -205,7 +205,69 @@ sequenceDiagram
 
 The transition to a fully step-by-step workflow is in progress, and the data model will change along with it.
 
-## 7. Testing and Quality Assurance
+## 7. AI Support: Images in the Question (Planned)
+
+Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel in HTA and Bowtie exists only on the `claude/ai-assistant` branch so far.
+
+**In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>`, keeping its proportions, to the size that is set (see below) and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
+
+| Provider | Image format |
+|---|---|
+| Claude | Content block `{type: "image", source: {type: "base64", media_type, data}}` before the text block. PNG, JPEG, GIF or WebP. |
+| Gemini | `parts: [{inline_data: {mime_type, data}}, {text}]`. Inline images are limited to about 20 MB per request. |
+| Hugging Face and local OpenAI-compatible servers (LM Studio, LiteLLM) | `{type: "image_url", image_url: {url: "data:image/png;base64,…"}}` in the message content |
+| Ollama (`/api/chat`, `/api/generate`) | `images: ["<base64>"]` on the message, without the `data:` prefix |
+
+**Decisions:**
+
+- **Image size: default from Gemma 4, higher in Settings.** The limit is an area in megapixels, because that is how the models count. The default is **0.65 megapixels**, which matches Gemma 4's default budget of 280 image tokens (16 px patches, pooled 3 × 3); a server on default settings scales a larger image down to that size anyway. Under **Settings** the user can choose a higher value when detail matters, for example handwriting on a whiteboard:
+
+  | Value | Corresponds to |
+  |---|---|
+  | 0.65 MP (default) | Gemma 4, default budget of 280 image tokens. About 1,070 × 600 px at 16:9. |
+  | 2.6 MP | Gemma 4, highest budget of 1,120 image tokens, if the server is set to it |
+  | 3.75 MP | Claude from Opus 4.7, Sonnet 5 and later: at most 2,576 px on the longest side |
+
+  The longest side is always limited to 2,576 px, because none of the models benefit from more. A higher value means more image tokens and a higher cost per question.
+- **Images are not stored.** Not in `localStorage`, not in the analysis JSON and not in the Markdown export, which only notes that an image was attached.
+- **Images are not sent again.** When earlier questions are included, older images are replaced with a placeholder.
+- **Models without image support.** A text-only model's error is explained in the panel, and the attachment is unavailable where this can be known in advance.
+- **Confidentiality.** The image takes the same path as the structure (section 1): to the cloud provider if one is selected, otherwise it stays in the organisation's network with a local model that reads images.
+
+## 8. HTA: Customisable TTA Columns and the AI Support (Planned)
+
+The purpose is described in the [design principles, section 1.7](docs/design-principles.md). None of this is built (2026-11-03).
+
+**Starting point.** The `stpa-input` branch in hfa-hta lets the analysis file define the columns in `meta.columns`: `id`, `label`, `type` (`text`, `list` or `select`), `options`, `visible` and `order`. Built-in columns can be relabelled, and other ids become custom text columns stored on each TTA row. In the tool, columns can only be shown and hidden. The AI panel on the `claude/ai-assistant` branch has the six built-in HEI fields and their meaning fixed in its system prompt, does not see custom columns, and deletes them when a suggestion is applied (`replaceState` calls `normalizeTtaRecords` without the column list).
+
+**Data model.** Each column in `meta.columns` gets a `description` field:
+
+```json
+{ "id": "hazards", "label": "Hazards (H)", "type": "list",
+  "description": "Hazard ids from the STPA analysis that the UCA can lead to, e.g. H1, H3." }
+```
+
+**Changes:**
+
+| Part | Change |
+|---|---|
+| `hta-app.js`: headers and columns | Editing as in the design principles, section 1.7. A new column gets an id made from its label. Column changes go through `commit`, so they enter the undo history and are saved in `meta.columns` on export. |
+| `hta-app.js`: column model | No built-in columns: `meta.columns` is used as the file gives it, and only `taskStep` is added if it is missing. The HEI columns are the default for a new analysis and for files without `meta.columns`. Each column has a `type` (`text`, `list`, or `select` with `options`); an HEI column without a type of its own gets the HEI type, so older files work as before. TTA rows keep all their fields on import, and list columns are stored as lists. |
+| `hta-ai.js`: system prompt | Split into a method-independent part (HTA, the scribe role, the patch format) and a column part built from `meta.columns` with label, description, type and options. |
+| `hta-ai.js`: context and patch | The AI gets every visible column and its values, custom ones included. A patch is checked against the columns: unknown fields are rejected, and for `select` the value must be one of the options. |
+| `hta-app.js`: `replaceState` | Passes the column list to `normalizeTtaRecords`, so custom columns are not deleted. |
+| `data/`: templates | Templates as JSON, for example HEI (HRA) and Input to STPA. A template fills in `meta.columns` and the column descriptions. |
+
+**Order:**
+
+1. Merge `stpa-input` into `main` in hfa-hta.
+2. The `description` field and editing of headers and columns.
+3. The AI adapter reads the columns, and `replaceState` is fixed.
+4. Templates.
+
+An AI suggestion of new columns (a patch with `columns`) waits until suggestions can be shown as Before/After/Difference (design principles, 1.3).
+
+## 9. Testing and Quality Assurance
 
 - **Shared tests in hfa-ds:** `npm test` runs automated tests (Playwright) against the tools in the other repositories (the location can be changed with `HFA_WORKSPACE`). Pages are opened directly as files (`file://`), without a web server, just as when the tools are used in an isolated environment. The tests in `tests/shared/` run against every tool in `tests/lib/tools.mjs` and check that the page loads without errors and that its colours match `tokens.json`. Tests for a single tool live in `tests/<tool>/` (today there are such tests for STPA: selection, questions about part of the structure, conversion to actuator/sensor, and patches). On GitHub, the `test-tools.yml` workflow runs the tests with all repositories fetched side by side.
 - **Quick tests per tool:** `hfa-hta` and `hfa-bowtie` have simple Python tests (`scripts/*-smoke-test.py`) that check that the basic functions work.

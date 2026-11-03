@@ -29,7 +29,7 @@ Dessa krav styr de tekniska valen i samtliga verktygsrepon:
 | Ingen installation | Varje verktyg består av en eller några få HTML-filer med vanlig JavaScript och CSS. Inget behöver byggas, installeras eller köras på en server. En modern webbläsare räcker. |
 | Fungerar utan nätverk | Sidorna hämtar ingenting från internet (inga skript, typsnitt eller tjänster utifrån) för att grundfunktionerna ska fungera. HTA och Bowtie finns dessutom som en enda fristående fil (`hta_offline.html`, `Bowtie_offline.html`) med inbäddat skript; STPA Workbench är redan en enda fil. Filen kan föras över till en isolerad miljö och öppnas direkt via `file://`. |
 | Sekretess | Det finns ingen server och ingen databas. Analysen finns bara i webbläsarens minne och sparas genom att användaren exporterar den till en JSON-fil på den egna datorn. `localStorage` används endast för inställningar (tema, kolumnval, panelbredd m.m.). |
-| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören. För sekretessbelagda analyser ska en modell som körs lokalt användas (Ollama, LM Studio, LocalAI). Då lämnar ingen data datorn eller det egna nätet. |
+| Sekretess vid AI-stöd | AI-stödet i STPA Workbench är valfritt; editorn, diagrammet och säkerhetstabellerna fungerar utan språkmodell. Väljs en molnleverantör (Claude, Gemini) skickas strukturen till den leverantören, och likaså bilder som bifogas en fråga (planerat, avsnitt 7). För sekretessbelagda analyser ska en modell som körs lokalt användas (Ollama, LM Studio, LocalAI). Då lämnar ingen data datorn eller det egna nätet. Bilder kräver en lokal modell som kan läsa bilder. |
 
 Valet är medvetet. Eftersom verktygen saknar byggsteg och externa paket måste designtokens föras in för hand i varje verktygs CSS (se avsnitt 4), och ingen kod delas mellan verktygen. I gengäld fungerar varje verktyg helt på egen hand, koden är lätt att granska och verktygen kan användas utan hjälp från IT-avdelningen.
 
@@ -205,7 +205,69 @@ sequenceDiagram
 
 Omställningen till ett fullt stegvis arbetsflöde pågår, och datamodellen kommer att förändras i takt med den.
 
-## 7. Test och kvalitetssäkring
+## 7. AI-stöd: bilder i frågan (planerat)
+
+Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga till språkmodellen. Syftet och gränserna beskrivs i [designprinciperna, avsnitt 1.6](docs/designprinciper.md). Inget av detta är byggt (2026-11-03); AI-panelen i HTA och Bowtie finns ännu bara på grenen `claude/ai-assistant`.
+
+**I webbläsaren.** Bilden kommer in genom att klistras in (`paste`-händelsen, `clipboardData`), dras in (`drop`) eller väljas med en filknapp. Den skalas ned med `<canvas>` med bibehållna proportioner till den storlek som är inställd (se nedan) och görs om till base64. Inget bibliotek behövs, och offlinefilerna fortsätter att fungera; bara själva AI-anropet kräver nätverk, som tidigare. En fråga består då av text och noll eller flera bilder, och varje leverantör översätter det till sitt format:
+
+| Leverantör | Format för bilden |
+|---|---|
+| Claude | Innehållsblock `{type: "image", source: {type: "base64", media_type, data}}` före textblocket. PNG, JPEG, GIF eller WebP. |
+| Gemini | `parts: [{inline_data: {mime_type, data}}, {text}]`. Inbäddade bilder är begränsade till cirka 20 MB per anrop. |
+| Hugging Face och lokala OpenAI-kompatibla servrar (LM Studio, LiteLLM) | `{type: "image_url", image_url: {url: "data:image/png;base64,…"}}` i meddelandets innehåll |
+| Ollama (`/api/chat`, `/api/generate`) | `images: ["<base64>"]` på meddelandet, utan `data:`-prefix |
+
+**Beslut:**
+
+- **Bildstorlek: standard efter Gemma 4, högre i Settings.** Gränsen anges som yta i megapixel, eftersom modellerna räknar så. Standard är **0,65 megapixel**, vilket motsvarar Gemma 4:s standardbudget på 280 bildtoken (patchar på 16 px, sammanslagna 3 × 3); en större bild skalas ändå ned till den storleken av en server med standardinställning. Under **Settings** kan användaren välja ett högre värde när detaljer behövs, till exempel handskrift på en whiteboard:
+
+  | Värde | Motsvarar |
+  |---|---|
+  | 0,65 MP (standard) | Gemma 4, standardbudget 280 bildtoken. Ungefär 1 070 × 600 px i 16:9. |
+  | 2,6 MP | Gemma 4, högsta budget 1 120 bildtoken, om servern är inställd på det |
+  | 3,75 MP | Claude från Opus 4.7, Sonnet 5 och senare: högst 2 576 px på längsta sidan |
+
+  Längsta sidan begränsas alltid till 2 576 px, eftersom ingen av modellerna har nytta av mer. Ett högre värde ger fler bildtoken och högre kostnad per fråga.
+- **Bilder sparas inte.** Inte i `localStorage`, inte i analysens JSON och inte i Markdown-exporten, som bara noterar att en bild bifogades.
+- **Bilder skickas inte om.** När tidigare frågor skickas med ersätts äldre bilder med en platshållare.
+- **Modell utan bildstöd.** Ett textmodellsfel förklaras i panelen, och bilagan kan inte väljas där det går att avgöra i förväg.
+- **Sekretess.** Bilden går samma väg som strukturen (avsnitt 1): till molnleverantören om en sådan valts, annars stannar den i det egna nätet med en lokal modell som kan läsa bilder.
+
+## 8. HTA: anpassningsbara TTA-kolumner och AI-stödet (planerat)
+
+Syftet beskrivs i [designprinciperna, avsnitt 1.7](docs/designprinciper.md). Inget av detta är byggt (2026-11-03).
+
+**Utgångsläge.** Grenen `stpa-input` i hfa-hta låter analysfilen ange kolumnerna i `meta.columns`: `id`, `label`, `type` (`text`, `list` eller `select`), `options`, `visible` och `order`. Inbyggda kolumner kan döpas om, och andra id blir egna textkolumner som sparas på varje TTA-rad. I verktyget kan kolumner bara visas och döljas. AI-panelen på grenen `claude/ai-assistant` har de sex inbyggda HEI-fälten och deras betydelse fasta i systemprompten, ser inte egna kolumner och raderar dem när ett förslag tillämpas (`replaceState` anropar `normalizeTtaRecords` utan kolumnlistan).
+
+**Datamodell.** Varje kolumn i `meta.columns` får ett fält `description`:
+
+```json
+{ "id": "hazards", "label": "Hazards (H)", "type": "list",
+  "description": "Hazard ids from the STPA analysis that the UCA can lead to, e.g. H1, H3." }
+```
+
+**Ändringar:**
+
+| Del | Ändring |
+|---|---|
+| `hta-app.js`: rubriker och kolumner | Redigering enligt designprinciperna, avsnitt 1.7. En ny kolumn får ett id som skapas från etiketten. Ändringar av kolumner går via `commit`, så att de hamnar i ångra-historiken och sparas i `meta.columns` vid export. |
+| `hta-app.js`: kolumnmodell | Inga inbyggda kolumner: `meta.columns` används som filen anger, och bara `taskStep` läggs till om den saknas. HEI-kolumnerna är standard för en ny analys och för filer utan `meta.columns`. Varje kolumn har `type` (`text`, `list` eller `select` med `options`); en HEI-kolumn utan egen typ får HEI-typen, så äldre filer fungerar som förut. TTA-raderna behåller alla sina fält vid import, och list-kolumner sparas som listor. |
+| `hta-ai.js`: systemprompt | Delas i en del som inte beror på metoden (HTA, skribentrollen, patchformatet) och en kolumndel som byggs från `meta.columns` med etikett, beskrivning, typ och alternativ. |
+| `hta-ai.js`: kontext och patch | AI:n får alla synliga kolumner och deras värden, även egna. En patch kontrolleras mot kolumnerna: okända fält avvisas, och för `select` måste värdet vara ett av alternativen. |
+| `hta-app.js`: `replaceState` | Skickar med kolumnlistan till `normalizeTtaRecords`, så att egna kolumner inte raderas. |
+| `data/`: mallar | Mallar som JSON, till exempel HEI (HRA) och Underlag till STPA. En mall fyller i `meta.columns` och kolumnernas beskrivningar. |
+
+**Ordning:**
+
+1. Merga `stpa-input` till `main` i hfa-hta.
+2. Fältet `description` och redigering av rubriker och kolumner.
+3. AI-adaptern läser kolumnerna, och `replaceState` rättas.
+4. Mallar.
+
+Ett förslag från AI:n om nya kolumner (en patch med `columns`) väntar tills förslag kan visas som Före/Efter/Skillnad (designprinciperna, 1.3).
+
+## 9. Test och kvalitetssäkring
 
 - **Gemensamma tester i hfa-ds:** `npm test` kör automatiska tester (Playwright) mot verktygen i de andra repona (sökvägen kan ändras med `HFA_WORKSPACE`). Sidorna öppnas direkt som filer (`file://`), utan webbserver, på samma sätt som när verktygen används i en isolerad miljö. Testerna i `tests/shared/` körs mot alla verktyg i `tests/lib/tools.mjs` och kontrollerar att sidan laddas utan fel och att färgerna stämmer med `tokens.json`. Tester för ett enskilt verktyg ligger i `tests/<verktyg>/` (i dag finns sådana för STPA: markering, frågor om en del av strukturen, omvandling till aktuator/sensor och patchar). På GitHub kör arbetsflödet `test-tools.yml` testerna med alla repon hämtade bredvid varandra.
 - **Snabbtester per verktyg:** `hfa-hta` och `hfa-bowtie` har enkla tester i Python (`scripts/*-smoke-test.py`) som kontrollerar att grundfunktionerna fungerar.
