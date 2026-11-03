@@ -36,14 +36,19 @@ test.describe("HTA: customisable TTA columns", () => {
   });
   test.afterEach(() => expect(errors).toEqual([]));
 
-  test("built-in columns have descriptions, shown as header tooltips", async ({ page }) => {
+  test("the HEI columns have descriptions, shown as header tooltips", async ({ page }) => {
     const cols = await columns(page);
     expect(cols.every((c) => c.description)).toBe(true);
+    expect(cols.filter((c) => c.id !== "taskStep").every((c) => ["text", "list", "select"].includes(c.type))).toBe(true);
     await expect(header(page, "recovery")).toHaveAttribute("title", /noticed and corrected[\s\S]*Click to edit the column/);
   });
 
-  test("a relabelled built-in column drops the default description; a description in the file is kept", async ({ page }) => {
+  test("a file's columns are used as they are: a renamed HEI column drops its default description", async ({ page }) => {
     await page.evaluate((f) => HTAEditor.loadState(f), STPA_FILE);
+    expect((await columns(page)).map((c) => c.id)).toEqual(["taskStep", "externalErrorMode", "hazards", "comments"]);
+    const r1 = await page.evaluate(() => HTAEditor.getState().ttaRecords.find((r) => r.id === "r1"));
+    expect(r1.hazards).toEqual(["H1"]); // a list column keeps its list
+    expect(r1).not.toHaveProperty("recovery");
     expect((await column(page, "externalErrorMode")).description).toBe("");
     expect((await column(page, "comments")).description).toMatch(/Notes/);
     expect((await column(page, "hazards")).description).toBe("Hazard ids the UCA can lead to, e.g. H1.");
@@ -54,7 +59,7 @@ test.describe("HTA: customisable TTA columns", () => {
     await header(page, "consequence").click();
     const dlg = page.locator("#column-dialog");
     await expect(dlg).toBeVisible();
-    await expect(page.locator("#column-delete")).toBeHidden(); // built-in: hide, not delete
+    await expect(page.locator("#column-delete")).toBeVisible(); // every column but Task Step can be deleted
     await page.fill("#column-label", "Hazard / Loss");
     await page.fill("#column-description", "The hazard or loss the error leads to.");
     await dlg.locator('button[value="save"]').click();
@@ -85,7 +90,7 @@ test.describe("HTA: customisable TTA columns", () => {
     await expect(header(page, "psf")).toHaveText("PSFs");
   });
 
-  test("+ Column adds a custom column whose values are saved; it can be deleted with its values", async ({ page }) => {
+  test("+ Column adds a column whose values are saved; it can be deleted with its values", async ({ page }) => {
     await page.click('[data-action="toggleColumnPicker"]');
     await page.click('[data-action="addColumn"]');
     await page.fill("#column-label", "Control and feedback");
@@ -118,14 +123,44 @@ test.describe("HTA: customisable TTA columns", () => {
     expect(left).toBe(0);
   });
 
-  test("Reset restores the built-in columns and keeps custom ones", async ({ page }) => {
+  test("Task Step cannot be deleted; an HEI column can, and stays deleted after export and import", async ({ page }) => {
+    await header(page, "taskStep").click();
+    await expect(page.locator("#column-delete")).toBeHidden();
+    await page.keyboard.press("Escape");
+
+    await header(page, "externalErrorMode").click();
+    page.once("dialog", (d) => d.accept());
+    await page.click("#column-delete");
+    await expect(header(page, "externalErrorMode")).toHaveCount(0);
+    await page.locator("#hierarchy").click({ position: { x: 5, y: 5 } });
+    await page.keyboard.press("Control+z");
+    await expect(header(page, "externalErrorMode")).toHaveCount(1);
+    await page.keyboard.press("Control+Shift+z");
+    await expect(header(page, "externalErrorMode")).toHaveCount(0);
+    const state = await page.evaluate(() => HTAEditor.getState());
+    expect(state.meta.columns.map((c) => c.id)).not.toContain("externalErrorMode");
+    expect(state.ttaRecords.some((r) => "externalErrorMode" in r)).toBe(false);
+
+    await page.evaluate((s) => HTAEditor.loadState(s), state);
+    expect(await column(page, "externalErrorMode")).toBeUndefined();
+
+    // A new row only gets the columns that exist.
+    await page.locator('.task[data-task-id="1.1"] .task-id').click();
+    await page.click('[data-action="addTtaRow"]');
+    const rows = await page.evaluate(() => HTAEditor.getState().ttaRecords.filter((r) => r.taskId === "1.1"));
+    expect(rows.at(-1)).not.toHaveProperty("externalErrorMode");
+    expect(rows.at(-1).psf).toEqual([]);
+  });
+
+  test("Reset restores the HEI columns and keeps the others", async ({ page }) => {
     await page.evaluate((f) => HTAEditor.loadState(f), STPA_FILE);
     await page.click('[data-action="toggleColumnPicker"]');
     await page.click('[data-action="resetColumns"]');
-    expect(await column(page, "externalErrorMode")).toMatchObject({ label: "External Error Mode", description: expect.stringMatching(/go wrong/) });
+    expect(await column(page, "externalErrorMode")).toMatchObject({ label: "External Error Mode", type: "select", description: expect.stringMatching(/go wrong/) });
+    expect(await column(page, "recovery")).toMatchObject({ label: "Recovery", type: "text" });
     expect(await column(page, "hazards")).toMatchObject({ label: "Related Hazards", visible: true });
-    // Custom column values are kept (custom list columns are stored as text today).
-    const values = await page.evaluate(() => HTAEditor.getState().ttaRecords.find((r) => r.id === "r1").hazards);
-    expect(String(values)).toBe("H1");
+    const r1 = await page.evaluate(() => HTAEditor.getState().ttaRecords.find((r) => r.id === "r1"));
+    expect(r1.hazards).toEqual(["H1"]);
+    expect(r1.recovery).toBe("");
   });
 });

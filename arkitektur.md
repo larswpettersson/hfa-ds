@@ -252,6 +252,7 @@ Syftet beskrivs i [designprinciperna, avsnitt 1.7](docs/designprinciper.md). Ing
 | Del | Ändring |
 |---|---|
 | `hta-app.js`: rubriker och kolumner | Redigering enligt designprinciperna, avsnitt 1.7. En ny kolumn får ett id som skapas från etiketten. Ändringar av kolumner går via `commit`, så att de hamnar i ångra-historiken och sparas i `meta.columns` vid export. |
+| `hta-app.js`: kolumnmodell | Inga inbyggda kolumner: `meta.columns` används som filen anger, och bara `taskStep` läggs till om den saknas. HEI-kolumnerna är standard för en ny analys och för filer utan `meta.columns`. Varje kolumn har `type` (`text`, `list` eller `select` med `options`); en HEI-kolumn utan egen typ får HEI-typen, så äldre filer fungerar som förut. TTA-raderna behåller alla sina fält vid import, och list-kolumner sparas som listor. |
 | `hta-ai.js`: systemprompt | Delas i en del som inte beror på metoden (HTA, skribentrollen, patchformatet) och en kolumndel som byggs från `meta.columns` med etikett, beskrivning, typ och alternativ. |
 | `hta-ai.js`: kontext och patch | AI:n får alla synliga kolumner och deras värden, även egna. En patch kontrolleras mot kolumnerna: okända fält avvisas, och för `select` måste värdet vara ett av alternativen. |
 | `hta-app.js`: `replaceState` | Skickar med kolumnlistan till `normalizeTtaRecords`, så att egna kolumner inte raderas. |

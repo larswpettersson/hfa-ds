@@ -145,7 +145,7 @@ The TTA table in HTA serves different purposes: for example error identification
 - **Each column has a short description** of what it means and how to fill it in. The description helps both people (as a tooltip on the header) and the AI.
 - **The user changes the columns in the table.**
   - Click a header, or pick the column in the *Columns* panel, to change its name and description. The description shows as a tooltip on the header.
-  - **+ Column** adds a custom column. Custom columns can be removed; built-in ones can only be hidden.
+  - **+ Column** adds a column. All columns are equal and can be renamed or removed, except *Task Step*, the link to the task in the HTA tree. A new analysis starts with the HEI columns, and **Reset** brings them back.
   - Changes can be undone and are included when the analysis is exported.
 - **Templates as a starting point.** A choice such as "HEI (HRA)" or "Input to STPA" fills in the columns at once. The template is only a start; the analysis can be changed afterwards.
 - **The AI follows the columns, it does not decide them.** It phrases content in the columns that exist. A suggestion of new columns is shown and accepted like any other suggestion (1.3), and if so comes later.
