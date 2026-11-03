@@ -320,3 +320,30 @@ This is how a typical complementary palette, green `#005F37`, blue `#00375F`, or
 - **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
 - **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The earlier `tokens.json` values (`#C70039` light, `#E03E3E` dark) did not and were replaced (2026-10-31).
 - **If the brand colour changes**, recompute the table and check the conclusions again.
+
+## 4. Buttons and dialogs
+
+### 4.1 Buttons that open a dialog end with …
+
+A button that opens a dialog, a panel or a file chooser, where the user has to do something more before anything happens, ends with **…**. That shows in advance that the button does not act directly.
+
+| The button | Examples |
+|---|---|
+| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
+| Acts directly: no … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
+
+- Use the character **…** (U+2026), not three full stops, with no space before it.
+- The rule applies to the button's text. Tooltips and `aria-label` are written without ….
+- **Exception:** buttons that show only a symbol, such as the help button **?**, get no ….
+- Introduced in the tools step by step (2026-11-03).
+
+### 4.2 Deleting rows in tables
+
+- **Editable tables have a ✕ at the end of each row.** It is muted but always visible, so it can be found, works on touch screens and shows for people following on the projector.
+- **The tooltip says what is deleted**, including linked data, for example "Delete c1 and its control actions and feedback".
+- **Undo instead of asking.** The row is deleted at once, and a status message says what was deleted and that Ctrl/⌘+Z undoes it. The tool asks first only when the deletion affects much outside the row, for example a column with values on many rows.
+- **If a rule requires the row, it is cleared instead.** In HTA every task has at least one TTA row; for a task's last row the button is called *Clear*.
+- **Tables derived from other data have no ✕.** They are changed where the data is, like the safety-case tables in STPA.
+- **✕ is a real button**, reachable with Tab and usable from the keyboard.
+
+The STPA workbench's structure tables already follow the principle (2026-11-03). The TTA table in HTA gets it together with the customisable columns.

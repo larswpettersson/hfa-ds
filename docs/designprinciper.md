@@ -320,3 +320,30 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
 - **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
+
+## 4. Knappar och dialoger
+
+### 4.1 Knappar som öppnar en dialog slutar med …
+
+En knapp som öppnar en dialog, en panel eller ett filval, där användaren behöver göra något mer innan något händer, slutar med **…**. Då syns det i förväg att knappen inte gör något direkt.
+
+| Knappen | Exempel |
+|---|---|
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
+| Gör något direkt: inget … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+
+- Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
+- Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
+- **Undantag:** knappar som bara visar en symbol, som hjälpknappen **?**, får inget ….
+- Införs i verktygen efter hand (2026-11-03).
+
+### 4.2 Ta bort rader i tabeller
+
+- **Redigerbara tabeller har ett ✕ sist på varje rad.** Det är dämpat men alltid synligt, så att det går att upptäcka, fungerar på pekskärm och syns för den som följer med på projektorn.
+- **Verktygstipset säger vad som tas bort**, även kopplade data, till exempel "Delete c1 and its control actions and feedback".
+- **Ångra i stället för att fråga.** Raden tas bort direkt, och ett statusmeddelande säger vad som togs bort och att Ctrl/⌘+Z ångrar. Verktyget frågar först bara när borttagningen påverkar mycket utanför raden, till exempel en kolumn med värden på många rader.
+- **Kräver en regel raden töms den i stället.** I HTA har varje uppgift minst en TTA-rad; för uppgiftens sista rad heter knappen *Clear*.
+- **Tabeller som räknas fram ur annan data har inget ✕.** De ändras där datan finns, som säkerhetstabellerna i STPA.
+- **✕ är en riktig knapp**, som nås med Tab och fungerar med tangentbordet.
+
+STPA-workbenchens strukturtabeller följer redan principen (2026-11-03). TTA-tabellen i HTA får den i samma veva som de anpassningsbara kolumnerna.
