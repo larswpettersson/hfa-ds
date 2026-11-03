@@ -251,12 +251,11 @@ Syftet beskrivs i [designprinciperna, avsnitt 1.7](docs/designprinciper.md). Ing
 
 | Del | Ändring |
 |---|---|
-| `hta-app.js`: rubriker | Klick på en rubrik (eller i panelen *Columns*) öppnar etikett och beskrivning för redigering. Beskrivningen visas som verktygstips. |
-| `hta-app.js`: kolumner | **+ Kolumn** lägger till en egen kolumn (id skapat från etiketten). Egna kolumner kan tas bort, inbyggda bara döljas. Ändringarna går via `commit`, så de kan ångras och följer med vid export. |
+| `hta-app.js`: rubriker och kolumner | Redigering enligt designprinciperna, avsnitt 1.7. En ny kolumn får ett id som skapas från etiketten. Ändringar av kolumner går via `commit`, så att de hamnar i ångra-historiken och sparas i `meta.columns` vid export. |
 | `hta-ai.js`: systemprompt | Delas i en del som inte beror på metoden (HTA, skribentrollen, patchformatet) och en kolumndel som byggs från `meta.columns` med etikett, beskrivning, typ och alternativ. |
 | `hta-ai.js`: kontext och patch | AI:n får alla synliga kolumner och deras värden, även egna. En patch kontrolleras mot kolumnerna: okända fält avvisas, och för `select` måste värdet vara ett av alternativen. |
 | `hta-app.js`: `replaceState` | Skickar med kolumnlistan till `normalizeTtaRecords`, så att egna kolumner inte raderas. |
-| `data/`: mallar | Mallar som JSON, till exempel HEI (SHERPA) och Underlag till STPA. En mall fyller i `meta.columns` och kolumnernas beskrivningar. |
+| `data/`: mallar | Mallar som JSON, till exempel HEI (HRA) och Underlag till STPA. En mall fyller i `meta.columns` och kolumnernas beskrivningar. |
 
 **Ordning:**
 

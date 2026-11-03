@@ -251,12 +251,11 @@ The purpose is described in the [design principles, section 1.7](docs/design-pri
 
 | Part | Change |
 |---|---|
-| `hta-app.js`: headers | Clicking a header (or using the *Columns* panel) opens its label and description for editing. The description shows as a tooltip. |
-| `hta-app.js`: columns | **+ Column** adds a custom column (id made from the label). Custom columns can be removed, built-in ones only hidden. Changes go through `commit`, so they can be undone and are included in the export. |
+| `hta-app.js`: headers and columns | Editing as in the design principles, section 1.7. A new column gets an id made from its label. Column changes go through `commit`, so they enter the undo history and are saved in `meta.columns` on export. |
 | `hta-ai.js`: system prompt | Split into a method-independent part (HTA, the scribe role, the patch format) and a column part built from `meta.columns` with label, description, type and options. |
 | `hta-ai.js`: context and patch | The AI gets every visible column and its values, custom ones included. A patch is checked against the columns: unknown fields are rejected, and for `select` the value must be one of the options. |
 | `hta-app.js`: `replaceState` | Passes the column list to `normalizeTtaRecords`, so custom columns are not deleted. |
-| `data/`: templates | Templates as JSON, for example HEI (SHERPA) and Input to STPA. A template fills in `meta.columns` and the column descriptions. |
+| `data/`: templates | Templates as JSON, for example HEI (HRA) and Input to STPA. A template fills in `meta.columns` and the column descriptions. |
 
 **Order:**
 
