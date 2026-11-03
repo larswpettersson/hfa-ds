@@ -137,6 +137,18 @@ The user should be able to give the AI an image along with the question: a photo
 
 None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](../ARCHITECTURE.md), section 7.
 
+### 1.7 Customisable TTA columns (planned)
+
+The TTA table in HTA serves different purposes: error identification with HEI (SHERPA), but also as input to an STPA, where the columns are called, for example, *Controller*, *Unsafe Control Action* and *Hazards*. The columns must therefore be customisable, and the AI support must follow them.
+
+- **The columns belong to the analysis.** Their names and meaning are saved in the analysis file and travel with it. There is only one place where the columns are described; the AI support has no column list of its own.
+- **Each column has a short description** of what it means and how to fill it in. The description helps both people (as a tooltip on the header) and the AI.
+- **The user changes the columns in the table.** Click a header to change its name and description, and add or remove custom columns. Changes can be undone.
+- **Templates as a starting point.** A choice such as "HEI (SHERPA)" or "Input to STPA" fills in the columns at once. The template is only a start; the analysis can be changed afterwards.
+- **The AI follows the columns, it does not decide them.** It phrases content in the columns that exist. A suggestion of new columns is shown and accepted like any other suggestion (1.3), and if so comes later.
+
+None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](../ARCHITECTURE.md), section 8.
+
 ## 2. Typography
 
 ### 2.1 Basis: typographic simplicity
