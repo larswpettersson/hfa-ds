@@ -1,0 +1,49 @@
+name: Deploy Hugging Face Space
+
+# Publishes the STPA, HTA and Bowtie pages as a static Space (huggingface.co/spaces/<owner>/hfa-tools).
+# Needs the repository secret HF_TOKEN: a Hugging Face token with write access to the Space.
+# Run it by hand (Actions → Deploy Hugging Face Space → Run workflow); pick a branch of hfa-hta / hfa-bowtie to try
+# one before it is merged.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tools_ref:
+        description: Branch of hfa-hta and hfa-bowtie to publish
+        default: main
+      stpa_ref:
+        description: Branch of hfa-stpa to publish
+        default: main
+      space:
+        description: Space id (owner/name)
+        default: larswpettersson/hfa-tools
+
+env:
+  HFA_WORKSPACE: ${{ github.workspace }}/ws
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: ws/hfa-ds }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-stpa, ref: "${{ inputs.stpa_ref }}", path: ws/hfa-stpa, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-hta, ref: "${{ inputs.tools_ref }}", path: ws/hfa-hta, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-bowtie, ref: "${{ inputs.tools_ref }}", path: ws/hfa-bowtie, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - name: Build
+        working-directory: ws/hfa-ds
+        run: scripts/hf-space/build.sh "$RUNNER_TEMP/hf-space"
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Deploy
+        working-directory: ws/hfa-ds
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ inputs.space }}
+          HF_COMMIT_MESSAGE: "hfa-ds ${{ github.sha }}: stpa@${{ inputs.stpa_ref }}, hta/bowtie@${{ inputs.tools_ref }}"
+        run: |
+          pip install --quiet huggingface_hub
+          python scripts/hf-space/deploy.py "$RUNNER_TEMP/hf-space"

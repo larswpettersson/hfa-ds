@@ -70,6 +70,10 @@ git clone https://github.com/larswpettersson/hfa-ds.git
 
 Penpot sync: paste `scripts/penpot/import-bundle.js` with each Penpot file connected in MCP.
 
+## Hugging Face Space
+
+`scripts/hf-space/build.sh` and `scripts/hf-space/deploy.py` publish STPA, HTA and Bowtie as a static Space (`larswpettersson/hfa-tools`); the workflow **Deploy Hugging Face Space** does both from GitHub (secret `HF_TOKEN`). The AI panel in HTA and Bowtie can call Hugging Face Inference Providers (e.g. `google/gemma-4-31B-it`) with your own token. See [docs/hugging-face.md](docs/hugging-face.md).
+
 ## License
 
 [MIT](LICENSE) © 2026 Lars Pettersson
