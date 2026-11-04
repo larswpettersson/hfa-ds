@@ -381,41 +381,88 @@ The analysis file is handled the same way in every tool, as in most programs (Wi
 
 Introduced in the tools step by step.
 
-## 5. Selecting and moving objects
+## 5. Navigating, selecting and moving objects
 
-The same principles apply in every tool, to blocks and links in STPA, tasks and rows in HTA, and cards and barriers in Bowtie.
+The same principles apply in every tool and every kind of diagram: tasks in HTA, cards, barriers, hazard and top event in Bowtie, and blocks in STPA. The aim is that anyone who wants to can work in the diagram with the keyboard, without having to click every single object with the mouse.
 
-### 5.1 Selecting several objects
+### 5.1 The objects in the model are navigable
 
-- **Shift+click** adds an object to the selection or takes it out, as in the STPA workbench. A plain click does what the tool otherwise does, for example start editing or link mode.
+- **What can be navigated to, selected and moved are the objects in the analysis model**, that is, the boxes the diagram draws for the parts of the model.
+- **Connections are not navigation targets.** Lines, arrows and edges between objects (for example control actions and feedback in STPA, the lines between tasks in HTA and the links from barriers to causes in Bowtie) are not reached with the arrow keys. They are reached and changed through the object they belong to, a table or a dialog.
+- **Each tool states which objects are navigable.** The navigation in 5.2 does not need to know the model, only where the objects are.
+- Tables, such as the TTA table, follow the conventions of tables (Tab between cells) and are not covered by 5.2.
+
+### 5.2 The arrow keys follow the screen, not the model
+
+An arrow moves the indication (5.3) to the nearest object in the direction the arrow points on screen. The same rule applies to every kind of diagram, whether the model is a tree, two sides around a top event or a control structure:
+
+1. Start from the indicated object.
+2. Only consider objects in the direction of the arrow.
+3. **Objects in the same row or column come first**, that is, objects that overlap the current one vertically for ←/→ and horizontally for ↑/↓.
+4. Pick the nearest. Distance to the side weighs more than distance ahead, so that the arrow goes straight rather than diagonally.
+5. If there is nothing in the same row or column, pick the nearest in the direction of the arrow.
+6. **At the edge the indication stays.** It does not wrap around to the other side.
+
+Examples: → from a task in HTA goes to the nearest box to the right on the same level, even if it belongs to another branch. → from a barrier in Bowtie goes to whatever is nearest to the right, another barrier or the top event depending on where the barrier is.
+
+**Ctrl/⌘+arrow jumps a larger unit in the structure**, as in text editors: for example to the parent or the first child in HTA, or to the top event or the outer edge in Bowtie. Here the model decides where the jump goes.
+
+### 5.3 One indication for mouse and keyboard
+
+What the mouse hovers over and what the arrow keys point out are the same thing, as in menus in Windows and macOS:
+
+- **There is one indication.** Both the mouse and the arrows set it, and it looks the same whichever set it.
+- **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
+- **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
+- **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
+- **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
+
+### 5.4 The keys mirror the mouse
+
+Every key has a mouse counterpart:
+
+| Mouse | Keyboard |
+|---|---|
+| Hover | Arrow (5.2) |
+| Click: select, or whatever the tool otherwise does on a click, for example link mode for a barrier | Ctrl/⌘+Enter |
+| Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
+| Double-click: edit | Enter or F2 |
+| Drag: move | Alt/Option+arrow (5.6) |
+
+Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists.
+
+### 5.5 Selecting several objects
+
+- **Shift+click and Ctrl/⌘+click** add an object to the selection or take it out. Shift+click is the convention in drawing tools and Ctrl/⌘+click in lists; both do the same, so the habit from either works. A plain click replaces the selection.
 - **Selected objects look the same** in every tool: the same shadow around the object.
 - **Esc or a click outside** clears the selection.
 - **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects.
 
-### 5.2 Moving selected objects
+### 5.6 Moving selected objects
 
-- **The arrow keys move all selected objects one step together**, in the tool's own order: column for barriers, place among siblings or level for tasks.
+- **Alt/Option+arrow moves all selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. Plain arrows navigate (5.2) and never move.
 - **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
 - **Every move can be undone** with Ctrl/⌘+Z where the tool has undo.
+- Alt+←/→ means back and forward in the browser on Windows and Linux; the tool must stop that when the keys are used in the diagram.
 
-### 5.3 Objects never overlap
+### 5.7 Objects never overlap
 
 - **Two objects may never take the same place**, for example two barriers in one column covering the same row. The rule applies after every change and when a file is opened.
 - **The object that was just changed or moved gets its place; an object that would collide gets a place of its own right after.** If, for example, the causes a barrier protects are changed, that barrier is the one that gives way.
 - **The order is kept**, for example the order along the path to and from the top event, and empty places are removed.
 
-### 5.4 A warning when the objects do not belong together
+### 5.8 A warning when the objects do not belong together
 
 Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, a card and a barrier, or tasks under different parent tasks, the tool **warns**:
 
 - **The move is not carried out**, and a message says why and which objects can be moved together.
 - **The selection stays**, so the user can take out what does not belong with Shift+click.
-- The selection itself is allowed, since it also scopes AI questions (5.1). It is the move that warns.
+- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns.
 
 **Current state (2026-11-04):**
 
-| Tool | Select several | Move several | No overlap | Warning |
-|---|---|---|---|---|
-| STPA | Shift+click on blocks, control actions and feedback | Missing (the diagram places itself) | The diagram places itself | – |
-| HTA | Missing (one task at a time) | Missing | The tree places itself | – |
-| Bowtie | Shift+click on barriers | ←/→ moves selected barriers | Yes | Yes: preventive and recovery barriers are not moved together |
+| Tool | Navigate with arrows | Mouse and keyboard | Select several | Move several | No overlap | Warning |
+|---|---|---|---|---|---|---|
+| STPA | Missing | – | Shift+click on blocks, control actions and feedback (connections should be reached through the table instead, 5.1) | Missing (the diagram places itself) | The diagram places itself | – |
+| HTA | Follows the tree: ↑ parent, ↓ next in tree order, ←/→ only among siblings | The mouse does not clear the keyboard's indication | Missing (one task at a time) | Missing; plain arrows move a selected task | The tree places itself | – |
+| Bowtie | Own rules per object type | The mouse does not clear the keyboard's indication | Shift+click on barriers, Ctrl/⌘+click on cards | ←/→ moves selected barriers, Alt+↑/↓ moves cards | Yes | Yes: preventive and recovery barriers are not moved together |

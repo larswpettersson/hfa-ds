@@ -74,7 +74,7 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     await expect(page.locator(".barrier.is-multi-selected")).toHaveCount(0);
   });
 
-  test("moving barriers from both sides of the top event warns and moves nothing (principle 5.4)", async ({ page }) => {
+  test("moving barriers from both sides of the top event warns and moves nothing (principle 5.8)", async ({ page }) => {
     const before = await page.evaluate(() => BowtieEditor.getState());
     await clickBarrier(page, "p1", ["Shift"]);
     await clickBarrier(page, "r1", ["Shift"]);

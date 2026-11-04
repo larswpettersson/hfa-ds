@@ -381,41 +381,88 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 
 Införs i verktygen efter hand.
 
-## 5. Markera och flytta objekt
+## 5. Navigera, markera och flytta objekt
 
-Samma principer gäller i alla verktyg, för block och länkar i STPA, uppgifter och rader i HTA, och kort och barriärer i Bowtie.
+Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.
 
-### 5.1 Markera flera objekt
+### 5.1 Objekten i modellen är navigerbara
 
-- **Shift+klick** markerar ett objekt eller tar bort det ur markeringen, som i STPA-workbenchen. Ett vanligt klick gör det verktyget gör annars, till exempel öppnar redigering eller länkläge.
+- **Det som går att navigera till, markera och flytta är objekten i analysmodellen**, det vill säga de rutor som diagrammet ritar för modellens delar.
+- **Kopplingar är inte navigeringsmål.** Linjer, pilar och kanter mellan objekten (till exempel styråtgärder och återkopplingar i STPA, linjerna mellan uppgifter i HTA och barriärernas koppling till orsaker i Bowtie) hoppar man inte till med piltangenterna. De nås och ändras via objektet de hör till, via en tabell eller via en dialog.
+- **Varje verktyg anger vilka objekt som är navigerbara.** Navigeringen i 5.2 behöver inte känna till modellen, bara var objekten ligger.
+- Tabeller, till exempel TTA-tabellen, följer tabellernas egna konventioner (Tab mellan celler) och omfattas inte av 5.2.
+
+### 5.2 Piltangenterna följer skärmen, inte modellen
+
+En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen pekar på skärmen. Samma regel gäller för alla diagramtyper, oavsett om modellen är ett träd, två sidor kring en topphändelse eller en styrstruktur:
+
+1. Utgå från det indikerade objektet.
+2. Ta bara med objekt som ligger åt pilens håll.
+3. **Objekt på samma rad eller i samma kolumn går först**, det vill säga objekt som överlappar det nuvarande i höjdled vid ←/→ och i sidled vid ↑/↓.
+4. Välj det närmaste. Avståndet åt sidan väger tyngre än avståndet framåt, så att pilen hellre går rakt än snett.
+5. Finns inget på samma rad eller i samma kolumn, välj det närmaste åt pilens håll.
+6. **Vid kanten stannar indikeringen.** Den hoppar inte runt till andra sidan.
+
+Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
+
+**Ctrl/⌘+pil hoppar en större enhet i strukturen**, som i textredigerare: till exempel till föräldern eller första barnet i HTA, eller till topphändelsen eller ytterkanten i Bowtie. Här är det modellen som bestämmer vart hoppet går.
+
+### 5.3 En indikering för mus och tangentbord
+
+Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, som i menyer i Windows och macOS:
+
+- **Det finns en indikering.** Både musen och pilarna sätter den, och den ser likadan ut oavsett vilket som satte den.
+- **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
+- **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
+- **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
+- **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
+
+### 5.4 Tangenterna speglar musen
+
+Varje tangent har en motsvarighet med musen:
+
+| Mus | Tangentbord |
+|---|---|
+| Hovra | Pil (5.2) |
+| Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
+| Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
+| Dubbelklick: redigera | Enter eller F2 |
+| Dra: flytta | Alt/Option+pil (5.6) |
+
+Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
+
+### 5.5 Markera flera objekt
+
+- **Shift+klick och Ctrl/⌘+klick** lägger till ett objekt i markeringen eller tar bort det ur den. Shift+klick är konventionen i ritverktyg och Ctrl/⌘+klick i listor; båda gör samma sak, så att vanan från båda fungerar. Ett vanligt klick ersätter markeringen.
 - **Markerade objekt ser likadana ut** i alla verktyg: samma skugga runt objektet.
 - **Esc eller ett klick utanför** tar bort markeringen.
 - **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten.
 
-### 5.2 Flytta markerade objekt
+### 5.6 Flytta markerade objekt
 
-- **Piltangenterna flyttar alla markerade objekt ett steg tillsammans**, i verktygets egen ordning: kolumn för barriärer, plats bland syskon eller nivå för uppgifter.
+- **Alt/Option+pil flyttar alla markerade objekt ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. Vanliga pilar navigerar (5.2) och flyttar aldrig.
 - **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
 - **Varje flytt går att ångra** med Ctrl/⌘+Z där verktyget har ångra.
+- Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
 
-### 5.3 Objekt överlappar aldrig
+### 5.7 Objekt överlappar aldrig
 
 - **Två objekt får aldrig ta samma plats**, till exempel två barriärer i samma kolumn som täcker samma rad. Regeln gäller efter varje ändring och när en fil öppnas.
 - **Det objekt som just ändrades eller flyttades får sin plats; ett objekt som skulle krocka får en egen plats direkt efter.** Ändras till exempel vilka orsaker en barriär skyddar, är det den barriären som flyttar undan.
 - **Ordningen bevaras**, till exempel ordningen längs vägen till och från topphändelsen, och tomma platser tas bort.
 
-### 5.4 Varning när objekten inte hör ihop
+### 5.8 Varning när objekten inte hör ihop
 
 En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, ett kort och en barriär, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
 
 - **Flytten genomförs inte**, och ett meddelande säger varför och vilka objekt som kan flyttas tillsammans.
 - **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
-- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.1). Det är flytten som varnar.
+- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar.
 
 **Nuläge (2026-11-04):**
 
-| Verktyg | Markera flera | Flytta flera | Ingen överlappning | Varning |
-|---|---|---|---|---|
-| STPA | Shift+klick på block, styråtgärder och återkopplingar | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
-| HTA | Saknas (en uppgift åt gången) | Saknas | Trädet placerar själv | – |
-| Bowtie | Shift+klick på barriärer | ←/→ flyttar markerade barriärer | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |
+| Verktyg | Navigera med pilar | Mus och tangentbord | Markera flera | Flytta flera | Ingen överlappning | Varning |
+|---|---|---|---|---|---|---|
+| STPA | Saknas | – | Shift+klick på block, styråtgärder och återkopplingar (kopplingarna bör i stället nås via tabellen, 5.1) | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
+| HTA | Efter trädet: ↑ förälder, ↓ nästa i trädordning, ←/→ bara bland syskon | Musen tar inte bort tangentbordets indikering | Saknas (en uppgift åt gången) | Saknas; vanliga pilar flyttar en markerad uppgift | Trädet placerar själv | – |
+| Bowtie | Egna regler per objekttyp | Musen tar inte bort tangentbordets indikering | Shift+klick på barriärer, Ctrl/⌘+klick på kort | ←/→ flyttar markerade barriärer, Alt+↑/↓ flyttar kort | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |
