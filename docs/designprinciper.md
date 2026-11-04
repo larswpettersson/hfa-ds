@@ -329,8 +329,8 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 
 | Knappen | Exempel |
 |---|---|
-| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
-| Gör något direkt: inget … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Open…**, **Save As…** |
+| Gör något direkt: inget … | **New**, **Save**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
 
 - Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
 - Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
@@ -357,25 +357,123 @@ AI-stödet utgår från analysen som är öppen. Ligger det en stor eller domän
   - **HTA:** ett övergripande mål, två deluppgifter varav en med två operationer, TTA-kolumnerna med beskrivningar, en ifylld rad och övriga tomma.
   - **Bowtie:** fara, topphändelse, två orsaker, två konsekvenser, en förebyggande och en återställande barriär med styrka och status, och en barriär som skyddar två vägar.
 - **AI-samtalet rensas samtidigt**, eftersom tidigare frågor och svar gäller den gamla analysen.
-- **New frågar först**, eftersom hela analysen ersätts (4.2), och ändringen går att ångra med Ctrl/⌘+Z. Finns osparade ändringar påminner frågan om **Save…**.
+- **New frågar först**, eftersom hela analysen ersätts (4.2), och ändringen går att ångra med Ctrl/⌘+Z. Finns osparade ändringar påminner frågan om **Save**.
 - Exempel och förval, som ACA759 eller STPA-workbenchens förval, laddas som tidigare. New är det neutrala startläget.
 
-### 4.4 Load… och Save… i alla verktyg
+### 4.4 Open… och Save i alla verktyg
 
-Analysfilen hanteras på samma sätt i alla verktyg:
+Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Windows, macOS, Office):
 
-- **Load…** öppnar ett filval och laddar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar.
-- **Save…** sparar analysen som en JSON-fil.
-- Båda slutar med …, eftersom de öppnar ett filval (4.1).
-- Namnen ersätter **Import** och **Export** i HTA och Bowtie, och **Open** och **Save** i STPA-workbenchen.
+- **Open…** öppnar ett filval och öppnar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar. Den slutar med …, eftersom den alltid öppnar ett filval (4.1).
+- **Save** sparar analysen som en JSON-fil, utan …. I webbläsaren blir det i dag en nedladdning. Där webbläsaren tillåter det kan **Save** skriva tillbaka till samma fil, och **Save As…** fråga efter namn och plats.
+- Namnen ersätter **Import** och **Export** i HTA och Bowtie.
 - Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
+- Kortkommandona Ctrl/⌘+O och Ctrl/⌘+S följer samma namn, där de införs.
 
 **Nuläge (2026-11-04):**
 
 | Verktyg | Rensa till exempel | Analysfil |
 |---|---|---|
-| STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | *Open* och *Save* |
-| HTA | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
-| Bowtie | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
+| STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | **Open…** och **Save** |
+| HTA | **New** (2026-11-04) | **Open…** och **Save**; Open… frågar om osparade ändringar |
+| Bowtie | **New** (2026-11-04); kan inte ångras, eftersom Bowtie saknar ångra | **Open…** och **Save**; Open… frågar om osparade ändringar |
+| Penpot (HFA DS) | – | **Att göra:** verktygsraden visar *Load/Save*; ändra till **Open…** och **Save** |
 
 Införs i verktygen efter hand.
+
+## 5. Navigera, markera och flytta objekt
+
+Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.
+
+### 5.1 Objekten i modellen är navigerbara
+
+- **Det som går att navigera till, markera och flytta är objekten i analysmodellen**, det vill säga de rutor som diagrammet ritar för modellens delar.
+- **Kopplingar är inte navigeringsmål.** Linjer, pilar och kanter mellan objekten (till exempel styråtgärder och återkopplingar i STPA, linjerna mellan uppgifter i HTA och barriärernas koppling till orsaker i Bowtie) hoppar man inte till med piltangenterna. De nås och ändras via objektet de hör till, via en tabell eller via en dialog.
+- **Varje verktyg anger vilka objekt som är navigerbara.** Navigeringen i 5.2 behöver inte känna till modellen, bara var objekten ligger.
+- Tabeller, till exempel TTA-tabellen, följer tabellernas egna konventioner och omfattas inte av 5.2; se 5.9.
+
+### 5.2 Piltangenterna följer skärmen, inte modellen
+
+En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen pekar på skärmen. Samma regel gäller för alla diagramtyper, oavsett om modellen är ett träd, två sidor kring en topphändelse eller en styrstruktur:
+
+1. Utgå från det indikerade objektet.
+2. Ta bara med objekt som ligger åt pilens håll.
+3. **Objekt på samma rad eller i samma kolumn går först**, det vill säga objekt som överlappar det nuvarande i höjdled vid ←/→ och i sidled vid ↑/↓.
+4. Välj det närmaste. Avståndet åt sidan väger tyngre än avståndet framåt, så att pilen hellre går rakt än snett.
+5. Finns inget på samma rad eller i samma kolumn, välj det närmaste åt pilens håll.
+6. **Vid kanten stannar indikeringen.** Den hoppar inte runt till andra sidan.
+
+Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
+
+**Ctrl/⌘+pil hoppar en större enhet i strukturen**, som i textredigerare: till exempel till föräldern eller första barnet i HTA, eller till topphändelsen eller ytterkanten i Bowtie. Här är det modellen som bestämmer vart hoppet går.
+
+### 5.3 En indikering för mus och tangentbord
+
+Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, som i menyer i Windows och macOS:
+
+- **Det finns en indikering.** Både musen och pilarna sätter den, och den ser likadan ut oavsett vilket som satte den.
+- **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
+- **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
+- **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
+- **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
+
+### 5.4 Tangenterna speglar musen
+
+Varje tangent har en motsvarighet med musen:
+
+| Mus | Tangentbord |
+|---|---|
+| Hovra | Pil (5.2) |
+| Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
+| Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
+| Dubbelklick: redigera | Enter eller F2 |
+| Dra: flytta | Alt/Option+pil (5.6) |
+
+Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
+
+### 5.5 Markera flera objekt
+
+- **Shift+klick och Ctrl/⌘+klick** lägger till ett objekt i markeringen eller tar bort det ur den. Shift+klick är konventionen i ritverktyg och Ctrl/⌘+klick i listor; båda gör samma sak, så att vanan från båda fungerar. Ett vanligt klick ersätter markeringen.
+- **Markerade objekt ser likadana ut** i alla verktyg: samma skugga runt objektet.
+- **Esc eller ett klick utanför** tar bort markeringen.
+- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten.
+
+### 5.6 Flytta markerade objekt
+
+- **Alt/Option+pil flyttar alla markerade objekt ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. Vanliga pilar navigerar (5.2) och flyttar aldrig.
+- **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
+- **Varje flytt går att ångra** med Ctrl/⌘+Z där verktyget har ångra.
+- Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
+
+### 5.7 Objekt överlappar aldrig
+
+- **Två objekt får aldrig ta samma plats**, till exempel två barriärer i samma kolumn som täcker samma rad. Regeln gäller efter varje ändring och när en fil öppnas.
+- **Det objekt som just ändrades eller flyttades får sin plats; ett objekt som skulle krocka får en egen plats direkt efter.** Ändras till exempel vilka orsaker en barriär skyddar, är det den barriären som flyttar undan.
+- **Ordningen bevaras**, till exempel ordningen längs vägen till och från topphändelsen, och tomma platser tas bort.
+
+### 5.8 Varning när objekten inte hör ihop
+
+En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, ett kort och en barriär, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
+
+- **Flytten genomförs inte**, och ett meddelande säger varför och vilka objekt som kan flyttas tillsammans.
+- **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
+- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar.
+
+### 5.9 Länkade vyer
+
+När samma modell visas i två vyer, till exempel diagrammet och TTA-tabellen i HTA eller diagrammet och strukturtabellerna i STPA, **delas markeringen mellan vyerna, men fokus stannar i den vy man arbetar i.** Den andra vyn följer med genom att visa och rulla fram markeringen. Den tar inte över tangentbordet. Så fungerar till exempel VS Code, Visio och Utforskaren.
+
+- **Markeringen följer med, inte indikeringen.** En pil i diagrammet (5.2) rullar inte tabellen. Markering i diagrammet markerar och rullar fram objektets rader i tabellen. ↑/↓ till en rad som hör till ett annat objekt markerar det objektet i diagrammet, på samma sätt som ett klick på raden.
+- **Den andra vyn rullar bara om markeringen inte syns**, till närmaste läge och inte centrerat, så att den inte hoppar vid varje radbyte. Vid klick med musen får objektet centreras.
+- **Varje vy är ett enda Tab-stopp.** Tab och Shift+Tab flyttar mellan vyerna; inne i en vy används piltangenterna. Fälten i diagrammets objekt nås inte med Tab, de redigeras med Enter eller F2 (5.4).
+- **När man kommer in i tabellen** hamnar fokus på den första raden för det markerade objektet. **När man kommer in i diagrammet** hamnar indikeringen på det markerade objektet.
+- **I tabellen gäller tabellernas konventioner:** pilar mellan celler när man inte redigerar, Enter eller F2 (eller att börja skriva) redigerar cellen. Medan man redigerar sparar Enter, Esc avbryter och Tab går till nästa cell. **Esc utan pågående redigering** lämnar tabellen och går till objektet i diagrammet. ✕ nås med Tab (4.2).
+- **Ett objekt med flera rader:** markering i diagrammet markerar alla raderna och fokus hamnar på den första. ↑/↓ mellan rader för samma objekt ändrar inte markeringen i diagrammet.
+
+**Nuläge (2026-11-04):**
+
+| Verktyg | Navigera med pilar | Mus och tangentbord | Länkade vyer | Markera flera | Flytta flera | Ingen överlappning | Varning |
+|---|---|---|---|---|---|---|---|
+| STPA | Saknas | – | Klick i diagrammet visar raden i strukturtabellen | Shift+klick på block, styråtgärder och återkopplingar (kopplingarna bör i stället nås via tabellen, 5.1) | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
+| HTA | Efter trädet: ↑ förälder, ↓ nästa i trädordning, ←/→ bara bland syskon | Musen tar inte bort tangentbordets indikering | Med musen i båda riktningarna; med tangentbordet saknas det, och Tab går mellan textfälten i uppgifterna | Saknas (en uppgift åt gången) | Saknas; vanliga pilar flyttar en markerad uppgift | Trädet placerar själv | – |
+| Bowtie | Egna regler per objekttyp | Musen tar inte bort tangentbordets indikering | – (ingen tabell) | Shift+klick på barriärer, Ctrl/⌘+klick på kort | ←/→ flyttar markerade barriärer, Alt+↑/↓ flyttar kort | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |

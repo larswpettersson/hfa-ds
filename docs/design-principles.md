@@ -329,8 +329,8 @@ A button that opens a dialog, a panel or a file chooser, where the user has to d
 
 | The button | Examples |
 |---|---|
-| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
-| Acts directly: no … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
+| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Open…**, **Save As…** |
+| Acts directly: no … | **New**, **Save**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
 
 - Use the character **…** (U+2026), not three full stops, with no space before it.
 - The rule applies to the button's text. Tooltips and `aria-label` are written without ….
@@ -357,25 +357,123 @@ The AI support starts from the analysis that is open. If a large or domain-speci
   - **HTA:** an overall goal, two sub-tasks of which one has two operations, the TTA columns with descriptions, one filled-in row and the others empty.
   - **Bowtie:** hazard, top event, two causes, two consequences, one preventive and one recovery barrier with strength and status, and one barrier that protects two paths.
 - **The AI conversation is cleared at the same time**, since earlier questions and answers concern the old analysis.
-- **New asks first**, because the whole analysis is replaced (4.2), and the change can be undone with Ctrl/⌘+Z. If there are unsaved changes, the question mentions **Save…**.
+- **New asks first**, because the whole analysis is replaced (4.2), and the change can be undone with Ctrl/⌘+Z. If there are unsaved changes, the question mentions **Save**.
 - Examples and presets, such as ACA759 or the STPA workbench's presets, load as before. New is the neutral starting point.
 
-### 4.4 Load… and Save… in every tool
+### 4.4 Open… and Save in every tool
 
-The analysis file is handled the same way in every tool:
+The analysis file is handled the same way in every tool, as in most programs (Windows, macOS, Office):
 
-- **Load…** opens a file chooser and loads an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes.
-- **Save…** saves the analysis as a JSON file.
-- Both end with …, since they open a file chooser (4.1).
-- The names replace **Import** and **Export** in HTA and Bowtie, and **Open** and **Save** in the STPA workbench.
+- **Open…** opens a file chooser and opens an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes. It ends with …, since it always opens a file chooser (4.1).
+- **Save** saves the analysis as a JSON file, without …. In the browser this is a download today. Where the browser allows it, **Save** can write back to the same file, and **Save As…** ask for a name and place.
+- The names replace **Import** and **Export** in HTA and Bowtie.
 - Export to formats *other* than the analysis file is still called **Export**, for example **Export CSV** in HTA and **Export .md** for the AI conversation.
+- The shortcuts Ctrl/⌘+O and Ctrl/⌘+S follow the same names, where they are introduced.
 
 **Current state (2026-11-04):**
 
 | Tool | Clear to example | Analysis file |
 |---|---|---|
-| STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | *Open* and *Save* |
-| HTA | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
-| Bowtie | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
+| STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | **Open…** and **Save** |
+| HTA | **New** (2026-11-04) | **Open…** and **Save**; Open… asks about unsaved changes |
+| Bowtie | **New** (2026-11-04); cannot be undone, since Bowtie has no undo | **Open…** and **Save**; Open… asks about unsaved changes |
+| Penpot (HFA DS) | – | **To do:** the toolbar shows *Load/Save*; change to **Open…** and **Save** |
 
 Introduced in the tools step by step.
+
+## 5. Navigating, selecting and moving objects
+
+The same principles apply in every tool and every kind of diagram: tasks in HTA, cards, barriers, hazard and top event in Bowtie, and blocks in STPA. The aim is that anyone who wants to can work in the diagram with the keyboard, without having to click every single object with the mouse.
+
+### 5.1 The objects in the model are navigable
+
+- **What can be navigated to, selected and moved are the objects in the analysis model**, that is, the boxes the diagram draws for the parts of the model.
+- **Connections are not navigation targets.** Lines, arrows and edges between objects (for example control actions and feedback in STPA, the lines between tasks in HTA and the links from barriers to causes in Bowtie) are not reached with the arrow keys. They are reached and changed through the object they belong to, a table or a dialog.
+- **Each tool states which objects are navigable.** The navigation in 5.2 does not need to know the model, only where the objects are.
+- Tables, such as the TTA table, follow the conventions of tables and are not covered by 5.2; see 5.9.
+
+### 5.2 The arrow keys follow the screen, not the model
+
+An arrow moves the indication (5.3) to the nearest object in the direction the arrow points on screen. The same rule applies to every kind of diagram, whether the model is a tree, two sides around a top event or a control structure:
+
+1. Start from the indicated object.
+2. Only consider objects in the direction of the arrow.
+3. **Objects in the same row or column come first**, that is, objects that overlap the current one vertically for ←/→ and horizontally for ↑/↓.
+4. Pick the nearest. Distance to the side weighs more than distance ahead, so that the arrow goes straight rather than diagonally.
+5. If there is nothing in the same row or column, pick the nearest in the direction of the arrow.
+6. **At the edge the indication stays.** It does not wrap around to the other side.
+
+Examples: → from a task in HTA goes to the nearest box to the right on the same level, even if it belongs to another branch. → from a barrier in Bowtie goes to whatever is nearest to the right, another barrier or the top event depending on where the barrier is.
+
+**Ctrl/⌘+arrow jumps a larger unit in the structure**, as in text editors: for example to the parent or the first child in HTA, or to the top event or the outer edge in Bowtie. Here the model decides where the jump goes.
+
+### 5.3 One indication for mouse and keyboard
+
+What the mouse hovers over and what the arrow keys point out are the same thing, as in menus in Windows and macOS:
+
+- **There is one indication.** Both the mouse and the arrows set it, and it looks the same whichever set it.
+- **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
+- **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
+- **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
+- **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
+
+### 5.4 The keys mirror the mouse
+
+Every key has a mouse counterpart:
+
+| Mouse | Keyboard |
+|---|---|
+| Hover | Arrow (5.2) |
+| Click: select, or whatever the tool otherwise does on a click, for example link mode for a barrier | Ctrl/⌘+Enter |
+| Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
+| Double-click: edit | Enter or F2 |
+| Drag: move | Alt/Option+arrow (5.6) |
+
+Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists.
+
+### 5.5 Selecting several objects
+
+- **Shift+click and Ctrl/⌘+click** add an object to the selection or take it out. Shift+click is the convention in drawing tools and Ctrl/⌘+click in lists; both do the same, so the habit from either works. A plain click replaces the selection.
+- **Selected objects look the same** in every tool: the same shadow around the object.
+- **Esc or a click outside** clears the selection.
+- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects.
+
+### 5.6 Moving selected objects
+
+- **Alt/Option+arrow moves all selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. Plain arrows navigate (5.2) and never move.
+- **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
+- **Every move can be undone** with Ctrl/⌘+Z where the tool has undo.
+- Alt+←/→ means back and forward in the browser on Windows and Linux; the tool must stop that when the keys are used in the diagram.
+
+### 5.7 Objects never overlap
+
+- **Two objects may never take the same place**, for example two barriers in one column covering the same row. The rule applies after every change and when a file is opened.
+- **The object that was just changed or moved gets its place; an object that would collide gets a place of its own right after.** If, for example, the causes a barrier protects are changed, that barrier is the one that gives way.
+- **The order is kept**, for example the order along the path to and from the top event, and empty places are removed.
+
+### 5.8 A warning when the objects do not belong together
+
+Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, a card and a barrier, or tasks under different parent tasks, the tool **warns**:
+
+- **The move is not carried out**, and a message says why and which objects can be moved together.
+- **The selection stays**, so the user can take out what does not belong with Shift+click.
+- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns.
+
+### 5.9 Linked views
+
+When the same model is shown in two views, for example the diagram and the TTA table in HTA or the diagram and the structure tables in STPA, **the selection is shared between the views, but focus stays in the view you are working in.** The other view follows by showing and scrolling to the selection. It does not take over the keyboard. This is how VS Code, Visio and File Explorer work, for example.
+
+- **The selection follows, not the indication.** An arrow in the diagram (5.2) does not scroll the table. Selecting in the diagram selects and scrolls to the object's rows in the table. ↑/↓ to a row that belongs to another object selects that object in the diagram, just like a click on the row.
+- **The other view only scrolls if the selection is not visible**, to the nearest position rather than centred, so that it does not jump at every row change. On a mouse click the object may be centred.
+- **Each view is a single Tab stop.** Tab and Shift+Tab move between the views; inside a view the arrow keys are used. The fields in the diagram's objects are not reached with Tab, they are edited with Enter or F2 (5.4).
+- **When you enter the table** focus lands on the first row of the selected object. **When you enter the diagram** the indication lands on the selected object.
+- **In the table the conventions of tables apply:** arrows between cells when not editing, Enter or F2 (or starting to type) edits the cell. While editing, Enter saves, Esc cancels and Tab goes to the next cell. **Esc with no edit in progress** leaves the table and goes to the object in the diagram. ✕ is reached with Tab (4.2).
+- **An object with several rows:** selecting in the diagram selects all its rows and focus lands on the first. ↑/↓ between rows of the same object does not change the selection in the diagram.
+
+**Current state (2026-11-04):**
+
+| Tool | Navigate with arrows | Mouse and keyboard | Linked views | Select several | Move several | No overlap | Warning |
+|---|---|---|---|---|---|---|---|
+| STPA | Missing | – | A click in the diagram shows the row in the structure table | Shift+click on blocks, control actions and feedback (connections should be reached through the table instead, 5.1) | Missing (the diagram places itself) | The diagram places itself | – |
+| HTA | Follows the tree: ↑ parent, ↓ next in tree order, ←/→ only among siblings | The mouse does not clear the keyboard's indication | With the mouse in both directions; missing with the keyboard, and Tab goes between the text fields in the tasks | Missing (one task at a time) | Missing; plain arrows move a selected task | The tree places itself | – |
+| Bowtie | Own rules per object type | The mouse does not clear the keyboard's indication | – (no table) | Shift+click on barriers, Ctrl/⌘+click on cards | ←/→ moves selected barriers, Alt+↑/↓ moves cards | Yes | Yes: preventive and recovery barriers are not moved together |
