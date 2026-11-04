@@ -293,3 +293,17 @@ This is how a typical complementary palette, green `#005F37`, blue `#00375F`, or
 - **Orange must not sit next to red.** It merges with red under tritanopia and is close even for normal vision and on a projector.
 - **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The earlier `tokens.json` values (`#C70039` light, `#E03E3E` dark) did not and were replaced (2026-10-31).
 - **If the brand colour changes**, recompute the table and check the conclusions again.
+
+## 4. Toolbars and buttons
+
+### 4.1 Buttons that add things
+
+- **Button labels start with a verb**, for example *Add Ca*, *Add Child*, *Duplicate*. Do not use "+" on its own.
+- **Hazard and Top Event always exist** in a bowtie diagram, exactly one of each, and are created with the diagram. There are therefore no buttons to add them.
+- **"…" after the label** means the button opens a dialog before anything happens, for example *Load…* and *Save…*.
+
+### 4.2 Keyboard shortcuts
+
+- **The shortcut letter is underlined** in the button label, for example <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, <u>L</u>ight and <u>D</u>ark.
+- A key may have only one meaning per toolbar. Clashes, such as *Duplicate* and *Dark* both using D in HTA, must be resolved before the buttons are used in the app.
+- All shortcuts are listed in the help dialog opened with **?**.

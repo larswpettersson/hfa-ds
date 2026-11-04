@@ -293,3 +293,17 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **Orange ska inte stå bredvid röd.** Den smälter ihop med röd vid tritanopi och ligger nära även vid normalt seende och på projektor.
 - **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
+
+## 4. Verktygsfält och knappar
+
+### 4.1 Knappar för att lägga till
+
+- **Knapptexter börjar med ett verb**, till exempel *Add Ca*, *Add Child*, *Duplicate*. Använd inte "+" som ensam markering.
+- **Hazard och Top Event finns alltid** i ett bowtie-diagram, exakt en av varje, och skapas med diagrammet. Därför finns inga knappar för att lägga till dem.
+- **"…" efter texten** betyder att knappen öppnar en dialog innan något händer, till exempel *Load…* och *Save…*.
+
+### 4.2 Kortkommandon
+
+- **Bokstaven för kortkommandot är understruken** i knapptexten, till exempel <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, <u>L</u>ight och <u>D</u>ark.
+- Samma tangent får bara ha en betydelse per verktygsfält. Krockar, som *Duplicate* och *Dark* som båda använder D i HTA, måste lösas innan knapparna används i appen.
+- Alla kortkommandon listas i hjälprutan som öppnas med **?**.
