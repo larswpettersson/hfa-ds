@@ -304,6 +304,7 @@ This is how a typical complementary palette, green `#005F37`, blue `#00375F`, or
 
 ### 4.2 Keyboard shortcuts
 
-- **The shortcut letter is underlined** in the button label, for example <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, <u>L</u>ight and <u>D</u>ark.
-- A key may have only one meaning per toolbar. Clashes, such as *Duplicate* and *Dark* both using D in HTA, must be resolved before the buttons are used in the app.
+- **The shortcut letter is underlined** in the button label, for example <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, Add <u>C</u>hild, Add <u>S</u>ibling and D<u>u</u>plicate.
+- **Light and Dark have no keyboard shortcuts.**
+- A key may have only one meaning per toolbar.
 - All shortcuts are listed in the help dialog opened with **?**.

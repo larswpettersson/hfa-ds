@@ -304,6 +304,7 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 
 ### 4.2 Kortkommandon
 
-- **Bokstaven för kortkommandot är understruken** i knapptexten, till exempel <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, <u>L</u>ight och <u>D</u>ark.
-- Samma tangent får bara ha en betydelse per verktygsfält. Krockar, som *Duplicate* och *Dark* som båda använder D i HTA, måste lösas innan knapparna används i appen.
+- **Bokstaven för kortkommandot är understruken** i knapptexten, till exempel <u>C</u>a, P<u>B</u>, <u>R</u>B, C<u>q</u>, Add <u>C</u>hild, Add <u>S</u>ibling och D<u>u</u>plicate.
+- **Light och Dark har inga kortkommandon.**
+- Samma tangent får bara ha en betydelse per verktygsfält.
 - Alla kortkommandon listas i hjälprutan som öppnas med **?**.
