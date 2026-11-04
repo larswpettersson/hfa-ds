@@ -329,8 +329,8 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 
 | Knappen | Exempel |
 |---|---|
-| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
-| Gör något direkt: inget … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
+| Gör något direkt: inget … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
 
 - Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
 - Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
@@ -347,3 +347,35 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 - **✕ är en riktig knapp**, som nås med Tab och fungerar med tangentbordet.
 
 STPA-workbenchens strukturtabeller följer redan principen (2026-11-03). TTA-tabellen i HTA får den i samma veva som de anpassningsbara kolumnerna.
+
+### 4.3 New: ett minimalt, generiskt exempel
+
+AI-stödet utgår från analysen som är öppen. Ligger det en stor eller domänspecifik analys i verktyget, till exempel ett förval eller ett tidigare projekt, präglar den modellens svar redan från första frågan. Därför ska varje verktyg ha en knapp **New** som rensar analysen och i stället visar ett **minimalt, generiskt exempel**.
+
+- **Exemplet använder hela JSON-strukturen**, med så få element som möjligt och neutrala namn utan domän. Då visar det vad verktyget kan, och AI:n ser datamodellen utan att färgas av ett visst ämne.
+  - **STPA:** en förlust, en fara, ett säkerhetskrav, två styrenheter i hierarki med processmodell (variabler och antaganden), en styrd process, en aktuator, en sensor, styråtgärder och återkopplingar (även via aktuator och sensor) och en UCA.
+  - **HTA:** ett övergripande mål, två deluppgifter varav en med två operationer, TTA-kolumnerna med beskrivningar, en ifylld rad och övriga tomma.
+  - **Bowtie:** fara, topphändelse, två orsaker, två konsekvenser, en förebyggande och en återställande barriär med styrka och status, och en barriär som skyddar två vägar.
+- **AI-samtalet rensas samtidigt**, eftersom tidigare frågor och svar gäller den gamla analysen.
+- **New frågar först**, eftersom hela analysen ersätts (4.2), och ändringen går att ångra med Ctrl/⌘+Z. Finns osparade ändringar påminner frågan om **Save…**.
+- Exempel och förval, som ACA759 eller STPA-workbenchens förval, laddas som tidigare. New är det neutrala startläget.
+
+### 4.4 Load… och Save… i alla verktyg
+
+Analysfilen hanteras på samma sätt i alla verktyg:
+
+- **Load…** öppnar ett filval och laddar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar.
+- **Save…** sparar analysen som en JSON-fil.
+- Båda slutar med …, eftersom de öppnar ett filval (4.1).
+- Namnen ersätter **Import** och **Export** i HTA och Bowtie, och **Open** och **Save** i STPA-workbenchen.
+- Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
+
+**Nuläge (2026-11-04):**
+
+| Verktyg | Rensa till exempel | Analysfil |
+|---|---|---|
+| STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | *Open* och *Save* |
+| HTA | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
+| Bowtie | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
+
+Införs i verktygen efter hand.
