@@ -375,8 +375,8 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 | Verktyg | Rensa till exempel | Analysfil |
 |---|---|---|
 | STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | **Open…** och **Save** |
-| HTA | Saknas | **Open…** och **Save**; frågan om osparade ändringar saknas |
-| Bowtie | Saknas | **Open…** och **Save**; frågan om osparade ändringar saknas |
+| HTA | **New** (2026-11-04) | **Open…** och **Save**; Open… frågar om osparade ändringar |
+| Bowtie | **New** (2026-11-04); kan inte ångras, eftersom Bowtie saknar ångra | **Open…** och **Save**; Open… frågar om osparade ändringar |
 | Penpot (HFA DS) | – | **Att göra:** verktygsraden visar *Load/Save*; ändra till **Open…** och **Save** |
 
 Införs i verktygen efter hand.

@@ -375,8 +375,8 @@ The analysis file is handled the same way in every tool, as in most programs (Wi
 | Tool | Clear to example | Analysis file |
 |---|---|---|
 | STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | **Open…** and **Save** |
-| HTA | Missing | **Open…** and **Save**; the question about unsaved changes is missing |
-| Bowtie | Missing | **Open…** and **Save**; the question about unsaved changes is missing |
+| HTA | **New** (2026-11-04) | **Open…** and **Save**; Open… asks about unsaved changes |
+| Bowtie | **New** (2026-11-04); cannot be undone, since Bowtie has no undo | **Open…** and **Save**; Open… asks about unsaved changes |
 | Penpot (HFA DS) | – | **To do:** the toolbar shows *Load/Save*; change to **Open…** and **Save** |
 
 Introduced in the tools step by step.
