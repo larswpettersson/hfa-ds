@@ -375,7 +375,7 @@ The analysis file is handled the same way in every tool:
 | Tool | Clear to example | Analysis file |
 |---|---|---|
 | STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | *Open* and *Save* |
-| HTA | Missing | *Import…* and *Export* |
-| Bowtie | Missing | *Import* and *Export* |
+| HTA | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
+| Bowtie | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
 
 Introduced in the tools step by step.

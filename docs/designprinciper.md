@@ -375,7 +375,7 @@ Analysfilen hanteras på samma sätt i alla verktyg:
 | Verktyg | Rensa till exempel | Analysfil |
 |---|---|---|
 | STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | *Open* och *Save* |
-| HTA | Saknas | *Import…* och *Export* |
-| Bowtie | Saknas | *Import* och *Export* |
+| HTA | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
+| Bowtie | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
 
 Införs i verktygen efter hand.
