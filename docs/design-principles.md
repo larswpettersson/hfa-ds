@@ -329,8 +329,8 @@ A button that opens a dialog, a panel or a file chooser, where the user has to d
 
 | The button | Examples |
 |---|---|
-| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
-| Acts directly: no … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
+| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Open…**, **Save As…** |
+| Acts directly: no … | **New**, **Save**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
 
 - Use the character **…** (U+2026), not three full stops, with no space before it.
 - The rule applies to the button's text. Tooltips and `aria-label` are written without ….
@@ -357,25 +357,26 @@ The AI support starts from the analysis that is open. If a large or domain-speci
   - **HTA:** an overall goal, two sub-tasks of which one has two operations, the TTA columns with descriptions, one filled-in row and the others empty.
   - **Bowtie:** hazard, top event, two causes, two consequences, one preventive and one recovery barrier with strength and status, and one barrier that protects two paths.
 - **The AI conversation is cleared at the same time**, since earlier questions and answers concern the old analysis.
-- **New asks first**, because the whole analysis is replaced (4.2), and the change can be undone with Ctrl/⌘+Z. If there are unsaved changes, the question mentions **Save…**.
+- **New asks first**, because the whole analysis is replaced (4.2), and the change can be undone with Ctrl/⌘+Z. If there are unsaved changes, the question mentions **Save**.
 - Examples and presets, such as ACA759 or the STPA workbench's presets, load as before. New is the neutral starting point.
 
-### 4.4 Load… and Save… in every tool
+### 4.4 Open… and Save in every tool
 
-The analysis file is handled the same way in every tool:
+The analysis file is handled the same way in every tool, as in most programs (Windows, macOS, Office):
 
-- **Load…** opens a file chooser and loads an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes.
-- **Save…** saves the analysis as a JSON file.
-- Both end with …, since they open a file chooser (4.1).
-- The names replace **Import** and **Export** in HTA and Bowtie, and **Open** and **Save** in the STPA workbench.
+- **Open…** opens a file chooser and opens an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes. It ends with …, since it always opens a file chooser (4.1).
+- **Save** saves the analysis as a JSON file, without …. In the browser this is a download today. Where the browser allows it, **Save** can write back to the same file, and **Save As…** ask for a name and place.
+- The names replace **Import** and **Export** in HTA and Bowtie.
 - Export to formats *other* than the analysis file is still called **Export**, for example **Export CSV** in HTA and **Export .md** for the AI conversation.
+- The shortcuts Ctrl/⌘+O and Ctrl/⌘+S follow the same names, where they are introduced.
 
 **Current state (2026-11-04):**
 
 | Tool | Clear to example | Analysis file |
 |---|---|---|
-| STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | *Open* and *Save* |
-| HTA | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
-| Bowtie | Missing | **Load…** and **Save…** (2026-11-04); the question about unsaved changes is missing |
+| STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | **Open…** and **Save** |
+| HTA | Missing | **Open…** and **Save**; the question about unsaved changes is missing |
+| Bowtie | Missing | **Open…** and **Save**; the question about unsaved changes is missing |
+| Penpot (HFA DS) | – | **To do:** the toolbar shows *Load/Save*; change to **Open…** and **Save** |
 
 Introduced in the tools step by step.

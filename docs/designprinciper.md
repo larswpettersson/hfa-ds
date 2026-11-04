@@ -329,8 +329,8 @@ En knapp som öppnar en dialog, en panel eller ett filval, där användaren beh�
 
 | Knappen | Exempel |
 |---|---|
-| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
-| Gör något direkt: inget … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
+| Öppnar en dialog, panel eller ett filval: slutar med … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Open…**, **Save As…** |
+| Gör något direkt: inget … | **New**, **Save**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, och **Save** och **Cancel** i en dialog |
 
 - Använd tecknet **…** (U+2026), inte tre punkter, och inget mellanslag före.
 - Regeln gäller knappens text. Verktygstips och `aria-label` skrivs utan ….
@@ -357,25 +357,26 @@ AI-stödet utgår från analysen som är öppen. Ligger det en stor eller domän
   - **HTA:** ett övergripande mål, två deluppgifter varav en med två operationer, TTA-kolumnerna med beskrivningar, en ifylld rad och övriga tomma.
   - **Bowtie:** fara, topphändelse, två orsaker, två konsekvenser, en förebyggande och en återställande barriär med styrka och status, och en barriär som skyddar två vägar.
 - **AI-samtalet rensas samtidigt**, eftersom tidigare frågor och svar gäller den gamla analysen.
-- **New frågar först**, eftersom hela analysen ersätts (4.2), och ändringen går att ångra med Ctrl/⌘+Z. Finns osparade ändringar påminner frågan om **Save…**.
+- **New frågar först**, eftersom hela analysen ersätts (4.2), och ändringen går att ångra med Ctrl/⌘+Z. Finns osparade ändringar påminner frågan om **Save**.
 - Exempel och förval, som ACA759 eller STPA-workbenchens förval, laddas som tidigare. New är det neutrala startläget.
 
-### 4.4 Load… och Save… i alla verktyg
+### 4.4 Open… och Save i alla verktyg
 
-Analysfilen hanteras på samma sätt i alla verktyg:
+Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Windows, macOS, Office):
 
-- **Load…** öppnar ett filval och laddar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar.
-- **Save…** sparar analysen som en JSON-fil.
-- Båda slutar med …, eftersom de öppnar ett filval (4.1).
-- Namnen ersätter **Import** och **Export** i HTA och Bowtie, och **Open** och **Save** i STPA-workbenchen.
+- **Open…** öppnar ett filval och öppnar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar. Den slutar med …, eftersom den alltid öppnar ett filval (4.1).
+- **Save** sparar analysen som en JSON-fil, utan …. I webbläsaren blir det i dag en nedladdning. Där webbläsaren tillåter det kan **Save** skriva tillbaka till samma fil, och **Save As…** fråga efter namn och plats.
+- Namnen ersätter **Import** och **Export** i HTA och Bowtie.
 - Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
+- Kortkommandona Ctrl/⌘+O och Ctrl/⌘+S följer samma namn, där de införs.
 
 **Nuläge (2026-11-04):**
 
 | Verktyg | Rensa till exempel | Analysfil |
 |---|---|---|
-| STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | *Open* och *Save* |
-| HTA | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
-| Bowtie | Saknas | **Load…** och **Save…** (2026-11-04); frågan om osparade ändringar saknas |
+| STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | **Open…** och **Save** |
+| HTA | Saknas | **Open…** och **Save**; frågan om osparade ändringar saknas |
+| Bowtie | Saknas | **Open…** och **Save**; frågan om osparade ändringar saknas |
+| Penpot (HFA DS) | – | **Att göra:** verktygsraden visar *Load/Save*; ändra till **Open…** och **Save** |
 
 Införs i verktygen efter hand.
