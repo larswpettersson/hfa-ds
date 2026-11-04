@@ -329,8 +329,8 @@ A button that opens a dialog, a panel or a file chooser, where the user has to d
 
 | The button | Examples |
 |---|---|
-| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Import…** |
-| Acts directly: no … | **Export**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
+| Opens a dialog, panel or file chooser: ends with … | **AI…**, **Columns…**, **Settings…**, **+ Column…**, **Load…**, **Save…** |
+| Acts directly: no … | **New**, **Export CSV**, **Add row**, **+ Child**, **Light**, **Dark**, and **Save** and **Cancel** in a dialog |
 
 - Use the character **…** (U+2026), not three full stops, with no space before it.
 - The rule applies to the button's text. Tooltips and `aria-label` are written without ….
@@ -347,3 +347,35 @@ A button that opens a dialog, a panel or a file chooser, where the user has to d
 - **✕ is a real button**, reachable with Tab and usable from the keyboard.
 
 The STPA workbench's structure tables already follow the principle (2026-11-03). The TTA table in HTA gets it together with the customisable columns.
+
+### 4.3 New: a minimal, generic example
+
+The AI support starts from the analysis that is open. If a large or domain-specific analysis is in the tool, such as a preset or an earlier project, it shapes the model's answers from the first question. Every tool therefore has a **New** button that clears the analysis and shows a **minimal, generic example** instead.
+
+- **The example uses the whole JSON structure**, with as few elements as possible and neutral names without a domain. It shows what the tool can do, and the AI sees the data model without being coloured by a particular subject.
+  - **STPA:** one loss, one hazard, one safety constraint, two controllers in a hierarchy with a process model (variables and assumptions), one controlled process, one actuator, one sensor, control actions and feedback (also through the actuator and sensor), and one UCA.
+  - **HTA:** an overall goal, two sub-tasks of which one has two operations, the TTA columns with descriptions, one filled-in row and the others empty.
+  - **Bowtie:** hazard, top event, two causes, two consequences, one preventive and one recovery barrier with strength and status, and one barrier that protects two paths.
+- **The AI conversation is cleared at the same time**, since earlier questions and answers concern the old analysis.
+- **New asks first**, because the whole analysis is replaced (4.2), and the change can be undone with Ctrl/⌘+Z. If there are unsaved changes, the question mentions **Save…**.
+- Examples and presets, such as ACA759 or the STPA workbench's presets, load as before. New is the neutral starting point.
+
+### 4.4 Load… and Save… in every tool
+
+The analysis file is handled the same way in every tool:
+
+- **Load…** opens a file chooser and loads an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes.
+- **Save…** saves the analysis as a JSON file.
+- Both end with …, since they open a file chooser (4.1).
+- The names replace **Import** and **Export** in HTA and Bowtie, and **Open** and **Save** in the STPA workbench.
+- Export to formats *other* than the analysis file is still called **Export**, for example **Export CSV** in HTA and **Export .md** for the AI conversation.
+
+**Current state (2026-11-04):**
+
+| Tool | Clear to example | Analysis file |
+|---|---|---|
+| STPA | Missing; only *Load preset…* and *New chat* (clears only the conversation) | *Open* and *Save* |
+| HTA | Missing | *Import…* and *Export* |
+| Bowtie | Missing | *Import* and *Export* |
+
+Introduced in the tools step by step.
