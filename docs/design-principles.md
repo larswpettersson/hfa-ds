@@ -380,3 +380,42 @@ The analysis file is handled the same way in every tool, as in most programs (Wi
 | Penpot (HFA DS) | – | **To do:** the toolbar shows *Load/Save*; change to **Open…** and **Save** |
 
 Introduced in the tools step by step.
+
+## 5. Selecting and moving objects
+
+The same principles apply in every tool, to blocks and links in STPA, tasks and rows in HTA, and cards and barriers in Bowtie.
+
+### 5.1 Selecting several objects
+
+- **Shift+click** adds an object to the selection or takes it out, as in the STPA workbench. A plain click does what the tool otherwise does, for example start editing or link mode.
+- **Selected objects look the same** in every tool: the same shadow around the object.
+- **Esc or a click outside** clears the selection.
+- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects.
+
+### 5.2 Moving selected objects
+
+- **The arrow keys move all selected objects one step together**, in the tool's own order: column for barriers, place among siblings or level for tasks.
+- **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
+- **Every move can be undone** with Ctrl/⌘+Z where the tool has undo.
+
+### 5.3 Objects never overlap
+
+- **Two objects may never take the same place**, for example two barriers in one column covering the same row. The rule applies after every change and when a file is opened.
+- **The object that was just changed or moved gets its place; an object that would collide gets a place of its own right after.** If, for example, the causes a barrier protects are changed, that barrier is the one that gives way.
+- **The order is kept**, for example the order along the path to and from the top event, and empty places are removed.
+
+### 5.4 A warning when the objects do not belong together
+
+Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, a card and a barrier, or tasks under different parent tasks, the tool **warns**:
+
+- **The move is not carried out**, and a message says why and which objects can be moved together.
+- **The selection stays**, so the user can take out what does not belong with Shift+click.
+- The selection itself is allowed, since it also scopes AI questions (5.1). It is the move that warns.
+
+**Current state (2026-11-04):**
+
+| Tool | Select several | Move several | No overlap | Warning |
+|---|---|---|---|---|
+| STPA | Shift+click on blocks, control actions and feedback | Missing (the diagram places itself) | The diagram places itself | – |
+| HTA | Missing (one task at a time) | Missing | The tree places itself | – |
+| Bowtie | Shift+click on barriers | ←/→ moves selected barriers | Yes | **To do:** preventive and recovery barriers are moved separately today, without a warning |

@@ -380,3 +380,42 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 | Penpot (HFA DS) | – | **Att göra:** verktygsraden visar *Load/Save*; ändra till **Open…** och **Save** |
 
 Införs i verktygen efter hand.
+
+## 5. Markera och flytta objekt
+
+Samma principer gäller i alla verktyg, för block och länkar i STPA, uppgifter och rader i HTA, och kort och barriärer i Bowtie.
+
+### 5.1 Markera flera objekt
+
+- **Shift+klick** markerar ett objekt eller tar bort det ur markeringen, som i STPA-workbenchen. Ett vanligt klick gör det verktyget gör annars, till exempel öppnar redigering eller länkläge.
+- **Markerade objekt ser likadana ut** i alla verktyg: samma skugga runt objektet.
+- **Esc eller ett klick utanför** tar bort markeringen.
+- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten.
+
+### 5.2 Flytta markerade objekt
+
+- **Piltangenterna flyttar alla markerade objekt ett steg tillsammans**, i verktygets egen ordning: kolumn för barriärer, plats bland syskon eller nivå för uppgifter.
+- **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
+- **Varje flytt går att ångra** med Ctrl/⌘+Z där verktyget har ångra.
+
+### 5.3 Objekt överlappar aldrig
+
+- **Två objekt får aldrig ta samma plats**, till exempel två barriärer i samma kolumn som täcker samma rad. Regeln gäller efter varje ändring och när en fil öppnas.
+- **Det objekt som just ändrades eller flyttades får sin plats; ett objekt som skulle krocka får en egen plats direkt efter.** Ändras till exempel vilka orsaker en barriär skyddar, är det den barriären som flyttar undan.
+- **Ordningen bevaras**, till exempel ordningen längs vägen till och från topphändelsen, och tomma platser tas bort.
+
+### 5.4 Varning när objekten inte hör ihop
+
+En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, ett kort och en barriär, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
+
+- **Flytten genomförs inte**, och ett meddelande säger varför och vilka objekt som kan flyttas tillsammans.
+- **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
+- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.1). Det är flytten som varnar.
+
+**Nuläge (2026-11-04):**
+
+| Verktyg | Markera flera | Flytta flera | Ingen överlappning | Varning |
+|---|---|---|---|---|
+| STPA | Shift+klick på block, styråtgärder och återkopplingar | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
+| HTA | Saknas (en uppgift åt gången) | Saknas | Trädet placerar själv | – |
+| Bowtie | Shift+klick på barriärer | ←/→ flyttar markerade barriärer | Ja | **Att göra:** förebyggande och återställande barriärer flyttas i dag var för sig utan varning |
