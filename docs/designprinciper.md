@@ -469,7 +469,6 @@ När samma modell visas i två vyer, till exempel diagrammet och TTA-tabellen i 
 - **När man kommer in i tabellen** hamnar fokus på den första raden för det markerade objektet. **När man kommer in i diagrammet** hamnar indikeringen på det markerade objektet.
 - **I tabellen gäller tabellernas konventioner:** pilar mellan celler när man inte redigerar, Enter eller F2 (eller att börja skriva) redigerar cellen. Medan man redigerar sparar Enter, Esc avbryter och Tab går till nästa cell. **Esc utan pågående redigering** lämnar tabellen och går till objektet i diagrammet. ✕ nås med Tab (4.2).
 - **Ett objekt med flera rader:** markering i diagrammet markerar alla raderna och fokus hamnar på den första. ↑/↓ mellan rader för samma objekt ändrar inte markeringen i diagrammet.
-- F6, som byter panel i Windows och Office, används inte, eftersom webbläsaren använder den för adressfältet.
 
 **Nuläge (2026-11-04):**
 

@@ -469,7 +469,6 @@ When the same model is shown in two views, for example the diagram and the TTA t
 - **When you enter the table** focus lands on the first row of the selected object. **When you enter the diagram** the indication lands on the selected object.
 - **In the table the conventions of tables apply:** arrows between cells when not editing, Enter or F2 (or starting to type) edits the cell. While editing, Enter saves, Esc cancels and Tab goes to the next cell. **Esc with no edit in progress** leaves the table and goes to the object in the diagram. ✕ is reached with Tab (4.2).
 - **An object with several rows:** selecting in the diagram selects all its rows and focus lands on the first. ↑/↓ between rows of the same object does not change the selection in the diagram.
-- F6, which switches panes in Windows and Office, is not used, since the browser uses it for the address bar.
 
 **Current state (2026-11-04):**
 
