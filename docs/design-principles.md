@@ -390,7 +390,7 @@ The same principles apply in every tool and every kind of diagram: tasks in HTA,
 - **What can be navigated to, selected and moved are the objects in the analysis model**, that is, the boxes the diagram draws for the parts of the model.
 - **Connections are not navigation targets.** Lines, arrows and edges between objects (for example control actions and feedback in STPA, the lines between tasks in HTA and the links from barriers to causes in Bowtie) are not reached with the arrow keys. They are reached and changed through the object they belong to, a table or a dialog.
 - **Each tool states which objects are navigable.** The navigation in 5.2 does not need to know the model, only where the objects are.
-- Tables, such as the TTA table, follow the conventions of tables (Tab between cells) and are not covered by 5.2.
+- Tables, such as the TTA table, follow the conventions of tables and are not covered by 5.2; see 5.9.
 
 ### 5.2 The arrow keys follow the screen, not the model
 
@@ -459,10 +459,22 @@ Moving several objects must make sense as one move. If the selected objects do n
 - **The selection stays**, so the user can take out what does not belong with Shift+click.
 - The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns.
 
+### 5.9 Linked views
+
+When the same model is shown in two views, for example the diagram and the TTA table in HTA or the diagram and the structure tables in STPA, **the selection is shared between the views, but focus stays in the view you are working in.** The other view follows by showing and scrolling to the selection. It does not take over the keyboard. This is how VS Code, Visio and File Explorer work, for example.
+
+- **The selection follows, not the indication.** An arrow in the diagram (5.2) does not scroll the table. Selecting in the diagram selects and scrolls to the object's rows in the table. ↑/↓ to a row that belongs to another object selects that object in the diagram, just like a click on the row.
+- **The other view only scrolls if the selection is not visible**, to the nearest position rather than centred, so that it does not jump at every row change. On a mouse click the object may be centred.
+- **Each view is a single Tab stop.** Tab and Shift+Tab move between the views; inside a view the arrow keys are used. The fields in the diagram's objects are not reached with Tab, they are edited with Enter or F2 (5.4).
+- **When you enter the table** focus lands on the first row of the selected object. **When you enter the diagram** the indication lands on the selected object.
+- **In the table the conventions of tables apply:** arrows between cells when not editing, Enter or F2 (or starting to type) edits the cell. While editing, Enter saves, Esc cancels and Tab goes to the next cell. **Esc with no edit in progress** leaves the table and goes to the object in the diagram. ✕ is reached with Tab (4.2).
+- **An object with several rows:** selecting in the diagram selects all its rows and focus lands on the first. ↑/↓ between rows of the same object does not change the selection in the diagram.
+- F6, which switches panes in Windows and Office, is not used, since the browser uses it for the address bar.
+
 **Current state (2026-11-04):**
 
-| Tool | Navigate with arrows | Mouse and keyboard | Select several | Move several | No overlap | Warning |
-|---|---|---|---|---|---|---|
-| STPA | Missing | – | Shift+click on blocks, control actions and feedback (connections should be reached through the table instead, 5.1) | Missing (the diagram places itself) | The diagram places itself | – |
-| HTA | Follows the tree: ↑ parent, ↓ next in tree order, ←/→ only among siblings | The mouse does not clear the keyboard's indication | Missing (one task at a time) | Missing; plain arrows move a selected task | The tree places itself | – |
-| Bowtie | Own rules per object type | The mouse does not clear the keyboard's indication | Shift+click on barriers, Ctrl/⌘+click on cards | ←/→ moves selected barriers, Alt+↑/↓ moves cards | Yes | Yes: preventive and recovery barriers are not moved together |
+| Tool | Navigate with arrows | Mouse and keyboard | Linked views | Select several | Move several | No overlap | Warning |
+|---|---|---|---|---|---|---|---|
+| STPA | Missing | – | A click in the diagram shows the row in the structure table | Shift+click on blocks, control actions and feedback (connections should be reached through the table instead, 5.1) | Missing (the diagram places itself) | The diagram places itself | – |
+| HTA | Follows the tree: ↑ parent, ↓ next in tree order, ←/→ only among siblings | The mouse does not clear the keyboard's indication | With the mouse in both directions; missing with the keyboard, and Tab goes between the text fields in the tasks | Missing (one task at a time) | Missing; plain arrows move a selected task | The tree places itself | – |
+| Bowtie | Own rules per object type | The mouse does not clear the keyboard's indication | – (no table) | Shift+click on barriers, Ctrl/⌘+click on cards | ←/→ moves selected barriers, Alt+↑/↓ moves cards | Yes | Yes: preventive and recovery barriers are not moved together |

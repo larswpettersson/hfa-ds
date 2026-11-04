@@ -390,7 +390,7 @@ Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, k
 - **Det som går att navigera till, markera och flytta är objekten i analysmodellen**, det vill säga de rutor som diagrammet ritar för modellens delar.
 - **Kopplingar är inte navigeringsmål.** Linjer, pilar och kanter mellan objekten (till exempel styråtgärder och återkopplingar i STPA, linjerna mellan uppgifter i HTA och barriärernas koppling till orsaker i Bowtie) hoppar man inte till med piltangenterna. De nås och ändras via objektet de hör till, via en tabell eller via en dialog.
 - **Varje verktyg anger vilka objekt som är navigerbara.** Navigeringen i 5.2 behöver inte känna till modellen, bara var objekten ligger.
-- Tabeller, till exempel TTA-tabellen, följer tabellernas egna konventioner (Tab mellan celler) och omfattas inte av 5.2.
+- Tabeller, till exempel TTA-tabellen, följer tabellernas egna konventioner och omfattas inte av 5.2; se 5.9.
 
 ### 5.2 Piltangenterna följer skärmen, inte modellen
 
@@ -459,10 +459,22 @@ En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekte
 - **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
 - Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar.
 
+### 5.9 Länkade vyer
+
+När samma modell visas i två vyer, till exempel diagrammet och TTA-tabellen i HTA eller diagrammet och strukturtabellerna i STPA, **delas markeringen mellan vyerna, men fokus stannar i den vy man arbetar i.** Den andra vyn följer med genom att visa och rulla fram markeringen. Den tar inte över tangentbordet. Så fungerar till exempel VS Code, Visio och Utforskaren.
+
+- **Markeringen följer med, inte indikeringen.** En pil i diagrammet (5.2) rullar inte tabellen. Markering i diagrammet markerar och rullar fram objektets rader i tabellen. ↑/↓ till en rad som hör till ett annat objekt markerar det objektet i diagrammet, på samma sätt som ett klick på raden.
+- **Den andra vyn rullar bara om markeringen inte syns**, till närmaste läge och inte centrerat, så att den inte hoppar vid varje radbyte. Vid klick med musen får objektet centreras.
+- **Varje vy är ett enda Tab-stopp.** Tab och Shift+Tab flyttar mellan vyerna; inne i en vy används piltangenterna. Fälten i diagrammets objekt nås inte med Tab, de redigeras med Enter eller F2 (5.4).
+- **När man kommer in i tabellen** hamnar fokus på den första raden för det markerade objektet. **När man kommer in i diagrammet** hamnar indikeringen på det markerade objektet.
+- **I tabellen gäller tabellernas konventioner:** pilar mellan celler när man inte redigerar, Enter eller F2 (eller att börja skriva) redigerar cellen. Medan man redigerar sparar Enter, Esc avbryter och Tab går till nästa cell. **Esc utan pågående redigering** lämnar tabellen och går till objektet i diagrammet. ✕ nås med Tab (4.2).
+- **Ett objekt med flera rader:** markering i diagrammet markerar alla raderna och fokus hamnar på den första. ↑/↓ mellan rader för samma objekt ändrar inte markeringen i diagrammet.
+- F6, som byter panel i Windows och Office, används inte, eftersom webbläsaren använder den för adressfältet.
+
 **Nuläge (2026-11-04):**
 
-| Verktyg | Navigera med pilar | Mus och tangentbord | Markera flera | Flytta flera | Ingen överlappning | Varning |
-|---|---|---|---|---|---|---|
-| STPA | Saknas | – | Shift+klick på block, styråtgärder och återkopplingar (kopplingarna bör i stället nås via tabellen, 5.1) | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
-| HTA | Efter trädet: ↑ förälder, ↓ nästa i trädordning, ←/→ bara bland syskon | Musen tar inte bort tangentbordets indikering | Saknas (en uppgift åt gången) | Saknas; vanliga pilar flyttar en markerad uppgift | Trädet placerar själv | – |
-| Bowtie | Egna regler per objekttyp | Musen tar inte bort tangentbordets indikering | Shift+klick på barriärer, Ctrl/⌘+klick på kort | ←/→ flyttar markerade barriärer, Alt+↑/↓ flyttar kort | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |
+| Verktyg | Navigera med pilar | Mus och tangentbord | Länkade vyer | Markera flera | Flytta flera | Ingen överlappning | Varning |
+|---|---|---|---|---|---|---|---|
+| STPA | Saknas | – | Klick i diagrammet visar raden i strukturtabellen | Shift+klick på block, styråtgärder och återkopplingar (kopplingarna bör i stället nås via tabellen, 5.1) | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
+| HTA | Efter trädet: ↑ förälder, ↓ nästa i trädordning, ←/→ bara bland syskon | Musen tar inte bort tangentbordets indikering | Med musen i båda riktningarna; med tangentbordet saknas det, och Tab går mellan textfälten i uppgifterna | Saknas (en uppgift åt gången) | Saknas; vanliga pilar flyttar en markerad uppgift | Trädet placerar själv | – |
+| Bowtie | Egna regler per objekttyp | Musen tar inte bort tangentbordets indikering | – (ingen tabell) | Shift+klick på barriärer, Ctrl/⌘+klick på kort | ←/→ flyttar markerade barriärer, Alt+↑/↓ flyttar kort | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |
