@@ -418,4 +418,4 @@ En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekte
 |---|---|---|---|---|
 | STPA | Shift+klick på block, styråtgärder och återkopplingar | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
 | HTA | Saknas (en uppgift åt gången) | Saknas | Trädet placerar själv | – |
-| Bowtie | Shift+klick på barriärer | ←/→ flyttar markerade barriärer | Ja | **Att göra:** förebyggande och återställande barriärer flyttas i dag var för sig utan varning |
+| Bowtie | Shift+klick på barriärer | ←/→ flyttar markerade barriärer | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |

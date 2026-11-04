@@ -74,6 +74,23 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     await expect(page.locator(".barrier.is-multi-selected")).toHaveCount(0);
   });
 
+  test("moving barriers from both sides of the top event warns and moves nothing (principle 5.4)", async ({ page }) => {
+    const before = await page.evaluate(() => BowtieEditor.getState());
+    await clickBarrier(page, "p1", ["Shift"]);
+    await clickBarrier(page, "r1", ["Shift"]);
+    await keys(page, "ArrowRight");
+    await expect(page.locator("#statusMessage")).toHaveClass(/show warning/);
+    await expect(page.locator("#statusMessage")).toContainText("cannot be moved together");
+    const after = await page.evaluate(() => BowtieEditor.getState());
+    expect(after.left.barriers.map((b) => b.col)).toEqual(before.left.barriers.map((b) => b.col));
+    expect(after.right.barriers.map((b) => b.col)).toEqual(before.right.barriers.map((b) => b.col));
+    // The selection stays, so the barrier that does not belong can be taken out.
+    expect((await page.evaluate(() => BowtieEditor.getSelection())).barrierIds.sort()).toEqual(["p1", "r1"]);
+    await clickBarrier(page, "r1", ["Shift"]);
+    await keys(page, "ArrowRight");
+    expect((await layout(page)).cols.P1).toBeGreaterThan(2);
+  });
+
   test("a file with overlapping barriers is laid out when it is opened", async ({ page }) => {
     await page.evaluate(() => {
       const s = BowtieEditor.getState();

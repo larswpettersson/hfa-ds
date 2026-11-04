@@ -418,4 +418,4 @@ Moving several objects must make sense as one move. If the selected objects do n
 |---|---|---|---|---|
 | STPA | Shift+click on blocks, control actions and feedback | Missing (the diagram places itself) | The diagram places itself | – |
 | HTA | Missing (one task at a time) | Missing | The tree places itself | – |
-| Bowtie | Shift+click on barriers | ←/→ moves selected barriers | Yes | **To do:** preventive and recovery barriers are moved separately today, without a warning |
+| Bowtie | Shift+click on barriers | ←/→ moves selected barriers | Yes | Yes: preventive and recovery barriers are not moved together |
