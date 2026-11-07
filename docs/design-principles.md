@@ -388,7 +388,7 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **Enter activates it.** In a question field it is *Send*, and in a dialog it is the dialog's primary button. Esc cancels or answers no.
 - **There is only one active primary button in the interface at any given time.** When a dialog is open it is the dialog's button; the buttons behind it are not active and do not count.
 - **If the primary button cannot be used** it is shown as disabled, in a neutral style and not red, so that another button can be primary. Without a provider, for example, *Send* is disabled and *Settings…* is primary.
-- **In a dialog that warns about something the safe choice is primary**, so that Enter never does what is harder to undo. The riskier choice is made on purpose, with an ordinary button. Example: in the question about *Auto* (4.8) *No, keep step by step* is primary and *Yes, use Auto* an ordinary button.
+- **In a dialog that warns about something the safe choice is primary**, so that Enter never does what is harder to undo. The riskier choice is made on purpose, with an ordinary button.
 
 **To check in the tools:** that every screen and dialog has at most one red button, and that Enter activates it.
 
@@ -412,9 +412,14 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 
 - **Step by step is the default.** The AI suggests one step at a time and the user decides on each suggestion.
 - **Auto is in Settings for the AI configuration**, as a switch `Auto` that is off by default. It takes no room in the panel.
-- **When the user turns Auto on** a dialog asks whether they are fully read into the material the analysis is based on: *Are you fully read into the material for this analysis?* Otherwise it is hard to understand the analysis model the AI produces. The primary button is *No, keep step by step* (4.5), so Enter and Esc leave Auto off. *Yes, use Auto* is an ordinary button.
-- **The question is asked every time Auto is turned on.** Turning Auto off needs no question.
+- **A warning text is shown under the switch, all the time, and there is no dialog when it is turned on.** The text says that in Auto the AI produces large parts of the analysis in one go, and that you need to know the material to understand and judge the analysis model. A plain text under the switch is better than logic for when a warning is shown.
+- **The warning is a box with `background.warning`** and text in `foreground.base`. Status is shown only with a fill colour (3.3).
 - **Auto does not change** that the AI's suggestions are shown before and after (1.3) and can be undone.
+
+### 4.9 Narrow button and Pill
+
+- **The narrow action button** (for example *Compress*, *Expand*, *Clear* and *Export .md* in the AI panel) is a variant of Action Button: `Type = Narrow`, with the same states (*Default*, *Hovered*, *Pressed*) and tokens as the others. The text is 12 px (`typography.caption`), the padding 4 and 8 px and the corner radius 4.
+- **Pill** is a component with the property `Status`: *Neutral*, *Info*, *Success*, *Warning* and *Error*. The status is shown only with the fill colour (`background.info`, `success`, `warning`, `error`), the text is `foreground.base`, and the border is `foreground.muted` on *Neutral* and `foreground.base` on the status variants, so that it reaches 3:1. The provider pill in the AI panel is a *Pill*: *Neutral* with the provider's name, and *Warning* with the text *No provider*.
 
 ## 5. Navigating, selecting and moving objects
 

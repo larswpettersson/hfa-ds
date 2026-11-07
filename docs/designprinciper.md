@@ -388,7 +388,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Enter aktiverar den.** I ett frågefält är det *Send*, och i en dialog är det dialogens primary-knapp. Esc avbryter eller svarar nej.
 - **Det finns bara en aktiv primary-knapp i gränssnittet vid varje givet tillfälle.** När en dialog är öppen är det dialogens knapp; knapparna bakom den är inte aktiva och räknas inte.
 - **Går primary-knappen inte att använda** visas den som inaktiv, i neutral stil och inte röd, så att en annan knapp kan vara primary. Utan en leverantör är till exempel *Send* inaktiv och *Settings…* primary.
-- **I en dialog som varnar för något är det säkra valet primary**, så att Enter aldrig utför det som är svårare att ångra. Det farligare valet görs med flit, med en vanlig knapp. Exempel: i frågan om *Auto* (4.8) är *No, keep step by step* primary och *Yes, use Auto* en vanlig knapp.
+- **I en dialog som varnar för något är det säkra valet primary**, så att Enter aldrig utför det som är svårare att ångra. Det farligare valet görs med flit, med en vanlig knapp.
 
 **Att kontrollera i verktygen:** att varje skärm och dialog har högst en röd knapp, och att Enter aktiverar den.
 
@@ -412,9 +412,14 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 
 - **Stegvis är förval.** AI:n föreslår ett steg i taget och användaren avgör varje förslag.
 - **Auto ligger i Settings för AI-konfigurationen**, som ett reglage `Auto` som är av som standard. Det tar ingen plats i panelen.
-- **När användaren slår på Auto** visas en dialog med frågan om hen är helt inläst på underlaget till analysen: *Are you fully read into the material for this analysis?* Annars är det svårt att förstå den analysmodell som AI:n tar fram. Primary-knappen är *No, keep step by step* (4.5), så Enter och Esc lämnar Auto av. *Yes, use Auto* är en vanlig knapp.
-- **Frågan ställs varje gång Auto slås på.** Att slå av Auto kräver ingen fråga.
+- **Det visas en varningstext under reglaget, hela tiden, och ingen dialogruta när man slår på det.** Texten säger att AI:n i Auto tar fram stora delar av analysen på en gång, och att man behöver känna till underlaget för att förstå och bedöma analysmodellen. En enkel text under reglaget är bättre än logik för när en varning ska visas.
+- **Varningen är en ruta med `background.warning`** och text i `foreground.base`. Status anges bara med fyllnadsfärg (3.3).
 - **Auto ändrar inte** att AI:ns förslag visas före och efter (1.3) och att de går att ångra.
+
+### 4.9 Smal knapp och Pill
+
+- **Den smala åtgärdsknappen** (till exempel *Compress*, *Expand*, *Clear* och *Export .md* i AI-panelen) är en variant av Action Button: `Type = Narrow`, med samma tillstånd (*Default*, *Hovered*, *Pressed*) och tokens som de andra. Texten är 12 px (`typography.caption`), marginalen 4 och 8 px och hörnradien 4.
+- **Pill** är en komponent med egenskapen `Status`: *Neutral*, *Info*, *Success*, *Warning* och *Error*. Statusen anges bara med fyllnadsfärgen (`background.info`, `success`, `warning`, `error`), texten är `foreground.base`, och kanten är `foreground.muted` på *Neutral* och `foreground.base` på statusvarianterna, så att den klarar 3:1. Leverantörsfältet i AI-panelen är en *Pill*: *Neutral* med leverantörens namn, och *Warning* med texten *No provider*.
 
 ## 5. Navigera, markera och flytta objekt
 
