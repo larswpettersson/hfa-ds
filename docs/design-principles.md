@@ -329,9 +329,9 @@ The background tokens are used as three layers. They give grouping and hierarchy
 |---|---|---|
 | `background.base` | The page behind everything | Only the background. Nothing else sits in `base`. |
 | `background.elevated` | What you read or act on: panels, dialogs and popovers, objects in the diagram (task, card, barrier, block), buttons, table cells | What lies on top |
-| `background.sunken` | What holds something or is recessed: the diagram canvas, the toolbar, input fields and editors, the table header row, the legend, a selected or hovered row | What lies underneath |
+| `background.sunken` | What holds something or is recessed: the diagram canvas, the toolbar, input fields and editors, the table header row, the legend, a hovered row | What lies underneath |
 
-**Check rule:** an object never has the same token as what it sits directly on. An object (`elevated`) on the diagram canvas (`sunken`) lifts, while a task (`elevated`) straight on a panel (`elevated`) is separated only by its border. The exception is table cells on the table's panel, where the grid separates the cells.
+**Check rule:** an object never has the same token as what it sits directly on. An object (`elevated`) on the diagram canvas (`sunken`) lifts, while a task (`elevated`) straight on a panel (`elevated`) is separated only by its border. Exceptions: table cells on the table's panel, where the grid separates the cells, and **controls** (buttons and fields), tables and popovers on an `elevated` panel. They are separated by their border (at least 3:1), by the hover and pressed states and, for a popover, by a shadow (see below). Without that exception the rule would hit every button on a panel.
 
 Status backgrounds (`background.success`, `error` and so on) replace the object's fill and do not change the rules above.
 
@@ -375,11 +375,12 @@ The shadows are currently fixed values in the Penpot components (for example *Pr
 
 | Tool or part | Deviation from 3.3 |
 |---|---|
-| Penpot: *TTA Row*, *TTA Toolbar*, *TTA Column Dialog* | Fixed colours instead of tokens (`#ffffff`, `#f0f6fc`, `#fafbfc`, `#eaf0f6`) |
-| Penpot: the diagram canvas in the HTA panel | The panel and the tasks are both `elevated`; the canvas should be `sunken` |
+| Penpot: ✕ in the table | `foreground.subtle` gives 2.97:1 against `elevated` (light), 4.30:1 (dark) and 1.46:1 against a selected row. Should be `foreground.muted`. |
 | HTA | The buttons are `base`; should be `elevated` |
 | Bowtie | The cards and barriers are `base`; should be `elevated`. The canvas is already `sunken`. |
 | STPA | The process blocks are `sunken`; should be `elevated` on a `sunken` surface |
+
+**Tested in Example (2026-11-07):** the fixed colours in *TTA Row*, *TTA Toolbar* (now instances of *Action Button*) and *TTA Column Dialog* are replaced with tokens, and the HTA panel has a `sunken` diagram canvas with `elevated` tasks. Checked against the token values in both themes: all borders reach 3:1 against the surface below, and text in `foreground.base` reaches 7:1. The only thing that failed was the ✕ above. The rule about the same token on the same token hit buttons, the table and the column picker on an `elevated` panel, which is the reason for the exception for controls. Selected rows in the TTA table use `background.info` with a red marker, a selection marker of its own outside the three layers (5.5).
 
 ## 4. Buttons and dialogs
 

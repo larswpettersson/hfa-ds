@@ -329,9 +329,9 @@ Bakgrundstokens används som tre lager. De ger gruppering och hierarki: vad som 
 |---|---|---|
 | `background.base` | Sidan bakom allt | Bara bakgrunden. Inget annat ligger i `base`. |
 | `background.elevated` | Det man läser eller agerar på: paneler, dialoger och popuper, objekt i diagrammet (uppgift, kort, barriär, block), knappar, tabellceller | Det som ligger ovanpå |
-| `background.sunken` | Det som håller något eller är nedsänkt: diagramytan, verktygsraden, inmatningsfält och editorer, tabellens rubrikrad, förklaringen, markerad eller hovrad rad | Det som ligger under |
+| `background.sunken` | Det som håller något eller är nedsänkt: diagramytan, verktygsraden, inmatningsfält och editorer, tabellens rubrikrad, förklaringen, hovrad rad | Det som ligger under |
 
-**Kontrollregel:** ett objekt har aldrig samma token som det som det ligger direkt på. Ett objekt (`elevated`) på diagramytan (`sunken`) lyfter, medan en uppgift (`elevated`) direkt på en panel (`elevated`) bara skiljs åt av sin kant. Undantaget är tabellceller på tabellens panel, där rutnätet skiljer cellerna åt.
+**Kontrollregel:** ett objekt har aldrig samma token som det som det ligger direkt på. Ett objekt (`elevated`) på diagramytan (`sunken`) lyfter, medan en uppgift (`elevated`) direkt på en panel (`elevated`) bara skiljs åt av sin kant. Undantag: tabellceller på tabellens panel, där rutnätet skiljer cellerna åt, och **kontroller** (knappar och fält), tabeller och popuper på en `elevated` panel. De skiljs åt av sin kant (minst 3:1), av hover- och tryckt tillstånd och, för en popup, av en skugga (se nedan). Utan det undantaget slår regeln mot varje knapp på en panel.
 
 Statusbakgrunder (`background.success`, `error` och så vidare) ersätter objektets fyllning och ändrar inte reglerna ovan.
 
@@ -375,11 +375,12 @@ Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process 
 
 | Verktyg eller del | Avvikelse från 3.3 |
 |---|---|
-| Penpot: *TTA Row*, *TTA Toolbar*, *TTA Column Dialog* | Fasta färger i stället för tokens (`#ffffff`, `#f0f6fc`, `#fafbfc`, `#eaf0f6`) |
-| Penpot: diagramytan i HTA-panelen | Panelen och uppgifterna är båda `elevated`; ytan bör vara `sunken` |
+| Penpot: ✕ i tabellen | `foreground.subtle` ger 2,97:1 mot `elevated` (ljust), 4,30:1 (mörkt) och 1,46:1 mot en markerad rad. Bör vara `foreground.muted`. |
 | HTA | Knapparna är `base`; bör vara `elevated` |
 | Bowtie | Korten och barriärerna är `base`; bör vara `elevated`. Diagramytan är redan `sunken`. |
 | STPA | Procesblocken är `sunken`; bör vara `elevated` på en `sunken` yta |
+
+**Provat i Example (2026-11-07):** de fasta färgerna i *TTA Row*, *TTA Toolbar* (nu instanser av *Action Button*) och *TTA Column Dialog* är ersatta med tokens, och HTA-panelen har en `sunken` diagramyta med `elevated` uppgifter. Kontrollerat mot tokenvärdena i båda teman: alla kanter klarar 3:1 mot ytan under, och text i `foreground.base` klarar 7:1. Det enda som föll var ✕ ovan. Regeln om samma token på samma token slog mot knappar, tabellen och kolumnväljaren på en `elevated` panel, vilket är bakgrunden till undantaget för kontroller. Markerade rader i TTA-tabellen använder `background.info` med en röd markering, alltså en egen markering utanför de tre lagren (5.5).
 
 ## 4. Knappar och dialoger
 
