@@ -70,3 +70,79 @@ Toolbar button. Default: elevated + 1 px muted border. Hovered: sunken + base bo
 3. **Vid en ändring:** markera det ändrade i Penpot och skriv en mening om vad som ändrades. AI:n läser markeringen via MCP och ändrar koden.
 4. **Kontrollera** resultatet i verktyget och med testerna (`npm test` i hfa-ds).
 
+## 2. Dokumentation, Gherkin och tester
+
+Det här kapitlet beskriver kedjan från dokumentation till verifierad kod, och hur en AI-assistent förväntas strukturera sina förslag. Kapitel 1 handlar om vad AI:n läser i Penpot; det här kapitlet handlar om vad som händer därefter.
+
+### 2.1 Kedjan
+
+Arbetet drivs av dokumentationen, inte av enskilda önskemål om komponenter:
+
+1. **Dokumentation.** Kravet beskrivs eller ändras först i [arkitektur.md](../arkitektur.md), [designprinciper.md](designprinciper.md) eller det här dokumentet. Inget implementeras som inte är dokumenterat.
+2. **Plan.** AI-assistenten översätter principerna, och eventuella skärmbilder eller felfångster, till en strukturerad plan (2.4).
+3. **Gherkin.** Beteendet formuleras som ett scenario med *Given–When–Then* (2.2) innan koden skrivs.
+4. **Implementation.** HTML, CSS och JavaScript skrivs så att scenariot uppfylls.
+5. **Playwright.** Testerna visar att koden gör det scenariot säger, och fångar att något annat har gått sönder (2.3).
+
+### 2.2 Gherkin som acceptanskriterium
+
+Ett scenario beskriver ett beteende, inte en implementation:
+
+```gherkin
+Feature: Öppna en fil
+  Scenario: Osparade ändringar frågar först
+    Given analysen har osparade ändringar
+    When användaren trycker på Open…
+    Then en dialog frågar Save, Don't save eller Cancel
+```
+
+- **Ett scenario per beteende.** Given anger utgångsläget, When en handling och Then ett resultat som Playwright kan kontrollera.
+- **Then är det som testet kontrollerar.** Skriv det så konkret att det går att säga ja eller nej: en synlig dialog, ett värde i modellen, en markering på ett objekt.
+- **Nuläge:** scenarierna skrivs i planen och i PR-beskrivningen, och testernas namn speglar dem (se till exempel `tests/shared/new-unsaved.spec.mjs`). Det finns inga `.feature`-filer och ingen `playwright-bdd` än. Om scenarierna ska köras direkt är det ett eget beslut: då läggs de i `tests/features/<namn>.feature`, och testsviten får ett steg som kör dem.
+
+### 2.3 Testerna
+
+- **Playwright** kör testerna mot verktygen i de andra repona (`npm test`, se [arkitektur.md](../arkitektur.md) avsnitt 9). Sidorna öppnas direkt som filer, utan webbserver.
+- **Filändelsen `.mjs`** gör att Node läser filen som en ES-modul, med `import` och `export`, oavsett inställningar. hfa-ds har dessutom `"type": "module"` i `package.json`; `.mjs` fungerar också i repon som inte har det.
+- **Antalet tester:** en körning ger i dag ungefär 78 tester (77 godkända och 1 överhoppat när `hfa-rbd` saknas). Det beror på att de gemensamma testerna körs mot varje verktyg och att varje verktyg har egna tester. Det är **en** webbläsare, Chromium; konfigurationen har inga projekt för Firefox, WebKit eller mobil.
+- **Tillstånd** som hover, disabled och markerad prövas där de ändrar beteende, inte för varje komponent.
+
+### 2.4 Mall för AI-assistentens plan
+
+När en AI-assistent (till exempel Claude Code) tar fram en plan eller ett prompt för en ändring används den här strukturen. Rollen är **AI Coding Strategist**: bryggan mellan visuellt underlag (skärmbilder, felfångster), dokumentationen och kodverktyget. Den läser underlaget tillsammans med användarens riktning, formulerar kraven som Gherkin och skriver en exakt, strukturerad instruktion.
+
+```
+Task: [en mening som beskriver uppgiften, utifrån design- eller arkitekturändringen]
+
+Visual Analysis & System Context:
+- [det viktiga som syns i skärmbilden eller önskemålet]
+- [vilken regel i arkitektur.md, designprinciper.md eller arbetssatt.md som tillämpas eller ändras]
+
+Behavioral Specification (Gherkin):
+Feature: [namn]
+  Scenario: [namn]
+    Given [utgångsläge]
+    When [handling]
+    Then [förväntat resultat, tydligt nog för att Playwright ska kunna kontrollera det]
+
+Scope / File Suggestions:
+- Vilka filer som berörs, till exempel verktygets HTML eller script, och vilket test som skapas eller ändras.
+
+Implementation Instructions:
+1. [Skriv eller uppdatera scenariot]
+2. [Layout och struktur]
+3. [Logik, tillstånd och interaktion som uppfyller stegen]
+4. [Stil, tokens och responsivitet]
+
+Acceptance Criteria:
+- Playwright-testerna för scenariot går igenom.
+- [en konkret signal i gränssnittet, till exempel "dialogen visas mitt på sidan"]
+```
+
+Mallen är på engelska eftersom den är ett prompt. Dokumentationen och beskrivningarna som den hänvisar till kan vara på svenska.
+
+### 2.5 När används kedjan?
+
+- **Nytt eller ändrat beteende:** hela kedjan. Dokumentera, skriv scenariot, implementera och testa.
+- **Rena utseendeändringar från Penpot:** kapitel 1 räcker, och `npm test` kontrollerar att färgerna fortfarande stämmer med `tokens.json`.
+- **Små rättelser** (stavning, en etikett): ingen plan behövs, men testerna körs.
