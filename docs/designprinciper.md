@@ -381,6 +381,41 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 
 Införs i verktygen efter hand.
 
+### 4.5 Primary-knappen aktiveras med Enter
+
+En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit text (`brand.on_primary`). Den är det som användaren oftast vill göra härnäst.
+
+- **Enter aktiverar den.** I ett frågefält är det *Send*, och i en dialog är det dialogens primary-knapp. Esc avbryter eller svarar nej.
+- **Det finns bara en aktiv primary-knapp i gränssnittet vid varje givet tillfälle.** När en dialog är öppen är det dialogens knapp; knapparna bakom den är inte aktiva och räknas inte.
+- **Går primary-knappen inte att använda** visas den som inaktiv, i neutral stil och inte röd, så att en annan knapp kan vara primary. Utan en leverantör är till exempel *Send* inaktiv och *Settings…* primary.
+- **I en dialog som varnar för något är det säkra valet primary**, så att Enter aldrig utför det som är svårare att ångra. Det farligare valet görs med flit, med en vanlig knapp. Exempel: i frågan om *Auto* (4.8) är *No, keep step by step* primary och *Yes, use Auto* en vanlig knapp.
+
+**Att kontrollera i verktygen:** att varje skärm och dialog har högst en röd knapp, och att Enter aktiverar den.
+
+### 4.6 Frågefält: Enter skickar, Shift+Enter ger en ny rad
+
+- **Enter skickar** frågan, som en aktivering av primary-knappen *Send* (4.5). **Shift+Enter** ger en radbrytning. Fältets text ska säga det: *Ask about the analysis… (Enter sends, Shift+Enter for a new line)*.
+- **Ett tomt fält skickar inget.** Enter under pågående inmatning med inmatningsmetod (IME, till exempel för kinesiska eller japanska) skickar inte.
+- **Ctrl/⌘+Enter skickar inte längre** (det var regeln tidigare). Den tangenten betyder *markera* (5.4).
+
+**Nuläge (2026-11-07):** HTA och Bowtie (`ai-assist.js`) och STPA skickar med Ctrl/⌘+Enter och har den texten i fältet. De ska ändras.
+
+### 4.7 AI-panelen: en växlingsknapp, öppen som standard
+
+- **Panelen ligger på höger sida och är öppen som standard.** En ikonknapp (ett fönster med en panel till höger) visar och döljer den. Knappen sitter på samma plats på skärmen i alla verktyg: längst till höger i verktygsraden när panelen är dold, och i panelens rubrik när den är öppen. Den ersätter ✕ och knappen *AI…*.
+- **Ikonen har bara tillstånden Hovered och Pressed**, inget statustillstånd. *Pressed* är tillfälligt: det gäller medan musknappen är nedtryckt, till dess att användaren släpper den och klicket är slut. Om panelen är öppen eller dold syns på panelen själv.
+- **Knappen har ingen …**, eftersom den bara visar eller döljer en panel och inte öppnar en dialog (4.1). Verktygstipset heter till exempel *Show AI panel* eller *Hide AI panel*.
+- **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är primary (4.5) och snabbåtgärder, frågefält och *Send* är inaktiva.
+- **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
+
+### 4.8 Auto: stegvis analys eller auto
+
+- **Stegvis är förval.** AI:n föreslår ett steg i taget och användaren avgör varje förslag.
+- **Auto ligger i Settings för AI-konfigurationen**, som ett reglage `Auto` som är av som standard. Det tar ingen plats i panelen.
+- **När användaren slår på Auto** visas en dialog med frågan om hen är helt inläst på underlaget till analysen: *Are you fully read into the material for this analysis?* Annars är det svårt att förstå den analysmodell som AI:n tar fram. Primary-knappen är *No, keep step by step* (4.5), så Enter och Esc lämnar Auto av. *Yes, use Auto* är en vanlig knapp.
+- **Frågan ställs varje gång Auto slås på.** Att slå av Auto kräver ingen fråga.
+- **Auto ändrar inte** att AI:ns förslag visas före och efter (1.3) och att de går att ångra.
+
 ## 5. Navigera, markera och flytta objekt
 
 Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.
