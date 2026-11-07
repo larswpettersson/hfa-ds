@@ -321,6 +321,66 @@ Så här skiljer sig en typisk kompletterande palett, grön `#005F37`, blå `#00
 - **`error` ska skilja sig från profilröd**, så att fel inte förväxlas med profilfärgen. `#5D1A14` klarar det (ΔL\* ≥ 17 i alla simuleringar). Tidigare värden i `tokens.json` (`#C70039` ljust, `#E03E3E` mörkt) gjorde det inte och är ersatta (2026-10-31).
 - **Byts profilfärgen** ska tabellen räknas om och slutsatserna kontrolleras på nytt.
 
+### 3.3 Ytlager: base, elevated och sunken
+
+Bakgrundstokens används som tre lager. De ger gruppering och hierarki: vad som ligger ovanpå, vad som ligger under och vad som är bakgrunden. De gäller för arbetsgränssnittet i alla verktyg och i Penpot, oavsett analysmodell (träd, två sidor kring en topphändelse eller en styrstruktur).
+
+| Token | Används för | Tanken |
+|---|---|---|
+| `background.base` | Sidan bakom allt | Bara bakgrunden. Inget annat ligger i `base`. |
+| `background.elevated` | Det man läser eller agerar på: paneler, dialoger och popuper, objekt i diagrammet (uppgift, kort, barriär, block), knappar, tabellceller | Det som ligger ovanpå |
+| `background.sunken` | Det som håller något eller är nedsänkt: diagramytan, verktygsraden, inmatningsfält och editorer, tabellens rubrikrad, förklaringen, markerad eller hovrad rad | Det som ligger under |
+
+**Kontrollregel:** ett objekt har aldrig samma token som det som det ligger direkt på. Ett objekt (`elevated`) på diagramytan (`sunken`) lyfter, medan en uppgift (`elevated`) direkt på en panel (`elevated`) bara skiljs åt av sin kant. Undantaget är tabellceller på tabellens panel, där rutnätet skiljer cellerna åt.
+
+Statusbakgrunder (`background.success`, `error` och så vidare) ersätter objektets fyllning och ändrar inte reglerna ovan.
+
+**Lagren är hierarki, inte avgränsning.** Skillnaden mellan lagren är liten:
+
+| Tema | elevated / base | elevated / sunken | base / sunken |
+|---|---|---|---|
+| Ljust (`tokens.json`) | 1,11 | 1,21 | 1,10 |
+| Mörkt (HTA och Bowtie) | 1,17 | 1,73 | 1,49 |
+| Mörkt (STPA) | 1,17 | 1,37 | 1,18 |
+
+WCAG 1.4.11 kräver 3:1 för det som visar var en komponent börjar. Det uppfylls av **kanten** (1 px `foreground.muted` på komponenter, `foreground.base` på dialoger och kort), inte av bakgrunden. Ett objekt får alltså alltid ha sin kant. På en projektor försvinner skillnaden mellan lagren nästan helt.
+
+#### Ingen fjärde bakgrundstoken
+
+Det går inte att få 3:1 mellan bakgrunder, hur många tokens man än har, så länge färgreglerna kräver 7:1 för `foreground.base` mot varje bakgrund:
+
+| Tema | Kravet på bakgrunden | Största kontrast mellan två bakgrunder |
+|---|---|---|
+| Ljust | Luminans minst 0,34 | 2,70 |
+| Mörkt | Luminans högst 0,095 | 2,90 |
+
+Dessutom finns det ingen plats för en fjärde i ljust tema. Ljusare än `elevated` (`#FAFBFC`) återstår bara `#FFFFFF`, med en skillnad på 1,04. Mörkare än `sunken` (`#E0E6EC`) bryts regel 6: `success` på `sunken` ger 4,8:1 och på `#D3DBE3` 4,3:1, och gränsen är 4,5:1. I mörkt tema blir stegen 1,2 till 1,7, och försvinner på en projektor. Varje ny token skulle dessutom behöva kontrolleras mot alla färgregler i båda teman, ändras i `tokens.json`, i tre verktyg och i Penpot, för en skillnad som knappt syns.
+
+#### Djup bortom tre lager
+
+En dialog ovanpå en panel ovanpå sidan får sitt djup på andra sätt än med en ny yta:
+
+- **Skugga** på det som ligger ovanpå: *raised* för kort och popuper, *overlay* för dialoger. I mörkt tema syns skuggor dåligt, där bär kanten och att `elevated` är ljusare än `base` höjden.
+- **Toning bakom modala dialoger.** Allt under dialogen dämpas, till exempel `foreground.base` vid 40–50 %, i stället för att dialogen får en egen yta. Webbläsarens `<dialog>` har redan en `::backdrop` för det. Toningen är ingen bakgrund som text ligger på, så färgreglerna för bakgrunder gäller den inte.
+- **Kant alltid**, enligt ovan.
+
+Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process Block*). Penpot har tokentypen *shadow*, men HFA DS har inga definierade. De införs när de behövs, och då i `tokens.json` och Penpot samtidigt.
+
+#### Gäller inte
+
+- **Den grafiska profilen** (profilröd och kompletterande färger) styrs av Trafikverkets manual och av 3.1 och 3.2.
+- **Utskrifter och bilder** av analyserna, där bakgrunden ofta ska vara vit.
+
+**Nuläge (2026-11-07):**
+
+| Verktyg eller del | Avvikelse från 3.3 |
+|---|---|
+| Penpot: *TTA Row*, *TTA Toolbar*, *TTA Column Dialog* | Fasta färger i stället för tokens (`#ffffff`, `#f0f6fc`, `#fafbfc`, `#eaf0f6`) |
+| Penpot: diagramytan i HTA-panelen | Panelen och uppgifterna är båda `elevated`; ytan bör vara `sunken` |
+| HTA | Knapparna är `base`; bör vara `elevated` |
+| Bowtie | Korten och barriärerna är `base`; bör vara `elevated`. Diagramytan är redan `sunken`. |
+| STPA | Procesblocken är `sunken`; bör vara `elevated` på en `sunken` yta |
+
 ## 4. Knappar och dialoger
 
 ### 4.1 Knappar som öppnar en dialog slutar med …
