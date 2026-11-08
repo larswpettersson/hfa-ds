@@ -467,7 +467,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Ikonen har bara tillstånden Hovered och Pressed**, inget statustillstånd. *Pressed* är tillfälligt: det gäller medan musknappen är nedtryckt, till dess att användaren släpper den och klicket är slut. Om panelen är öppen eller dold syns på panelen själv.
 - **Knappen har ingen …**, eftersom den bara visar eller döljer en panel och inte öppnar en dialog (4.1). Verktygstipset heter till exempel *Show AI panel* eller *Hide AI panel*.
 - **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är en vanlig knapp och snabbåtgärder, frågefält och *Send* är inaktiva.
-- **Tangenten I visar och döljer panelen** i alla verktyg, när ingen text redigeras (5.4). Tidigare var det A; bokstaven A används av *Add Above* (5.10).
+- **Tangenten I visar och döljer panelen** i alla verktyg, när ingen text redigeras (5.4). Den ersätter A, som *Add Above* (5.10) ska använda; tills *Add Above* är byggt gäller A.
 - **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
 
 **Nuläge (2026-11-08):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som vanlig knapp, och inaktiva *Send* (primary först när det finns en leverantör) och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA använder sedan 2026-11-08 samma panel som de andra (arkitektur.md, avsnitt 10), så knappen och läget utan leverantör är lika i alla tre. Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
@@ -532,9 +532,9 @@ Varje tangent har en motsvarighet med musen:
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
 | Dubbelklick: redigera | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
-| Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **A**, **B**, **S**. HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
+| Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
 | Ta bort markerade objekt | Delete (5.10) |
-| Knappen som visar och döljer AI-panelen (4.7) | **I** |
+| Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
 | Hjälpknappen | **?** |
 
 Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
@@ -596,10 +596,12 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Ett kommando gör hela jobbet.** Objektet läggs till, kopplas enligt modellens regler, markeras, och dess namn kan skrivas direkt: fokus hamnar på namncellen på objektets rad i tabellen (5.9), inte i en ruta i diagrammet. Texter som användaren ska skriva lämnas tomma; verktyget hittar inte på något.
 - **Hela tillägget är ett steg att ångra** (Ctrl/⌘+Z), även när flera länkar skapades.
 - **Flera markerade objekt får ett gemensamt nytt objekt**, som kopplas till alla. Hör de markerade objekten inte ihop, till exempel för *Add Beside* när de har olika överordnade, varnar verktyget enligt 5.8 och ändrar ingenting.
+- **Objekt och länkar utan text visar sitt id.** En länk eller ett objekt som användaren inte har skrivit något till syns ändå, går att markera och visar var texten saknas. Id:t ersätts av texten när den skrivs. Exempel: en ny styråtgärd utan text visas med etiketten *ca3*, och med *ApplyBrakes* när den är ifylld.
+- **Ett verktyg kan begränsa markeringen till en sorts objekt.** Då lägger Shift+klick och Ctrl/⌘+klick bara till objekt av samma sort, och ett objekt av en annan sort ersätter markeringen. STPA gör så för block, styråtgärder och återkopplingar.
 - **Delete tar bort det markerade tillsammans med det som hör till det**, till exempel länkarna, och går att ångra i ett steg.
 - **Varje kommando har en knapp i verktygsfältet över diagrammet**, med tangenten i verktygstipset (5.4). Knappen är inaktiv när kommandot inte går att använda, så att den visar vad som är möjligt. Det är vanliga knappar: Enter är primary-knappens tangent (4.5).
 - **Bokstavstangenterna är avstängda medan man skriver**, och **?** öppnar hjälpen med de tangenter som gäller.
 - **Kopplingar mellan befintliga objekt** ändras i tabellerna, inte med egna länklägen (5.1).
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).
 
-**Nuläge (2026-11-08):** inte byggt. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.
+**Nuläge (2026-11-08):** inte byggt, och *Add Above* skjuts upp. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.

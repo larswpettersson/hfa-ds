@@ -1,6 +1,6 @@
 # Design: editing the control structure directly in the STPA diagram
 
-**Status:** decided (2026-11-08). None of this is built. The look is drawn in Penpot in another chat; tests and the build wait until the graphics have been reviewed. Swedish version: [design-stpa.md](design-stpa.md).
+**Status:** decided (2026-11-08). None of this is built, and *Add Above* is postponed to a later version. The look is drawn in Penpot in another chat; tests and the build wait until the graphics have been reviewed. Swedish version: [design-stpa.md](design-stpa.md).
 
 The general rules are in [5.10 of the design principles](design-principles.md). This document describes what applies to STPA. The same pattern is used for HTA and Bowtie: general rules in the design principles, the tool's own requirements in `design-<tool>.md`.
 
@@ -14,12 +14,15 @@ The answers to the eight open questions, in short:
 
 1. **Names:** *Add Above*, *Add Below* and *Add Beside*, with the keys **A**, **B** and **S**. The words *Child*, *Parent* and *Sibling* are not used in STPA.
 2. **Type:** the type follows the position. A block with something below it is a *controller*, and the block at the bottom is a *controlled process*. The difference remains in the JSON, as in the Penpot design of process blocks. No type is chosen when a block is created.
-3. **Actuator and sensor:** normally only control actions and feedback are used. *Convert to actuator* and *Convert to sensor* must exist for both and be easy to find.
+3. **Actuator and sensor:** normally only control actions and feedback are used. Every control action can be converted to an actuator block and every feedback to a sensor block, whichever blocks they run between. *Convert to actuator* and *Convert to sensor* must be easy to find.
 4. **Links:** a new block always gets both a control action and a feedback, without text. The user writes the text. The links *L* and *F* are not built.
-5. **Keys:** A, B and S. **A** was already the shortcut for the AI panel; it moves to **I** (see 5.4 and 4.7).
+5. **Keys:** A, B and S. **A** is already the shortcut for the AI panel; it moves to **I** when *Add Above* is built (see 5.4 and 4.7). Until then the AI toggle stays on A.
 6. **Several selected:** one shared new block connected to all selected blocks.
 7. **A new diagram** starts with one controller and one controlled process, connected by a control action and a feedback.
 8. **Tables and JSON** stay as they are. The selection is shown in the table and the text is edited there (5.9).
+9. **Selection:** a click or Enter on a block selects it. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
+10. **Links and blocks without text** show their id (principle in 5.10).
+11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 
@@ -59,7 +62,8 @@ Feature: Adding blocks to the control structure
     And the model has a new block below "ECU", with links
     And the new block is selected
 
-  @STPA-ADD-3
+  # Postponed: not built in the first version
+  @STPA-ADD-3 @later
   Scenario: Add Above takes over the links upwards
     Given "Brakes" is selected
     When the user presses A
@@ -81,7 +85,8 @@ Feature: Adding blocks to the control structure
     Then the model has exactly one new block
     And both "Driver" and "Supervisor" have a control action to and a feedback from the new block
 
-  @STPA-ADD-6
+  # Postponed: not built in the first version
+  @STPA-ADD-6 @later
   Scenario: Several selected blocks get one shared new block above them
     Given "Brakes" and "Steering" are selected
     When the user presses A
@@ -114,7 +119,7 @@ Feature: Adding blocks to the control structure
     Given no block is selected
     When the user presses A
     Then the model is unchanged
-    And the buttons Add Above, Add Below and Add Beside are inactive
+    And the buttons Add Below and Add Beside are inactive
 ```
 
 Esc in the name cell leaves the table but does not remove the block (5.9). A block without a name is shown with its id and can be undone with Ctrl/⌘+Z.
@@ -147,28 +152,89 @@ Feature: The type follows the position
 
 ### STPA-LINK: links without text, Convert
 
-**Links created by an addition have no text, and can be selected and filled in in the table. *Convert to actuator* and *Convert to sensor* exist for control actions and feedback respectively and can be found even when nothing is selected.**
+**Links created by an addition have no text. A link or block without text shows its id, so that it is visible, can be selected and filled in in the table. Every control action can be converted to an actuator block and every feedback to a sensor block. *Convert to actuator* and *Convert to sensor* can be found even when nothing is selected.**
 
 ```gherkin
 Feature: Links and conversion
   @STPA-LINK-1
   Scenario: A link without text is visible and can be selected
     Given the user has added a block with B
-    Then the diagram shows the control action and the feedback without text
+    Then the diagram shows the id as the label on the control action and on the feedback
     And both can be selected
 
   @STPA-LINK-2
-  Scenario: The text is written in the table
+  Scenario: The text is written in the table and replaces the id
     Given the new control action is selected
     When the user types "ApplyBrakes" in its text cell and presses Enter
     Then the model has the control action with the text "ApplyBrakes"
-    And the diagram shows the text
+    And the diagram shows the text instead of the id
 
   @STPA-LINK-3
   Scenario: Convert exists for both control action and feedback
     Given a control action is selected
     Then the button Convert to actuator is visible in the toolbar and active
     And the button Convert to sensor is visible but inactive, with a tooltip that says why
+
+  @STPA-LINK-4
+  Scenario: Convert applies to every link, whichever blocks it runs between
+    Given a control action between two controllers is selected
+    When the user chooses Convert to actuator
+    Then the model has an actuator block between the two blocks
+    And the control action runs via the actuator block
+
+  @STPA-LINK-5
+  Scenario: A feedback becomes a sensor block
+    Given a feedback is selected
+    When the user chooses Convert to sensor
+    Then the model has a sensor block on the path of the feedback
+```
+
+### STPA-SEL: selecting and deselecting
+
+**A click or Enter on a block selects it and gives the name cell on its row focus. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind: the blocks are one kind, the control actions one and the feedback one.**
+
+This differs from 5.4, where Ctrl/⌘+Enter corresponds to a click and Enter edits. In STPA, Enter and Ctrl/⌘+Enter do the same as a click, because a click already moves focus to the name cell. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
+
+```gherkin
+Feature: Selecting and deselecting
+  @STPA-SEL-1
+  Scenario: A click selects a block
+    Given nothing is selected
+    When the user clicks the block "Driver"
+    Then only "Driver" is selected
+    And the name cell on its row in the table has focus
+
+  @STPA-SEL-2
+  Scenario: Enter selects the indicated block
+    Given the indication is on "Driver"
+    When the user presses Enter
+    Then the result is the same as a click on "Driver"
+
+  @STPA-SEL-3
+  Scenario: Esc in the diagram removes the selection
+    Given "Driver" is selected and focus is in the diagram
+    When the user presses Esc
+    Then nothing is selected
+
+  @STPA-SEL-4
+  Scenario: A click outside removes the selection
+    Given "Driver" is selected
+    When the user clicks an empty area of the diagram
+    Then nothing is selected
+
+  @STPA-SEL-5
+  Scenario: Shift+click and Ctrl/⌘+click select several of the same kind
+    Given "Driver" is selected
+    When the user Shift+clicks "Brakes"
+    Then "Driver" and "Brakes" are selected
+    When the user Ctrl/⌘+clicks "Brakes"
+    Then only "Driver" is selected
+
+  @STPA-SEL-6
+  Scenario: An object of another kind replaces the selection
+    Given the block "Driver" is selected
+    When the user Shift+clicks a control action
+    Then only the control action is selected
 ```
 
 ### STPA-NEW: a new diagram
@@ -194,7 +260,8 @@ Feature: Keys and buttons
     When the user clicks the button Add Below
     Then the result is the same as when the user presses B
 
-  @STPA-KEYS-2
+  # Postponed together with Add Above
+  @STPA-KEYS-2 @later
   Scenario: The I key toggles the AI panel, A does not
     Given the AI panel is open
     When the user presses I
@@ -215,18 +282,19 @@ Feature: Keys and buttons
 - The links *L* and *F* and dragging to connect. Links between existing blocks are changed in the tables (5.1).
 - The words Child, Parent and Sibling in STPA.
 - Naming left or right. The order sideways follows the links and the list.
+- *Add Above* (and the A key) in the first version. The requirements stay, tagged `@later`.
+- Selecting mixed kinds: in STPA the selection holds only one kind, so an AI question cannot be scoped to a block and a link at the same time (5.5).
 
 ## 5. Open points to settle during the build
 
-- **A link without text:** the diagram shows the link's id today when the text is missing. How an empty link is drawn is to be decided in Penpot (an empty label, a marker or an id).
-- **Add Above with an existing parent (STPA-ADD-3):** the new block is inserted between them and takes over the links. This is the most uncertain part, because links are moved.
-- **Convert and the type of the blocks:** *Convert to actuator* today applies only to control actions that go to a controlled process. When a block in the middle is a controller, it is unclear whether conversion should be possible to it.
+- **Add Above with an existing parent (STPA-ADD-3):** postponed. The new block is inserted between them and takes over the links, which is the most uncertain part, because links are moved.
+- **Actuator and sensor blocks in the layout:** today all actuators and sensors are drawn on one row above the process row. When a control action between two controllers is converted (STPA-LINK-4), the block must end up between the two levels. The schema today says that an actuator's target and a sensor's source is a controlled process, and that limit is to go.
 - **Where Convert sits:** today the buttons are only in the selection bar under the diagram, and only when something is selected. That is why they are hard to find.
-- **A and I:** moving the AI toggle from A to I changes HTA and Bowtie, 4.7 and the tests `tests/shared/ai-panel-toggle.spec.mjs` and `tests/hta/ai-assist.spec.mjs`.
+- **A and I:** moving the AI toggle from A to I changes HTA and Bowtie, 4.7 and the tests `tests/shared/ai-panel-toggle.spec.mjs` and `tests/hta/ai-assist.spec.mjs`. It is done when *Add Above* is built.
 
 ## 6. Next steps
 
 1. Draw the toolbar, the inactive states and the help in Penpot (done in another chat).
 2. Review the graphics.
-3. Write the tests in `tests/stpa/` and build in STPA Workbench, with *Add Below* first, then *Add Beside* and *Add Above*.
-4. Add the shared test that checks that every `@STPA-…` id here has a test.
+3. Write the tests in `tests/stpa/` and build in STPA Workbench, with *Add Below* first, then *Add Beside*, the selection (STPA-SEL) and Convert. *Add Above* is built later.
+4. Add the shared test that checks that every `@STPA-…` id here has a test. Scenarios tagged `@later` are skipped.

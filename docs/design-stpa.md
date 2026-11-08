@@ -1,6 +1,6 @@
 # Design: redigera kontrollstrukturen direkt i STPA-diagrammet
 
-**Status:** beslutat (2026-11-08). Inget av detta är byggt. Utseendet ritas i Penpot i en annan chatt; tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-stpa.en.md](design-stpa.en.md).
+**Status:** beslutat (2026-11-08). Inget av detta är byggt, och *Add Above* skjuts upp till en senare version. Utseendet ritas i Penpot i en annan chatt; tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-stpa.en.md](design-stpa.en.md).
 
 De generella reglerna står i [5.10 i designprinciperna](designprinciper.md). Det här dokumentet beskriver det som gäller för STPA. Samma mönster används för HTA och Bowtie: generella regler i designprinciperna, verktygets egna krav i `design-<verktyg>.md`.
 
@@ -14,12 +14,15 @@ Svaren på de åtta öppna frågorna, i korthet:
 
 1. **Namn:** *Add Above*, *Add Below* och *Add Beside*, med tangenterna **A**, **B** och **S**. Orden *Child*, *Parent* och *Sibling* används inte i STPA.
 2. **Typ:** typen följer läget. Ett block med något under sig är en *controller*, och blocket längst ned är en *controlled process*. I JSON finns skillnaden kvar, som i Penpot-designen av processblock. Ingen typ väljs vid skapandet.
-3. **Aktuator och sensor:** normalt används bara styråtgärd och återkoppling. *Convert to actuator* och *Convert to sensor* ska finnas för båda och vara lätta att hitta.
+3. **Aktuator och sensor:** normalt används bara styråtgärd och återkoppling. Varje styråtgärd kan konverteras till ett aktuatorblock och varje återkoppling till ett sensorblock, oavsett vilka block de går mellan. *Convert to actuator* och *Convert to sensor* ska vara lätta att hitta.
 4. **Länkar:** ett nytt block får alltid både en styråtgärd och en återkoppling, utan text. Användaren skriver texten. Länkarna *L* och *F* byggs inte.
-5. **Tangenter:** A, B och S. **A** var redan genväg för AI-panelen; den flyttas till **I** (se 5.4 och 4.7).
+5. **Tangenter:** A, B och S. **A** är redan genväg för AI-panelen; den flyttas till **I** när *Add Above* byggs (se 5.4 och 4.7). Tills dess ligger AI-växlingen kvar på A.
 6. **Flera markerade:** ett gemensamt nytt block som kopplas till alla markerade.
 7. **Nytt diagram** börjar med en controller och en controlled process, kopplade med styråtgärd och återkoppling.
 8. **Tabeller och JSON** behålls som de är. Markeringen visas i tabellen och texten redigeras där (5.9).
+9. **Markering:** klick eller Enter på ett block markerar det. Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
+10. **Länkar och block utan text** visar sitt id (princip i 5.10).
+11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 
@@ -59,7 +62,8 @@ Feature: Lägga till block i kontrollstrukturen
     And modellen har ett nytt block under "ECU", med länkar
     And det nya blocket är markerat
 
-  @STPA-ADD-3
+  # Skjuts upp: byggs inte i första versionen
+  @STPA-ADD-3 @later
   Scenario: Add Above tar över länkarna uppåt
     Given "Brakes" är markerad
     When användaren trycker A
@@ -81,7 +85,8 @@ Feature: Lägga till block i kontrollstrukturen
     Then modellen har ett enda nytt block
     And både "Driver" och "Supervisor" har en styråtgärd till och en återkoppling från det nya blocket
 
-  @STPA-ADD-6
+  # Skjuts upp: byggs inte i första versionen
+  @STPA-ADD-6 @later
   Scenario: Flera markerade får ett gemensamt nytt block ovanför sig
     Given "Brakes" och "Steering" är markerade
     When användaren trycker A
@@ -114,7 +119,7 @@ Feature: Lägga till block i kontrollstrukturen
     Given inget block är markerat
     When användaren trycker A
     Then modellen är oförändrad
-    And knapparna Add Above, Add Below och Add Beside är inaktiva
+    And knapparna Add Below och Add Beside är inaktiva
 ```
 
 Esc i namncellen lämnar tabellen men tar inte bort blocket (5.9). Ett block utan namn visas med sitt id och kan ångras med Ctrl/⌘+Z.
@@ -147,28 +152,89 @@ Feature: Typen följer läget
 
 ### STPA-LINK: länkar utan text, Convert
 
-**Länkar som skapas av ett tillägg har ingen text, och går att markera och fylla i i tabellen. *Convert to actuator* och *Convert to sensor* finns för styråtgärder respektive återkopplingar och går att hitta även när inget är markerat.**
+**Länkar som skapas av ett tillägg har ingen text. En länk eller ett block utan text visar sitt id, så att den syns, går att markera och fyllas i i tabellen. Varje styråtgärd kan konverteras till ett aktuatorblock och varje återkoppling till ett sensorblock. *Convert to actuator* och *Convert to sensor* går att hitta även när inget är markerat.**
 
 ```gherkin
 Feature: Länkar och konvertering
   @STPA-LINK-1
   Scenario: En länk utan text syns och går att markera
     Given användaren har lagt till ett block med B
-    Then diagrammet visar styråtgärden och återkopplingen utan text
+    Then diagrammet visar id:t som etikett på styråtgärden och på återkopplingen
     And båda går att markera
 
   @STPA-LINK-2
-  Scenario: Texten skrivs i tabellen
+  Scenario: Texten skrivs i tabellen och ersätter id:t
     Given den nya styråtgärden är markerad
     When användaren skriver "ApplyBrakes" i dess textcell och trycker Enter
     Then modellen har styråtgärden med texten "ApplyBrakes"
-    And diagrammet visar texten
+    And diagrammet visar texten i stället för id:t
 
   @STPA-LINK-3
   Scenario: Convert finns för både styråtgärd och återkoppling
     Given en styråtgärd är markerad
     Then knappen Convert to actuator är synlig i verktygsfältet och aktiv
     And knappen Convert to sensor är synlig men inaktiv, med ett verktygstips som säger varför
+
+  @STPA-LINK-4
+  Scenario: Convert gäller alla länkar, oavsett vilka block de går mellan
+    Given en styråtgärd mellan två controllers är markerad
+    When användaren väljer Convert to actuator
+    Then modellen har ett aktuatorblock mellan de två blocken
+    And styråtgärden går via aktuatorblocket
+
+  @STPA-LINK-5
+  Scenario: En återkoppling blir ett sensorblock
+    Given en återkoppling är markerad
+    When användaren väljer Convert to sensor
+    Then modellen har ett sensorblock på återkopplingens väg
+```
+
+### STPA-SEL: markera och avmarkera
+
+**Ett klick eller Enter på ett block markerar det och ger namncellen på dess rad fokus. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort: blocken är en sort, styråtgärderna en och återkopplingarna en.**
+
+Det skiljer sig från 5.4, där Ctrl/⌘+Enter motsvarar klick och Enter redigerar. I STPA gör Enter och Ctrl/⌘+Enter samma sak som ett klick, eftersom ett klick redan flyttar fokus till namncellen. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
+
+```gherkin
+Feature: Markera och avmarkera
+  @STPA-SEL-1
+  Scenario: Klick markerar ett block
+    Given inget är markerat
+    When användaren klickar på blocket "Driver"
+    Then bara "Driver" är markerad
+    And namncellen på dess rad i tabellen har fokus
+
+  @STPA-SEL-2
+  Scenario: Enter markerar det indikerade blocket
+    Given indikeringen står på "Driver"
+    When användaren trycker Enter
+    Then resultatet är detsamma som vid ett klick på "Driver"
+
+  @STPA-SEL-3
+  Scenario: Esc i diagrammet tar bort markeringen
+    Given "Driver" är markerad och fokus är i diagrammet
+    When användaren trycker Esc
+    Then inget är markerat
+
+  @STPA-SEL-4
+  Scenario: Klick utanför tar bort markeringen
+    Given "Driver" är markerad
+    When användaren klickar på en tom yta i diagrammet
+    Then inget är markerat
+
+  @STPA-SEL-5
+  Scenario: Shift+klick och Ctrl/⌘+klick väljer flera av samma sort
+    Given "Driver" är markerad
+    When användaren Shift+klickar på "Brakes"
+    Then "Driver" och "Brakes" är markerade
+    When användaren Ctrl/⌘+klickar på "Brakes"
+    Then bara "Driver" är markerad
+
+  @STPA-SEL-6
+  Scenario: Ett objekt av en annan sort ersätter markeringen
+    Given blocket "Driver" är markerat
+    When användaren Shift+klickar på en styråtgärd
+    Then bara styråtgärden är markerad
 ```
 
 ### STPA-NEW: nytt diagram
@@ -194,7 +260,8 @@ Feature: Tangenter och knappar
     When användaren klickar knappen Add Below
     Then resultatet är detsamma som när användaren trycker B
 
-  @STPA-KEYS-2
+  # Skjuts upp tillsammans med Add Above
+  @STPA-KEYS-2 @later
   Scenario: Tangenten I växlar AI-panelen, A gör det inte
     Given AI-panelen är öppen
     When användaren trycker I
@@ -215,18 +282,19 @@ Feature: Tangenter och knappar
 - Länkarna *L* och *F* och att dra för att koppla. Länkar mellan befintliga block ändras i tabellerna (5.1).
 - Orden Child, Parent och Sibling i STPA.
 - Att ange vänster eller höger. Sidordningen följer länkarna och listan.
+- *Add Above* (och tangenten A) i första versionen. Kraven finns kvar med taggen `@later`.
+- Markering av blandade sorter: i STPA innehåller markeringen bara en sort, så en AI-fråga kan inte avgränsas till ett block och en länk samtidigt (5.5).
 
 ## 5. Öppna punkter att avgöra vid bygget
 
-- **Länk utan text:** diagrammet visar i dag länkens id när texten saknas. Hur en tom länk ritas ska avgöras i Penpot (en tom etikett, en markör eller ett id).
-- **Add Above med en befintlig överordnad (STPA-ADD-3):** det nya blocket sätts in mellan dem och tar över länkarna. Det är den mest osäkra delen, eftersom länkarna flyttas.
-- **Convert och blockens typ:** *Convert to actuator* gäller i dag bara styråtgärder som går till en controlled process. När ett block i mitten är en controller blir det oklart om konvertering ska vara möjlig dit.
+- **Add Above med en befintlig överordnad (STPA-ADD-3):** skjuts upp. Det nya blocket sätts in mellan dem och tar över länkarna, vilket är den mest osäkra delen, eftersom länkar flyttas.
+- **Aktuator- och sensorblock i layouten:** i dag ritas alla aktuatorer och sensorer på en rad ovanför processraden. När en styråtgärd mellan två controllers konverteras (STPA-LINK-4) ska blocket hamna mellan de två nivåerna. Schemat säger i dag att aktuatorns mål och sensorns källa är en controlled process, och den begränsningen ska bort.
 - **Var Convert sitter:** i dag finns knapparna bara i markeringsraden under diagrammet, och bara när något är markerat. Det är därför de är svåra att hitta.
-- **A och I:** att flytta AI-växlingen från A till I ändrar HTA och Bowtie, 4.7 och testerna `tests/shared/ai-panel-toggle.spec.mjs` och `tests/hta/ai-assist.spec.mjs`.
+- **A och I:** att flytta AI-växlingen från A till I ändrar HTA och Bowtie, 4.7 och testerna `tests/shared/ai-panel-toggle.spec.mjs` och `tests/hta/ai-assist.spec.mjs`. Det görs när *Add Above* byggs.
 
 ## 6. Nästa steg
 
 1. Rita verktygsfältet, de inaktiva lägena och hjälpen i Penpot (görs i en annan chatt).
 2. Granska grafiken.
-3. Skriv testerna i `tests/stpa/` och bygg i STPA Workbench, med *Add Below* först, sedan *Add Beside* och *Add Above*.
-4. Lägg till det gemensamma testet som kontrollerar att varje `@STPA-…`-id här har ett test.
+3. Skriv testerna i `tests/stpa/` och bygg i STPA Workbench, med *Add Below* först, sedan *Add Beside*, markeringen (STPA-SEL) och Convert. *Add Above* byggs senare.
+4. Lägg till det gemensamma testet som kontrollerar att varje `@STPA-…`-id här har ett test. Scenarier med `@later` hoppas över.
