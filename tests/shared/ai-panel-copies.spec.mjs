@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 import { WORKSPACE } from "../lib/tools.mjs";
 
 // The AI panel has one source, hfa-ds/scripts/ai-panel/ai-assist.js. Every tool holds a copy (npm run sync:ai-panel);
-// a tool differs only in how it mounts the panel (arkitektur.md, "AI-panelen").
+// a tool differs only in how it mounts the panel (docs/arkitektur.md, "AI-panelen").
 const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../scripts/ai-panel/ai-assist.js");
 const COPIES = ["hfa-hta/scripts/ai-assist.js", "hfa-bowtie/scripts/ai-assist.js", "hfa-stpa/workbench/ai-assist.js"];
 

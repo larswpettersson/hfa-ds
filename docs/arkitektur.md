@@ -13,7 +13,7 @@
 
 Liveversionerna publiceras via GitHub Pages. Det är vanliga webbsidor utan server bakom: det man matar in stannar i webbläsaren och lämnar den bara om användaren själv exporterar det (se avsnitt 1).
 
-Visuella designbeslut (typografi, storlekar, typsnittslista) beskrivs i [docs/designprinciper.md](docs/designprinciper.md).
+Visuella designbeslut (typografi, storlekar, typsnittslista) beskrivs i [docs/designprinciper.md](designprinciper.md).
 
 ## 1. Grundtanke: körbarhet i isolerade miljöer och sekretess
 
@@ -207,7 +207,7 @@ Omställningen till ett fullt stegvis arbetsflöde pågår, och datamodellen kom
 
 ## 7. AI-stöd: bilder i frågan (planerat)
 
-Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga till språkmodellen. Syftet och gränserna beskrivs i [designprinciperna, avsnitt 1.6](docs/designprinciper.md). Inget av detta är byggt (2026-11-03); AI-panelen beskrivs i avsnitt 10.
+Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga till språkmodellen. Syftet och gränserna beskrivs i [designprinciperna, avsnitt 1.6](designprinciper.md). Inget av detta är byggt (2026-11-03); AI-panelen beskrivs i avsnitt 10.
 
 **I webbläsaren.** Bilden kommer in genom att klistras in (`paste`-händelsen, `clipboardData`), dras in (`drop`) eller väljas med en filknapp. Den skalas ned med `<canvas>` med bibehållna proportioner till den storlek som är inställd (se nedan) och görs om till base64. Inget bibliotek behövs, och offlinefilerna fortsätter att fungera; bara själva AI-anropet kräver nätverk, som tidigare. En fråga består då av text och noll eller flera bilder, och varje leverantör översätter det till sitt format:
 
@@ -236,7 +236,7 @@ Planerat stöd för att skicka med en bild eller ett skärmklipp i en fråga til
 
 ## 8. HTA: anpassningsbara TTA-kolumner och AI-stödet (planerat)
 
-Syftet beskrivs i [designprinciperna, avsnitt 1.7](docs/designprinciper.md). Inget av detta är byggt (2026-11-03).
+Syftet beskrivs i [designprinciperna, avsnitt 1.7](designprinciper.md). Inget av detta är byggt (2026-11-03).
 
 **Utgångsläge.** Grenen `stpa-input` i hfa-hta låter analysfilen ange kolumnerna i `meta.columns`: `id`, `label`, `type` (`text`, `list` eller `select`), `options`, `visible` och `order`. Inbyggda kolumner kan döpas om, och andra id blir egna textkolumner som sparas på varje TTA-rad. I verktyget kan kolumner bara visas och döljas. AI-panelen på grenen `claude/ai-assistant` har de sex inbyggda HEI-fälten och deras betydelse fasta i systemprompten, ser inte egna kolumner och raderar dem när ett förslag tillämpas (`replaceState` anropar `normalizeTtaRecords` utan kolumnlistan).
 

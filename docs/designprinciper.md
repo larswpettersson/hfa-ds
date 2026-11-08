@@ -2,7 +2,7 @@
 
 *English version: [design-principles.md](design-principles.md)*
 
-Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](../arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
+Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
 
 ## 1. Syfte och enkelhet
 
@@ -135,7 +135,7 @@ Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av white
 - **Bilden stannar inte kvar.** Den sparas inte i verktyget eller i exporten och skickas inte om vid följdfrågor.
 - **Tydligt vad som lämnar datorn.** Ett skärmklipp kan innehålla mer än man tänkt. Vid en molnleverantör ska det framgå vid bilagan; för sekretessbelagda analyser krävs en lokal modell med bildstöd.
 
-Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 7.
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 7.
 
 ### 1.7 Anpassningsbara TTA-kolumner (planerat)
 
@@ -150,7 +150,7 @@ TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI
 - **Mallar som utgångspunkt.** Ett val som "HEI (HRA)" eller "Underlag till STPA" fyller i kolumnerna på en gång. Mallen är bara en start; analysen kan ändras efteråt.
 - **AI:n följer kolumnerna, den bestämmer dem inte.** Den formulerar innehåll i de kolumner som finns. Ett förslag om nya kolumner visas och godkänns som andra förslag (1.3) och kommer i så fall senare.
 
-Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](../arkitektur.md), avsnitt 8.
+Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 8.
 
 ## 2. Typografi
 
