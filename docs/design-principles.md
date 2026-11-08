@@ -321,6 +321,67 @@ This is how a typical complementary palette, green `#005F37`, blue `#00375F`, or
 - **`error` must differ from brand red**, so that errors are not mistaken for the brand colour. `#5D1A14` does (ΔL\* ≥ 17 in every simulation). The earlier `tokens.json` values (`#C70039` light, `#E03E3E` dark) did not and were replaced (2026-10-31).
 - **If the brand colour changes**, recompute the table and check the conclusions again.
 
+### 3.3 Surface layers: base, elevated and sunken
+
+The background tokens are used as three layers. They give grouping and hierarchy: what sits on top, what sits below and what is the background. They apply to the working interface in every tool and in Penpot, whatever the analysis model (a tree, two sides around a top event or a control structure).
+
+| Token | Used for | The idea |
+|---|---|---|
+| `background.base` | The page behind everything | Only the background. Nothing else sits in `base`. |
+| `background.elevated` | What you read or act on: panels, dialogs and popovers, objects in the diagram (task, card, barrier, block), buttons, table cells | What lies on top |
+| `background.sunken` | What holds something or is recessed: the diagram canvas, the toolbar, input fields and editors, the table header row, the legend, a hovered row | What lies underneath |
+
+**Check rule:** an object never has the same token as what it sits directly on. An object (`elevated`) on the diagram canvas (`sunken`) lifts, while a task (`elevated`) straight on a panel (`elevated`) is separated only by its border. Exceptions: table cells on the table's panel, where the grid separates the cells, and **controls** (buttons and fields), tables and popovers on an `elevated` panel. They are separated by their border (at least 3:1), by the hover and pressed states and, for a popover, by a shadow (see below). Without that exception the rule would hit every button on a panel.
+
+Status backgrounds (`background.success`, `error` and so on) replace the object's fill and do not change the rules above.
+
+**The layers are hierarchy, not delimitation.** The difference between the layers is small:
+
+| Theme | elevated / base | elevated / sunken | base / sunken |
+|---|---|---|---|
+| Light (`tokens.json`) | 1.11 | 1.21 | 1.10 |
+| Dark (HTA and Bowtie) | 1.17 | 1.73 | 1.49 |
+| Dark (STPA) | 1.17 | 1.37 | 1.18 |
+
+WCAG 1.4.11 requires 3:1 for what shows where a component begins. That is met by the **border** (1 px `foreground.muted` on components, `foreground.base` on dialogs and cards), not by the background. An object must therefore always have its border. On a projector the difference between the layers almost disappears.
+
+#### No fourth background token
+
+3:1 between backgrounds cannot be reached, however many tokens there are, as long as the colour rules require 7:1 for `foreground.base` against every background:
+
+| Theme | Requirement on the background | Largest contrast between two backgrounds |
+|---|---|---|
+| Light | Luminance at least 0.34 | 2.70 |
+| Dark | Luminance at most 0.095 | 2.90 |
+
+There is also no room for a fourth in the light theme. Lighter than `elevated` (`#FAFBFC`) only `#FFFFFF` remains, a difference of 1.04. Darker than `sunken` (`#E0E6EC`) breaks rule 6: `success` on `sunken` gives 4.8:1 and on `#D3DBE3` 4.3:1, and the limit is 4.5:1. In the dark theme the steps are 1.2 to 1.7, and disappear on a projector. Every new token would also have to be checked against all colour rules in both themes and changed in `tokens.json`, in three tools and in Penpot, for a difference that is barely visible.
+
+#### Depth beyond three layers
+
+A dialog on top of a panel on top of the page gets its depth in other ways than with a new surface:
+
+- **Shadow** on what lies on top: *raised* for cards and popovers, *overlay* for dialogs. In the dark theme shadows are hard to see; there the border and the fact that `elevated` is lighter than `base` carry the height.
+- **A scrim behind modal dialogs.** Everything under the dialog is dimmed, for example `foreground.base` at 40–50 %, instead of the dialog getting a surface of its own. The browser's `<dialog>` already has a `::backdrop` for it. The scrim is not a background text sits on, so the colour rules for backgrounds do not apply to it.
+- **Border always**, as above.
+
+The shadows are currently fixed values in the Penpot components (for example *Process Block*). Penpot has the token type *shadow*, but HFA DS has none defined. They are introduced when needed, and then in `tokens.json` and Penpot at the same time.
+
+#### Does not apply
+
+- **The graphic profile** (brand red and complementary colours) is governed by Trafikverket's manual and by 3.1 and 3.2.
+- **Printouts and images** of the analyses, where the background often has to be white.
+
+**Current state (2026-11-07):**
+
+| Tool or part | Deviation from 3.3 |
+|---|---|
+| Penpot: ✕ in the table | `foreground.subtle` gives 2.97:1 against `elevated` (light), 4.30:1 (dark) and 1.46:1 against a selected row. Should be `foreground.muted`. |
+| HTA | The buttons are `base`; should be `elevated` |
+| Bowtie | The cards and barriers are `base`; should be `elevated`. The canvas is already `sunken`. |
+| STPA | The process blocks are `sunken`; should be `elevated` on a `sunken` surface |
+
+**Tested in Example (2026-11-07):** the fixed colours in *TTA Row*, *TTA Toolbar* (now instances of *Action Button*) and *TTA Column Dialog* are replaced with tokens, and the HTA panel has a `sunken` diagram canvas with `elevated` tasks. Checked against the token values in both themes: all borders reach 3:1 against the surface below, and text in `foreground.base` reaches 7:1. The only thing that failed was the ✕ above. The rule about the same token on the same token hit buttons, the table and the column picker on an `elevated` panel, which is the reason for the exception for controls. Selected rows in the TTA table use `background.info` with a red marker, a selection marker of its own outside the three layers (5.5).
+
 ## 4. Buttons and dialogs
 
 ### 4.1 Buttons that open a dialog end with …
