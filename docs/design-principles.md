@@ -442,6 +442,46 @@ The analysis file is handled the same way in every tool, as in most programs (Wi
 
 Introduced in the tools step by step.
 
+### 4.5 The primary button is activated with Enter
+
+A **primary button** is a button with a red fill (`brand.primary`) and white text (`brand.on_primary`). It is what the user most often wants to do next.
+
+- **Enter activates it.** In a question field it is *Send*, and in a dialog it is the dialog's primary button. Esc cancels or answers no.
+- **There is only one active primary button in the interface at any given time.** When a dialog is open it is the dialog's button; the buttons behind it are not active and do not count.
+- **If the primary button cannot be used** it is shown as disabled, in a neutral style and not red, so that another button can be primary. Without a provider, for example, *Send* is disabled and *Settings…* is primary.
+- **In a dialog that warns about something the safe choice is primary**, so that Enter never does what is harder to undo. The riskier choice is made on purpose, with an ordinary button.
+
+**To check in the tools:** that every screen and dialog has at most one red button, and that Enter activates it.
+
+### 4.6 Question field: Enter sends, Shift+Enter gives a new line
+
+- **Enter sends** the question, as an activation of the primary button *Send* (4.5). **Shift+Enter** gives a line break. The text in the field says so: *Ask about the analysis… (Enter sends, Shift+Enter for a new line)*.
+- **An empty field sends nothing.** Enter while composing with an input method (IME, for example for Chinese or Japanese) does not send.
+- **Ctrl/⌘+Enter no longer sends** (it was the rule before). That key means *select* (5.4).
+
+**Current state (2026-11-07):** HTA and Bowtie (`ai-assist.js`) and STPA send with Ctrl/⌘+Enter and have that text in the field. They are to be changed.
+
+### 4.7 The AI panel: a toggle button, open by default
+
+- **The panel is on the right and is open by default.** An icon button (a window with a panel on the right) shows and hides it. The button is in the same place on the screen in every tool: at the right end of the toolbar when the panel is hidden, and in the panel's header when it is open. It replaces ✕ and the *AI…* button.
+- **The icon has only the states Hovered and Pressed**, no status state. *Pressed* is temporary: it applies while the mouse button is down, until the user releases it and the click is over. Whether the panel is open or hidden is visible from the panel itself.
+- **The button has no …**, since it only shows or hides a panel and does not open a dialog (4.1). The tooltip is for example *Show AI panel* or *Hide AI panel*.
+- **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is primary (4.5), and the question field and *Send* are disabled.
+- **The provider pill shows the chosen provider** (for example *Local*), not whether the connection responds.
+
+### 4.8 Auto: step by step or auto
+
+- **Step by step is the default.** The AI suggests one step at a time and the user decides on each suggestion.
+- **Auto is in Settings for the AI configuration**, as a switch `Auto` that is off by default. It takes no room in the panel.
+- **A warning text is shown under the switch, all the time, and there is no dialog when it is turned on.** The text says that in Auto the AI produces large parts of the analysis in one go, and that you need to know the material to understand and judge the analysis model. A plain text under the switch is better than logic for when a warning is shown.
+- **The warning is a box with `background.warning`** and text in `foreground.base`. Status is shown only with a fill colour (3.3).
+- **Auto does not change** that the AI's suggestions are shown before and after (1.3) and can be undone.
+
+### 4.9 Narrow button and Pill
+
+- **The narrow action button** (for example *Compress*, *Expand*, *Clear* and *Export .md* in the AI panel) is a variant of Action Button: `Type = Narrow`, with the same states (*Default*, *Hovered*, *Pressed*) and tokens as the others. The text is 12 px (`typography.caption`), the padding 4 and 8 px and the corner radius 4.
+- **Pill** is a component with the property `Status`: *Neutral*, *Info*, *Success*, *Warning* and *Error*. The status is shown only with the fill colour (`background.info`, `success`, `warning`, `error`), the text is `foreground.base`, and the border is `foreground.muted` on *Neutral* and `foreground.base` on the status variants, so that it reaches 3:1. The provider pill in the AI panel is a *Pill*: *Neutral* with the provider's name, and *Warning* with the text *No provider*.
+
 ## 5. Navigating, selecting and moving objects
 
 The same principles apply in every tool and every kind of diagram: tasks in HTA, cards, barriers, hazard and top event in Bowtie, and blocks in STPA. The aim is that anyone who wants to can work in the diagram with the keyboard, without having to click every single object with the mouse.
