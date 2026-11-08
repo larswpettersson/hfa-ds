@@ -56,7 +56,7 @@ I HTA är **C** lägg till barn, **S** lägg till syskon, **D** duplicera och **
 | Syskon, ta bort, byta namn | Går att bygga i dag; tabellerna gör redan samma ändringar. |
 | Egna länkar (L och F) | Går att bygga. Länkläget finns som mönster i Bowtie. |
 | Förälder | Genomförbart, men länkarna ska flyttas, så det är den del som är mest osäker. |
-| Dra för att koppla | Möjligt men skjuts upp: kräver träffytor och förhandsvisning och är inte tangentbordsbaserat. L/F med klick räcker som första version. |
+| Dra för att koppla | Ej relevant för dessa applikationer |
 
 Datamodellen har redan block, styråtgärder, återkoppling och typbyte. Diagrammet ritas om från JSON, så varje ändring blir ett steg som går att ångra, på samma sätt som i tabellerna.
 
