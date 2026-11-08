@@ -459,7 +459,7 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **An empty field sends nothing.** Enter while composing with an input method (IME, for example for Chinese or Japanese) does not send.
 - **Ctrl/⌘+Enter no longer sends** (it was the rule before). That key means *select* (5.4).
 
-**Current state (2026-11-07):** HTA and Bowtie (`ai-assist.js`) and STPA send with Ctrl/⌘+Enter and have that text in the field. They are to be changed.
+**Current state (2026-11-08):** HTA, Bowtie (`ai-assist.js`) and STPA follow the rule: Enter sends, Shift+Enter gives a new line, and Ctrl/⌘+Enter does not send. An empty field sends nothing, and Enter does nothing while a reply is running (it is ended only with *Stop*) or during IME input. The test `tests/shared/enter-sends.spec.mjs` checks it in all three.
 
 ### 4.7 The AI panel: a toggle button, open by default
 
