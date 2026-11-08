@@ -10,10 +10,6 @@ const field = (page, key) => page.locator(`#structureWrap [data-key="${key}"]`);
 const labelTexts = (loc) => loc.evaluateAll((els) => els.map((el) => el.firstChild.nodeValue));
 const json = (page) => getEditorJson(page, "#editor");
 const focusedKey = (page) => page.evaluate(() => document.activeElement?.dataset?.key || null);
-const panelShare = async (page) => {
-  const [l, r] = await Promise.all(["#leftPanel", "#rightPanel"].map((s) => page.locator(s).boundingBox()));
-  return l.width / (l.width + r.width);
-};
 
 test.describe("STPA workbench: structure tables, type switches and layout", () => {
   let errors;
@@ -23,7 +19,7 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     ({ errors } = await openTool(page, T));
     await page.evaluate(() => {
       localStorage.clear();
-      localStorage.setItem("hfa-stpa:settings", JSON.stringify({ provider: "claude", claude_key: "test-key", mcp_enabled: false }));
+      localStorage.setItem("hfa-ai:providers", JSON.stringify({ provider: "claude", claude_key: "test-key" }));
     });
     await page.reload();
     await page.waitForSelector("#diagram g.node");
@@ -102,9 +98,9 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     const add = { patch: true, actuators: [{ id: "a1", name: "Hydraulic unit", target: "p1", actuation: "Brake pressure" }], control_actions: [{ id: "ca1", target: "a1" }] };
     const sw = { patch: true, remove: ["a1"], controlled_processes: [{ id: "a1", name: "Hydraulic unit", states: ["Idle", "Pressurised"] }] };
     await mockClaude(page, "Add:\n\n```json\n" + JSON.stringify(add) + "\n```\n\nSwitch:\n\n```json\n" + JSON.stringify(sw) + "\n```");
-    await page.fill("#prompt", "Add a hydraulic actuator");
-    await page.click("#sendBtn");
-    const cards = page.locator(".struct-card");
+    await page.fill(".ai-chat textarea", "Add a hydraulic actuator");
+    await page.click(".ai-chat button[type=submit]");
+    const cards = page.locator(".ai-card");
     await expect(cards).toHaveCount(2);
     await cards.nth(0).locator("button", { hasText: "Apply to editor" }).click();
     await expect(node(page, "a1")).toHaveClass(/act/);
@@ -114,24 +110,6 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     expect(m.controlled_processes.find((p) => p.id === "a1")).toEqual(sw.controlled_processes[0]);
     expect(m.control_actions.find((c) => c.id === "ca1").target).toBe("a1");
     await expect(node(page, "a1")).toHaveClass(/proc/);
-  });
-
-  test("the control structure panel expands to ⅔ and ¾ and the split survives a reload", async ({ page }) => {
-    expect(await panelShare(page)).toBeCloseTo(0.5, 2);
-    const expand = page.locator('#leftPanel .wbtn[data-dir="1"]');
-    await expand.click();
-    expect(await panelShare(page)).toBeCloseTo(2 / 3, 2);
-    await expand.click();
-    expect(await panelShare(page)).toBeCloseTo(3 / 4, 2);
-    await expect(expand).toBeDisabled();
-    await page.reload();
-    await page.waitForSelector("#diagram g.node");
-    expect(await panelShare(page)).toBeCloseTo(3 / 4, 2);
-    await page.locator('#rightPanel .wbtn[data-dir="1"]').click(); // expanding the analysis compresses the structure
-    expect(await panelShare(page)).toBeCloseTo(2 / 3, 2);
-    await page.locator("#splitter").focus();
-    await page.keyboard.press("Home");
-    expect(await panelShare(page)).toBeCloseTo(1 / 4, 2);
   });
 
   test("views compress and expand, keep their state after a reload, and edits stay undoable with the JSON compressed", async ({ page }) => {

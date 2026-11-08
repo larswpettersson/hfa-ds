@@ -448,7 +448,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 
 - **Enter aktiverar den.** I ett frågefält är det *Send*, och i en dialog är det dialogens primary-knapp. Esc avbryter eller svarar nej.
 - **Det finns bara en aktiv primary-knapp i gränssnittet vid varje givet tillfälle.** När en dialog är öppen är det dialogens knapp; knapparna bakom den är inte aktiva och räknas inte.
-- **Går primary-knappen inte att använda** visas den som inaktiv, i neutral stil och inte röd, så att en annan knapp kan vara primary. Utan en leverantör är till exempel *Send* inaktiv och *Settings…* primary.
+- **Går primary-knappen inte att använda** visas den som inaktiv, i neutral stil och inte röd, så att en annan knapp kan vara primary. Utan en leverantör är till exempel *Send* inaktiv, och då är ingen knapp primary; *Settings…* är en vanlig knapp, eftersom det är *Send* som Enter aktiverar.
 - **I en dialog som varnar för något är det säkra valet primary**, så att Enter aldrig utför det som är svårare att ångra. Det farligare valet görs med flit, med en vanlig knapp.
 
 **Att kontrollera i verktygen:** att varje skärm och dialog har högst en röd knapp, och att Enter aktiverar den.
@@ -466,10 +466,10 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Panelen ligger på höger sida och är öppen som standard.** En ikonknapp (ett fönster med en panel till höger) visar och döljer den. Knappen sitter på samma plats på skärmen i alla verktyg: längst till höger i verktygsraden när panelen är dold, och i panelens rubrik när den är öppen. Den ersätter ✕ och knappen *AI…*.
 - **Ikonen har bara tillstånden Hovered och Pressed**, inget statustillstånd. *Pressed* är tillfälligt: det gäller medan musknappen är nedtryckt, till dess att användaren släpper den och klicket är slut. Om panelen är öppen eller dold syns på panelen själv.
 - **Knappen har ingen …**, eftersom den bara visar eller döljer en panel och inte öppnar en dialog (4.1). Verktygstipset heter till exempel *Show AI panel* eller *Hide AI panel*.
-- **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är primary (4.5) och snabbåtgärder, frågefält och *Send* är inaktiva.
+- **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är en vanlig knapp och snabbåtgärder, frågefält och *Send* är inaktiva.
 - **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
 
-**Nuläge (2026-11-08):** HTA och Bowtie (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som enda röda knapp och inaktiva *Send* och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA har fortfarande ingen växlingsknapp (chatten är alltid synlig). Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
+**Nuläge (2026-11-08):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som vanlig knapp, och inaktiva *Send* (primary först när det finns en leverantör) och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA använder sedan 2026-11-08 samma panel som de andra (arkitektur.md, avsnitt 10), så knappen och läget utan leverantör är lika i alla tre. Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
 
 ### 4.8 Auto: stegvis analys eller auto
 

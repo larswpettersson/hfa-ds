@@ -12,7 +12,10 @@
     "scan:secrets": "bash scripts/security/scan-secrets.sh",
     "test": "playwright test",
     "test:shared": "playwright test tests/shared",
-    "test:stpa": "playwright test tests/stpa"
+    "test:stpa": "playwright test tests/stpa",
+    "sync:ai-panel": "node scripts/ai-panel/sync.mjs",
+    "check:ai-panel": "node scripts/ai-panel/sync.mjs --check",
+    "build:offline": "node scripts/build/inline-offline.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1"

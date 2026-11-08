@@ -18,9 +18,9 @@ const TOOLS = [
     open: (page) => openPanel(page),
   },
   {
-    id: "stpa-workbench", ready: "#diagram g.node", prompt: "#prompt", answers: ".msg.assistant",
-    storage: ["hfa-stpa:settings", { provider: "claude", claude_key: "test-key", mcp_enabled: false }],
-    open: async () => {},
+    id: "stpa-workbench", ready: "#diagram g.node", prompt: ".ai-chat textarea", answers: ".ai-msg.assistant",
+    storage: ["hfa-ai:providers", { provider: "claude", claude_key: "test-key" }],
+    open: (page) => openPanel(page),
   },
 ];
 

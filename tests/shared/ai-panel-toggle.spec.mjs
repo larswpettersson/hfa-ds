@@ -3,10 +3,11 @@ import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 
 // Design principles 4.5 and 4.7: the AI panel is open by default and has an icon toggle with only hover and pressed;
-// without a provider the panel says so, and there is only one primary button.
+// without a provider the panel says so, and Send is the only primary button.
 const TOOLS = [
   { id: "hta", ready: ".task", toolbar: ".header .toolbar" },
   { id: "bowtie", ready: ".card", toolbar: ".toolbar" },
+  { id: "stpa-workbench", ready: "#diagram g.node", toolbar: "header .row" },
 ];
 const PROVIDERS = { provider: "claude", claude_key: "test-key" };
 
@@ -68,7 +69,7 @@ for (const c of TOOLS) {
       expect(await bg()).toBe(rest); // the toggle looks the same whether the panel is open or hidden
     });
 
-    test("without a provider the panel says so and there is one primary button", async ({ page }) => {
+    test("without a provider the panel says so, Send is disabled and nothing is primary", async ({ page }) => {
       await load(page, null);
       const panel = page.locator(".ai-panel");
       await expect(panel.locator(".ai-pill")).toHaveText("No provider");
@@ -78,8 +79,7 @@ for (const c of TOOLS) {
       await expect(panel.locator('.ai-chat button[type="submit"]')).toBeDisabled();
       await expect(panel.locator(".ai-chat textarea")).toBeDisabled();
       await expect(panel.locator(".ai-chat textarea")).toHaveAttribute("placeholder", /Set up a provider in Settings/);
-      await expect(panel.locator("button.primary")).toHaveCount(1);
-      await expect(panel.locator("button.primary")).toHaveText("Settings…");
+      await expect(panel.locator("button.primary")).toHaveCount(0); // Settings… is an ordinary button; Enter sends, and Send is the primary one
     });
 
     test("with a provider Send is the only primary button", async ({ page }) => {
