@@ -448,7 +448,7 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 
 - **Enter activates it.** In a question field it is *Send*, and in a dialog it is the dialog's primary button. Esc cancels or answers no.
 - **There is only one active primary button in the interface at any given time.** When a dialog is open it is the dialog's button; the buttons behind it are not active and do not count.
-- **If the primary button cannot be used** it is shown as disabled, in a neutral style and not red, so that another button can be primary. Without a provider, for example, *Send* is disabled and *Settings…* is primary.
+- **If the primary button cannot be used** it is shown as disabled, in a neutral style and not red, so that another button can be primary. Without a provider, for example, *Send* is disabled and then no button is primary; *Settings…* is an ordinary button, because *Send* is what Enter activates.
 - **In a dialog that warns about something the safe choice is primary**, so that Enter never does what is harder to undo. The riskier choice is made on purpose, with an ordinary button.
 
 **To check in the tools:** that every screen and dialog has at most one red button, and that Enter activates it.
@@ -466,10 +466,10 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **The panel is on the right and is open by default.** An icon button (a window with a panel on the right) shows and hides it. The button is in the same place on the screen in every tool: at the right end of the toolbar when the panel is hidden, and in the panel's header when it is open. It replaces ✕ and the *AI…* button.
 - **The icon has only the states Hovered and Pressed**, no status state. *Pressed* is temporary: it applies while the mouse button is down, until the user releases it and the click is over. Whether the panel is open or hidden is visible from the panel itself.
 - **The button has no …**, since it only shows or hides a panel and does not open a dialog (4.1). The tooltip is for example *Show AI panel* or *Hide AI panel*.
-- **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is primary (4.5), and the question field and *Send* are disabled.
+- **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is an ordinary button, and the question field and *Send* are disabled.
 - **The provider pill shows the chosen provider** (for example *Local*), not whether the connection responds.
 
-**Current state (2026-11-08):** HTA, Bowtie and STPA (`ai-assist.js`) follow 4.7: the panel is open by default, the icon button replaces *AI…* and ✕, and without a provider they show *No provider*, a warning box, *Settings…* as the only red button and a disabled *Send* and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. Since 2026-11-08 STPA uses the same panel as the others (ARCHITECTURE.md, section 10), so the toggle and the state without a provider are the same in all three. The quick actions are still in the tools, while the design in Penpot has removed them.
+**Current state (2026-11-08):** HTA, Bowtie and STPA (`ai-assist.js`) follow 4.7: the panel is open by default, the icon button replaces *AI…* and ✕, and without a provider they show *No provider*, a warning box, *Settings…* as an ordinary button, and a disabled *Send* (primary once a provider exists) and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. Since 2026-11-08 STPA uses the same panel as the others (ARCHITECTURE.md, section 10), so the toggle and the state without a provider are the same in all three. The quick actions are still in the tools, while the design in Penpot has removed them.
 
 ### 4.8 Auto: step by step or auto
 
