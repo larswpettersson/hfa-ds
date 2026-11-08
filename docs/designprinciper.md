@@ -459,7 +459,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Ett tomt fält skickar inget.** Enter under pågående inmatning med inmatningsmetod (IME, till exempel för kinesiska eller japanska) skickar inte.
 - **Ctrl/⌘+Enter skickar inte längre** (det var regeln tidigare). Den tangenten betyder *markera* (5.4).
 
-**Nuläge (2026-11-07):** HTA och Bowtie (`ai-assist.js`) och STPA skickar med Ctrl/⌘+Enter och har den texten i fältet. De ska ändras.
+**Nuläge (2026-11-08):** HTA, Bowtie (`ai-assist.js`) och STPA följer regeln: Enter skickar, Shift+Enter ger en ny rad, och Ctrl/⌘+Enter skickar inte. Ett tomt fält skickar inget, och Enter gör inget medan ett svar pågår (det avbryts bara med *Stop*) eller under IME-inmatning. Testet `tests/shared/enter-sends.spec.mjs` kontrollerar det i alla tre.
 
 ### 4.7 AI-panelen: en växlingsknapp, öppen som standard
 
