@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 import { mockClaude } from "../lib/claude.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 const T = tool("hta");
 const fence = (obj) => "Proposal:\n\n```json\n" + JSON.stringify(obj, null, 2) + "\n```";
@@ -29,7 +30,9 @@ test.describe("HTA: AI panel", () => {
     await expect(page.locator(".ai-msg.assistant")).toHaveCount(n);
   };
 
-  test("A opens the panel; letters typed in it do not reach the editor's shortcuts", async ({ page }) => {
+  test("the panel is open by default; A hides and shows it; letters typed in it do not reach the editor's shortcuts", async ({ page }) => {
+    await expect(page.locator(".ai-panel")).toBeVisible();
+    await page.keyboard.press("a");
     await expect(page.locator(".ai-panel")).toBeHidden();
     await page.keyboard.press("a");
     await expect(page.locator(".ai-panel")).toBeVisible();
@@ -42,7 +45,7 @@ test.describe("HTA: AI panel", () => {
 
   test("a question sends the hierarchy and TTA rows; a selected task scopes it", async ({ page }) => {
     const bodies = await mockClaude(page, "Fine.");
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await page.click('.task[data-task-id="1.2"] .task-id');
     await expect(page.locator(".ai-scope strong")).toHaveText('task 1.2 "Apply Brake"');
     await ask(page, "What can go wrong?");
@@ -63,7 +66,7 @@ test.describe("HTA: AI panel", () => {
       ttaRecords: [{ taskId: "n1", externalErrorMode: "Omission", consequence: "Wrong route" }, { id: "r3", recovery: "ATP" }],
       remove: ["r2"],
     }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Improve");
     await expect(page.locator(".ai-card strong")).toHaveText("HTA patch · 2 tasks, 2 TTA rows, remove r2");
     await page.click(".ai-card .ai-apply");
@@ -88,7 +91,7 @@ test.describe("HTA: AI panel", () => {
   test("a complete analysis loads after confirmation", async ({ page }) => {
     await mockClaude(page, fence({ root: { id: "1", title: "Boil water", children: [{ id: "1.1", title: "Fill kettle", children: [] }, { id: "1.2", title: "Switch on", children: [] }] },
       ttaRecords: [{ id: "x1", taskId: "1.2", externalErrorMode: "Omission" }] }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Redo");
     await expect(page.locator(".ai-card strong")).toHaveText("HTA · 3 tasks, 1 TTA rows");
     page.once("dialog", (d) => d.accept());
@@ -101,7 +104,7 @@ test.describe("HTA: AI panel", () => {
   test("a patch with an unknown parent is refused and changes nothing", async ({ page }) => {
     const before = await state(page);
     await mockClaude(page, fence({ patch: true, tasks: [{ id: "n1", parent: "9.9", title: "Lost" }] }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Add");
     await page.click(".ai-card .ai-apply");
     await expect(page.locator(".ai-status")).toContainText("Could not apply: Parent 9.9");

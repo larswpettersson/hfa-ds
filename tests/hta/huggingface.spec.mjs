@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 import { mockHuggingFace } from "../lib/huggingface.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 // The AI panel is shared by HTA and Bowtie (scripts/ai-assist.js); the provider is tested once, here.
 const T = tool("hta");
@@ -17,7 +18,7 @@ test.describe("AI panel: Hugging Face provider", () => {
   test("a question goes to the router with the token, system prompt and Gemma 4 by default", async ({ page }) => {
     const requests = await mockHuggingFace(page, "## Review\n\nLooks fine.");
     await page.reload();
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await expect(page.locator(".ai-head .ai-pill")).toHaveText("Hugging Face");
     // the model list comes from the router
     await expect(page.locator(".ai-chat select option")).toHaveCount(2);
@@ -38,7 +39,7 @@ test.describe("AI panel: Hugging Face provider", () => {
   test("used-up credits (HTTP 402) are explained", async ({ page }) => {
     await mockHuggingFace(page, "", { status: 402 });
     await page.reload();
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await page.fill(".ai-chat textarea", "Review");
     await page.click(".ai-chat button[type=submit]");
     await expect(page.locator(".ai-msg.error")).toContainText("Inference Providers credits");

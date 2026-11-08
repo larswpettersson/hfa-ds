@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 import { mockClaude } from "../lib/claude.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 // Design principle 4.6: in the question field Enter sends and Shift+Enter gives a new line.
 // An empty field sends nothing, and Ctrl/⌘+Enter no longer sends.
@@ -9,12 +10,12 @@ const TOOLS = [
   {
     id: "hta", ready: ".task", prompt: ".ai-chat textarea", answers: ".ai-msg.assistant",
     storage: ["hfa-ai:providers", { provider: "claude", claude_key: "test-key" }],
-    open: (page) => page.click(".ai-toggle"),
+    open: (page) => openPanel(page),
   },
   {
     id: "bowtie", ready: ".card", prompt: ".ai-chat textarea", answers: ".ai-msg.assistant",
     storage: ["hfa-ai:providers", { provider: "claude", claude_key: "test-key" }],
-    open: (page) => page.click(".ai-toggle"),
+    open: (page) => openPanel(page),
   },
   {
     id: "stpa-workbench", ready: "#diagram g.node", prompt: "#prompt", answers: ".msg.assistant",

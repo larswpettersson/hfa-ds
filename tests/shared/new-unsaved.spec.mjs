@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 // New (design principles 4.3) and the question about unsaved changes before Open… (4.4), in HTA and Bowtie.
 const TOOLS = [
@@ -56,7 +57,7 @@ for (const t of TOOLS) {
     });
 
     test("New asks, replaces the analysis with the example and clears the AI conversation", async ({ page }) => {
-      await page.click(".ai-toggle");
+      await openPanel(page);
       await expect(page.locator(".ai-msg")).not.toHaveCount(0); // the welcome text
       await t.edit(page);
 

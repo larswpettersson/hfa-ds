@@ -469,6 +469,8 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is primary (4.5), and the question field and *Send* are disabled.
 - **The provider pill shows the chosen provider** (for example *Local*), not whether the connection responds.
 
+**Current state (2026-11-08):** HTA and Bowtie (`ai-assist.js`) follow 4.7: the panel is open by default, the icon button replaces *AI…* and ✕, and without a provider they show *No provider*, a warning box, *Settings…* as the only red button and a disabled *Send* and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. STPA still has no toggle (its chat is always visible). The quick actions are still in the tools, while the design in Penpot has removed them.
+
 ### 4.8 Auto: step by step or auto
 
 - **Step by step is the default.** The AI suggests one step at a time and the user decides on each suggestion.
