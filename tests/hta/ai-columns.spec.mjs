@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 import { mockClaude } from "../lib/claude.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 // The AI support follows the analysis' TTA columns: architecture section 8, step 3.
 const T = tool("hta");
@@ -47,8 +48,8 @@ test.describe("HTA: AI support follows the TTA columns", () => {
 
   test("the prompt describes the analysis' columns and the context carries their values", async ({ page }) => {
     const bodies = await mockClaude(page, "Fine.");
-    await page.click(".ai-toggle");
-    await expect(page.locator(".ai-toggle")).toHaveText("AI…");
+    await openPanel(page);
+    await expect(page.locator(".ai-toggle")).toHaveAttribute("aria-label", "Hide AI panel");
     await ask(page, "Fill in");
     const sys = bodies[0].system;
     expect(sys).toContain('- "controller" (Controller; text): Who carries out the task');
@@ -71,7 +72,7 @@ test.describe("HTA: AI support follows the TTA columns", () => {
         { taskId: "n1", controller: "PF / PM", hazards: ["H2"] },
       ],
     }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Fill in");
     await page.click(".ai-card .ai-apply");
     await expect(page.locator(".ai-status")).toContainText("Patch applied");
@@ -85,7 +86,7 @@ test.describe("HTA: AI support follows the TTA columns", () => {
   test("a patch with a field that is not a column is refused and changes nothing", async ({ page }) => {
     const before = await rows(page);
     await mockClaude(page, fence({ patch: true, ttaRecords: [{ id: "r1", controller: "PM", recovery: "ATP" }] }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Fill in");
     await page.click(".ai-card .ai-apply");
     await expect(page.locator(".ai-status")).toContainText('"recovery" that is not a column');
@@ -95,7 +96,7 @@ test.describe("HTA: AI support follows the TTA columns", () => {
   test("a select value outside the column's options is refused", async ({ page }) => {
     const before = await rows(page);
     await mockClaude(page, fence({ patch: true, ttaRecords: [{ id: "r1", severity: "Medium" }] }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Fill in");
     await page.click(".ai-card .ai-apply");
     await expect(page.locator(".ai-status")).toContainText('"Medium" is not one of the options of "Severity"');

@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 import { mockClaude } from "../lib/claude.mjs";
+import { openPanel } from "../lib/ai-panel.mjs";
 
 const T = tool("bowtie");
 const fence = (obj) => "Proposal:\n\n```json\n" + JSON.stringify(obj, null, 2) + "\n```";
@@ -27,7 +28,7 @@ test.describe("Bowtie: AI panel", () => {
 
   test("the question carries the compact bowtie; a selected card scopes it", async ({ page }) => {
     const bodies = await mockClaude(page, "Fine.");
-    await page.keyboard.press("a");
+    await openPanel(page);
     await page.locator("#c-C1").click({ position: { x: 4, y: 4 } });
     await expect(page.locator(".ai-scope strong")).toHaveText("C1");
     await ask(page, "Barriers for C1?");
@@ -48,7 +49,7 @@ test.describe("Bowtie: AI panel", () => {
       reactiveBarriers: [{ id: "R1", status: "Unknown" }],
       remove: ["C3", "R2"],
     }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "Improve");
     await page.click(".ai-card .ai-apply");
     await expect(page.locator(".ai-status")).toContainText("P2 only guarded removed paths");
@@ -72,7 +73,7 @@ test.describe("Bowtie: AI panel", () => {
       consequences: [{ id: "K1", description: "Burn" }],
       reactiveBarriers: [{ id: "R1", description: "Cool water first aid", protects: ["K1"] }],
     }));
-    await page.click(".ai-toggle");
+    await openPanel(page);
     await ask(page, "New");
     await expect(page.locator(".ai-card strong")).toHaveText("Bowtie · 2 causes, 3 barriers, 1 consequences");
     page.once("dialog", (d) => d.accept());
