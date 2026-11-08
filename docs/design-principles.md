@@ -2,7 +2,7 @@
 
 *Swedish version: [designprinciper.md](designprinciper.md)*
 
-Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](../ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
+Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
 
 ## 1. Purpose and simplicity
 
@@ -135,7 +135,7 @@ The user should be able to give the AI an image along with the question: a photo
 - **The image does not stay.** It is not saved in the tool or in the export, and it is not sent again with follow-up questions.
 - **Clear about what leaves the computer.** A screenshot can contain more than intended. With a cloud provider this is stated at the attachment; confidential analyses require a local model that reads images.
 
-None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](../ARCHITECTURE.md), section 7.
+None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 7.
 
 ### 1.7 Customisable TTA columns (planned)
 
@@ -150,7 +150,7 @@ The TTA table in HTA serves different purposes: for example error identification
 - **Templates as a starting point.** A choice such as "HEI (HRA)" or "Input to STPA" fills in the columns at once. The template is only a start; the analysis can be changed afterwards.
 - **The AI follows the columns, it does not decide them.** It phrases content in the columns that exist. A suggestion of new columns is shown and accepted like any other suggestion (1.3), and if so comes later.
 
-None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](../ARCHITECTURE.md), section 8.
+None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 8.
 
 ## 2. Typography
 

@@ -78,7 +78,7 @@ Det här kapitlet beskriver kedjan från dokumentation till verifierad kod, och 
 
 Arbetet drivs av dokumentationen, inte av enskilda önskemål om komponenter:
 
-1. **Dokumentation.** Kravet beskrivs eller ändras först i [arkitektur.md](../arkitektur.md), [designprinciper.md](designprinciper.md) eller det här dokumentet. Inget implementeras som inte är dokumenterat.
+1. **Dokumentation.** Kravet beskrivs eller ändras först i [arkitektur.md](arkitektur.md), [designprinciper.md](designprinciper.md) eller det här dokumentet. Inget implementeras som inte är dokumenterat.
 2. **Plan.** AI-assistenten översätter principerna, och eventuella skärmbilder eller felfångster, till en strukturerad plan (2.4).
 3. **Gherkin.** Beteendet formuleras som ett scenario med *Given–When–Then* (2.2) innan koden skrivs.
 4. **Implementation.** HTML, CSS och JavaScript skrivs så att scenariot uppfylls.
@@ -102,7 +102,7 @@ Feature: Öppna en fil
 
 ### 2.3 Testerna
 
-- **Playwright** kör testerna mot verktygen i de andra repona (`npm test`, se [arkitektur.md](../arkitektur.md) avsnitt 9). Sidorna öppnas direkt som filer, utan webbserver.
+- **Playwright** kör testerna mot verktygen i de andra repona (`npm test`, se [arkitektur.md](arkitektur.md) avsnitt 9). Sidorna öppnas direkt som filer, utan webbserver.
 - **Filändelsen `.mjs`** gör att Node läser filen som en ES-modul, med `import` och `export`, oavsett inställningar. hfa-ds har dessutom `"type": "module"` i `package.json`; `.mjs` fungerar också i repon som inte har det.
 - **Antalet tester:** en körning ger i dag ungefär 78 tester (77 godkända och 1 överhoppat när `hfa-rbd` saknas). Det beror på att de gemensamma testerna körs mot varje verktyg och att varje verktyg har egna tester. Det är **en** webbläsare, Chromium; konfigurationen har inga projekt för Firefox, WebKit eller mobil.
 - **Tillstånd** som hover, disabled och markerad prövas där de ändrar beteende, inte för varje komponent.

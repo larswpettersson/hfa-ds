@@ -79,7 +79,7 @@ This chapter describes the chain from documentation to verified code, and how an
 
 The work is driven by the documentation, not by individual requests for components:
 
-1. **Documentation.** The requirement is described or changed first in [ARCHITECTURE.md](../ARCHITECTURE.md), [design-principles.md](design-principles.md) or this document. Nothing is implemented that is not documented.
+1. **Documentation.** The requirement is described or changed first in [ARCHITECTURE.md](ARCHITECTURE.md), [design-principles.md](design-principles.md) or this document. Nothing is implemented that is not documented.
 2. **Plan.** The AI assistant translates the principles, and any screenshots or bug captures, into a structured plan (2.4).
 3. **Gherkin.** The behaviour is written as a *Given–When–Then* scenario (2.2) before the code is written.
 4. **Implementation.** HTML, CSS and JavaScript are written so that the scenario is met.
@@ -103,7 +103,7 @@ Feature: Open a file
 
 ### 2.3 The tests
 
-- **Playwright** runs the tests against the tools in the other repositories (`npm test`, see [ARCHITECTURE.md](../ARCHITECTURE.md) section 9). The pages are opened directly as files, without a web server.
+- **Playwright** runs the tests against the tools in the other repositories (`npm test`, see [ARCHITECTURE.md](ARCHITECTURE.md) section 9). The pages are opened directly as files, without a web server.
 - **The `.mjs` extension** makes Node read the file as an ES module, with `import` and `export`, whatever the settings. hfa-ds also has `"type": "module"` in `package.json`; `.mjs` also works in repositories that do not.
 - **The number of tests:** a run currently gives about 78 tests (77 passed and 1 skipped when `hfa-rbd` is missing). That is because the shared tests run against every tool and each tool has its own tests. It is **one** browser, Chromium; the configuration has no projects for Firefox, WebKit or mobile.
 - **States** such as hover, disabled and selected are tested where they change behaviour, not for every component.

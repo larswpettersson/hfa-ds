@@ -13,7 +13,7 @@
 
 The live versions are published through GitHub Pages. They are ordinary web pages with no server behind them: whatever is entered stays in the browser and leaves it only if the user exports it (see section 1).
 
-Visual design decisions (typography, sizes, font stack) are documented in [docs/design-principles.md](docs/design-principles.md).
+Visual design decisions (typography, sizes, font stack) are documented in [docs/design-principles.md](design-principles.md).
 
 ## 1. Rationale: Operation in Isolated Environments and Confidentiality
 
@@ -207,7 +207,7 @@ The transition to a fully step-by-step workflow is in progress, and the data mod
 
 ## 7. AI Support: Images in the Question (Planned)
 
-Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel is described in section 10.
+Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](design-principles.md). None of this is built (2026-11-03); the AI panel is described in section 10.
 
 **In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>`, keeping its proportions, to the size that is set (see below) and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
 
@@ -236,7 +236,7 @@ Planned support for sending an image or screenshot along with a question to the 
 
 ## 8. HTA: Customisable TTA Columns and the AI Support (Planned)
 
-The purpose is described in the [design principles, section 1.7](docs/design-principles.md). None of this is built (2026-11-03).
+The purpose is described in the [design principles, section 1.7](design-principles.md). None of this is built (2026-11-03).
 
 **Starting point.** The `stpa-input` branch in hfa-hta lets the analysis file define the columns in `meta.columns`: `id`, `label`, `type` (`text`, `list` or `select`), `options`, `visible` and `order`. Built-in columns can be relabelled, and other ids become custom text columns stored on each TTA row. In the tool, columns can only be shown and hidden. The AI panel on the `claude/ai-assistant` branch has the six built-in HEI fields and their meaning fixed in its system prompt, does not see custom columns, and deletes them when a suggestion is applied (`replaceState` calls `normalizeTtaRecords` without the column list).
 
