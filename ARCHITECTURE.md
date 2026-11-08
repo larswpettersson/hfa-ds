@@ -57,7 +57,7 @@ The shared purpose is to support safety and human factors analysis through separ
 |---|---|---|---|---|---|
 | HTA | `HTA.html` (+ earlier `hta-editor2.html`, `hta-editor.html`) | `hta_offline.html` | JSON v2 (HTA tree + `ttaRecords`) | JSON export/import, CSV export | Runnable, under development |
 | Bowtie | `Bowtie.html` | `Bowtie_offline.html` | JSON v1 | JSON export/import, print | Runnable, under development |
-| STPA Workbench | `workbench/index.html` | Same file (single-file application) | JSON (losses, hazards, constraints, UCAs, control structure, actuators, sensors) | JSON export/import, chat export as Markdown | Runnable, under development; transition to cumulative analysis in progress |
+| STPA Workbench | `workbench/index.html` (+ `ai-assist.js`) | `workbench/stpa_offline.html` | JSON (losses, hazards, constraints, UCAs, control structure, actuators, sensors) | JSON export/import, chat export as Markdown | Runnable, under development; transition to cumulative analysis in progress |
 | RBD | `RBD.html` | – | Draft | – | Early design stage, not runnable |
 
 All data models are under development. Exported files may need to be converted or recreated when the models change.
@@ -207,7 +207,7 @@ The transition to a fully step-by-step workflow is in progress, and the data mod
 
 ## 7. AI Support: Images in the Question (Planned)
 
-Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel in HTA and Bowtie exists only on the `claude/ai-assistant` branch so far.
+Planned support for sending an image or screenshot along with a question to the language model. The purpose and limits are described in the [design principles, section 1.6](docs/design-principles.md). None of this is built (2026-11-03); the AI panel is described in section 10.
 
 **In the browser.** The image comes in by pasting (the `paste` event, `clipboardData`), dragging (`drop`) or a file button. It is scaled down with `<canvas>`, keeping its proportions, to the size that is set (see below) and converted to base64. No library is needed and the offline files keep working; only the AI call itself needs a network, as before. A question then consists of text and zero or more images, and each provider translates that into its own format:
 
@@ -272,3 +272,24 @@ An AI suggestion of new columns (a patch with `columns`) waits until suggestions
 - **Shared tests in hfa-ds:** `npm test` runs automated tests (Playwright) against the tools in the other repositories (the location can be changed with `HFA_WORKSPACE`). Pages are opened directly as files (`file://`), without a web server, just as when the tools are used in an isolated environment. The tests in `tests/shared/` run against every tool in `tests/lib/tools.mjs` and check that the page loads without errors and that its colours match `tokens.json`. Tests for a single tool live in `tests/<tool>/` (today there are such tests for STPA: selection, questions about part of the structure, conversion to actuator/sensor, and patches). On GitHub, the `test-tools.yml` workflow runs the tests with all repositories fetched side by side.
 - **Quick tests per tool:** `hfa-hta` and `hfa-bowtie` have simple Python tests (`scripts/*-smoke-test.py`) that check that the basic functions work.
 - **Token check:** the `validate-tokens.yml` workflow checks that `tokens.json` in `hfa-ds` has the correct format.
+
+## 10. The AI Panel: One Shared Component with Per-Tool Configuration
+
+The AI panel is a single file, `ai-assist.js`, used by HTA, Bowtie and STPA Workbench. The panel does everything that should be the same in every tool: the providers (Claude, Gemini, Hugging Face and a local model), the model picker, streaming, Markdown rendering, foldable answers, export to Markdown, the icon button that shows and hides the panel (design principle 4.7), the Enter rule (4.6) and the state without a provider.
+
+**The source is in hfa-ds**, in `scripts/ai-panel/ai-assist.js`. Each tool holds a copy: `hfa-hta/scripts/ai-assist.js`, `hfa-bowtie/scripts/ai-assist.js` and `hfa-stpa/workbench/ai-assist.js`. The copies are never edited by hand. A change is made in the source, and `npm run sync:ai-panel` in hfa-ds copies the file into the tools (`npm run check:ai-panel` only compares). The test `tests/shared/ai-panel-copies.spec.mjs` fails if a copy differs from the source. A new tool is added to the `TARGETS` list in `scripts/ai-panel/sync.mjs`.
+
+**What differs between the tools is configuration, not code.** Each tool mounts the panel with `HFAAssist.mount({…})` when it is built up, and that call sets:
+
+- `systemPrompt`: the default system prompt. It is the text shown at the bottom of *Settings…*. The user can edit it for that tool and reset it to the tool's default. It is saved per tool (`id` gives the key prefix), so HTA, Bowtie and STPA each have their own prompt even though the provider settings are shared.
+- `schemaPrompt`: text appended after the system prompt that describes the tool's data model and what a change proposal (a patch) looks like. It can be a function built for every question. It sits outside the editable prompt, so saved custom prompts still get schema changes.
+- `title`, `subject` (the topic in the question field's hint), `welcome`, `quickActions` and `exportName`.
+- `getContext` (the analysis sent with every question, headed by `contextLabel`) and `getScope` (the selection).
+- `inspect`, `apply`, `snapshot` and `restore`: which JSON blocks in an answer can be applied, how they are applied and how they are reverted.
+- `toolbar` and `buttonClass`: where the icon button sits when the panel is hidden and how it should look in the tool's toolbar.
+
+A future tool therefore gets the same panel by loading `ai-assist.js` and calling `mount` with its own configuration. The provider settings (keys, models, address) are shared by the tools under `hfa-ai:providers` when they run from the same origin.
+
+**Offline files.** The tools must still work as one file. `npm run build:offline -- <tool.html> <output.html>` (the script `scripts/build/inline-offline.mjs`) inlines every `<script src="…"></script>` that stands on a line of its own. HTA and Bowtie have their offline files (`hta_offline.html`, `Bowtie_offline.html`) built this way, and STPA has `workbench/stpa_offline.html`. Rebuild when `ai-assist.js` or the tool's HTML changes.
+
+STPA Workbench no longer has a provider or MCP layer of its own; it was removed when the tool moved to the shared panel.

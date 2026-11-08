@@ -469,7 +469,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är primary (4.5) och snabbåtgärder, frågefält och *Send* är inaktiva.
 - **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
 
-**Nuläge (2026-11-08):** HTA och Bowtie (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som enda röda knapp och inaktiva *Send* och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA har fortfarande ingen växlingsknapp (chatten är alltid synlig). Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
+**Nuläge (2026-11-08):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som enda röda knapp och inaktiva *Send* och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA använder sedan 2026-11-08 samma panel som de andra (arkitektur.md, avsnitt 10), så knappen och läget utan leverantör är lika i alla tre. Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
 
 ### 4.8 Auto: stegvis analys eller auto
 

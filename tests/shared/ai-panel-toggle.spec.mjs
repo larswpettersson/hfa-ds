@@ -7,6 +7,7 @@ import { openTool } from "../lib/page.mjs";
 const TOOLS = [
   { id: "hta", ready: ".task", toolbar: ".header .toolbar" },
   { id: "bowtie", ready: ".card", toolbar: ".toolbar" },
+  { id: "stpa-workbench", ready: "#diagram g.node", toolbar: "header .row" },
 ];
 const PROVIDERS = { provider: "claude", claude_key: "test-key" };
 

@@ -14,7 +14,7 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     ({ errors } = await openTool(page, T));
     await page.evaluate(() => {
       localStorage.clear();
-      localStorage.setItem("hfa-stpa:settings", JSON.stringify({ provider: "claude", claude_key: "test-key", mcp_enabled: false }));
+      localStorage.setItem("hfa-ai:providers", JSON.stringify({ provider: "claude", claude_key: "test-key" }));
     });
     await page.reload();
     await page.waitForSelector("#diagram g.node");
@@ -28,7 +28,7 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     await page.locator('#diagram text[data-sel="ca1"]').click({ modifiers: ["Shift"] });
     await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click({ modifiers: ["Shift"] });
     expect(await selected(page)).toEqual(["ca1", "fb1", "p1"]);
-    await expect(page.locator("#scopeText")).toContainText("p1, ca1, fb1");
+    await expect(page.locator(".ai-scope")).toContainText("p1, ca1, fb1");
     await node(page, "p1").click({ modifiers: ["Shift"] });
     expect(await selected(page)).toEqual(["ca1", "fb1"]);
     // the selected state uses the halo filter from the Penpot "Selected" variant
@@ -91,13 +91,13 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
   test("a scoped question sends the selection, the chosen model and no earlier turns", async ({ page }) => {
     const bodies = await mockClaude(page, "Answer.");
     await node(page, "p1").click({ modifiers: ["Shift"] });
-    await page.selectOption("#modelPick", "claude-haiku-4-5");
-    await page.fill("#prompt", "First question");
-    await page.click("#sendBtn");
-    await expect(page.locator(".msg.assistant").last()).toContainText("Answer.");
-    await page.fill("#prompt", "Second question");
-    await page.click("#sendBtn");
-    await expect(page.locator(".msg.assistant")).toHaveCount(3);
+    await page.selectOption(".ai-chat select", "claude-haiku-4-5");
+    await page.fill(".ai-chat textarea", "First question");
+    await page.click(".ai-chat button[type=submit]");
+    await expect(page.locator(".ai-msg.assistant").last()).toContainText("Answer.");
+    await page.fill(".ai-chat textarea", "Second question");
+    await page.click(".ai-chat button[type=submit]");
+    await expect(page.locator(".ai-msg.assistant")).toHaveCount(3);
 
     expect(bodies).toHaveLength(2);
     const [first, second] = bodies;
@@ -112,17 +112,17 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     expect(first.messages[0].content).toContain('"id": "p1"');
     expect(first.messages[0].content).not.toContain('"id": "c1"');
     expect(second.messages).toHaveLength(1); // earlier turns are off by default
-    await expect(page.locator(".msg.assistant .meta").last()).toContainText("42 out tokens");
+    await expect(page.locator(".ai-msg.assistant .meta").last()).toContainText("42 out tokens");
 
-    await page.check("#keep_history");
-    await page.selectOption("#modelPick", "claude-opus-5-5");
-    await page.fill("#prompt", "Third question");
-    await page.click("#sendBtn");
-    await expect(page.locator(".msg.assistant")).toHaveCount(4);
+    await page.check(".ai-scope input[type=checkbox]");
+    await page.selectOption(".ai-chat select", "claude-opus-5-5");
+    await page.fill(".ai-chat textarea", "Third question");
+    await page.click(".ai-chat button[type=submit]");
+    await expect(page.locator(".ai-msg.assistant")).toHaveCount(4);
     expect(bodies[2].messages).toHaveLength(5);
     expect(bodies[2].output_config).toEqual({ effort: "medium" });
     expect(bodies[2].fallbacks).toBe("default");
-    expect(await page.inputValue("#claude_model")).toBe("claude-opus-5-5");
+    expect((await page.evaluate(() => JSON.parse(localStorage.getItem("hfa-ai:providers")))).claude_model).toBe("claude-opus-5-5");
   });
 
   test("a structure patch in a reply merges into the editor by id", async ({ page }) => {
@@ -134,9 +134,9 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
       remove: ["ca2"],
     };
     await mockClaude(page, "Here:\n\n```json\n" + JSON.stringify(patch) + "\n```");
-    await page.fill("#prompt", "Rename it");
-    await page.click("#sendBtn");
-    const card = page.locator(".struct-card").last();
+    await page.fill(".ai-chat textarea", "Rename it");
+    await page.click(".ai-chat button[type=submit]");
+    const card = page.locator(".ai-card").last();
     await expect(card).toContainText("Structure patch");
     await card.locator("button", { hasText: "Apply to editor" }).click();
     const m = await getEditorJson(page, "#editor");
