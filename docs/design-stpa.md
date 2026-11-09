@@ -191,7 +191,7 @@ Feature: Länkar och konvertering
 
 ### STPA-SEL: markera och avmarkera
 
-**Ett klick eller Enter på ett block markerar det och ger namncellen på dess rad fokus. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort: blocken är en sort, styråtgärderna en och återkopplingarna en.**
+**Ett klick eller Enter på ett block markerar det och ger namncellen på dess rad fokus. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
 
 Det skiljer sig från 5.4, där Ctrl/⌘+Enter motsvarar klick och Enter redigerar. I STPA gör Enter och Ctrl/⌘+Enter samma sak som ett klick, eftersom ett klick redan flyttar fokus till namncellen. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
 
@@ -283,7 +283,7 @@ Feature: Tangenter och knappar
 - Orden Child, Parent och Sibling i STPA.
 - Att ange vänster eller höger. Sidordningen följer länkarna och listan.
 - *Add Above* (och tangenten A) i första versionen. Kraven finns kvar med taggen `@later`.
-- Markering av blandade sorter: i STPA innehåller markeringen bara en sort, så en AI-fråga kan inte avgränsas till ett block och en länk samtidigt (5.5).
+- Markering av blandade sorter (5.5): markeringen innehåller bara en sort, så en AI-fråga kan inte avgränsas till ett block och en länk samtidigt (5.5).
 
 ## 5. Öppna punkter att avgöra vid bygget
 

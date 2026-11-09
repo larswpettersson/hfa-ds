@@ -191,7 +191,7 @@ Feature: Links and conversion
 
 ### STPA-SEL: selecting and deselecting
 
-**A click or Enter on a block selects it and gives the name cell on its row focus. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind: the blocks are one kind, the control actions one and the feedback one.**
+**A click or Enter on a block selects it and gives the name cell on its row focus. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
 
 This differs from 5.4, where Ctrl/⌘+Enter corresponds to a click and Enter edits. In STPA, Enter and Ctrl/⌘+Enter do the same as a click, because a click already moves focus to the name cell. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
 
@@ -283,7 +283,7 @@ Feature: Keys and buttons
 - The words Child, Parent and Sibling in STPA.
 - Naming left or right. The order sideways follows the links and the list.
 - *Add Above* (and the A key) in the first version. The requirements stay, tagged `@later`.
-- Selecting mixed kinds: in STPA the selection holds only one kind, so an AI question cannot be scoped to a block and a link at the same time (5.5).
+- Selecting mixed kinds (5.5): the selection holds only one kind, so an AI question cannot be scoped to a block and a link at the same time (5.5).
 
 ## 5. Open points to settle during the build
 

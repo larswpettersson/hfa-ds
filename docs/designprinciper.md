@@ -544,9 +544,12 @@ Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) f�
 ### 5.5 Markera flera objekt
 
 - **Shift+klick och Ctrl/⌘+klick** lägger till ett objekt i markeringen eller tar bort det ur den. Shift+klick är konventionen i ritverktyg och Ctrl/⌘+klick i listor; båda gör samma sak, så att vanan från båda fungerar. Ett vanligt klick ersätter markeringen.
+- **Markeringen innehåller bara en sorts objekt.** Shift+klick och Ctrl/⌘+klick lägger bara till objekt av samma sort som de redan markerade. Ett objekt av en annan sort ersätter markeringen, som ett vanligt klick. Varje verktyg anger sina sorter i `design-<verktyg>.md`; i STPA är block, styråtgärder och återkopplingar var sin sort (5.10).
 - **Markerade objekt ser likadana ut** i alla verktyg: samma skugga runt objektet.
 - **Esc eller ett klick utanför** tar bort markeringen.
-- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten.
+- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten. Eftersom markeringen bara har en sort går det inte att avgränsa en fråga till objekt av olika sorter på en gång.
+
+**Nuläge (2026-11-09):** regeln är inte byggd i något verktyg. HTA har bara en sort. STPA låter i dag blocken, styråtgärderna och återkopplingarna blandas i en markering, och Bowtie har olika modifierare för barriärer och kort; båda behöver ändras och kontrolleras.
 
 ### 5.6 Flytta markerade objekt
 
@@ -563,11 +566,11 @@ Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) f�
 
 ### 5.8 Varning när objekten inte hör ihop
 
-En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, ett kort och en barriär, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
+En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
 
 - **Flytten genomförs inte**, och ett meddelande säger varför och vilka objekt som kan flyttas tillsammans.
 - **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
-- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar.
+- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar. Objekt av olika sorter kan aldrig vara markerade tillsammans (5.5), så varningen gäller objekt av samma sort som ändå inte hör ihop.
 
 ### 5.9 Länkade vyer
 
@@ -597,7 +600,6 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Hela tillägget är ett steg att ångra** (Ctrl/⌘+Z), även när flera länkar skapades.
 - **Flera markerade objekt får ett gemensamt nytt objekt**, som kopplas till alla. Hör de markerade objekten inte ihop, till exempel för *Add Beside* när de har olika överordnade, varnar verktyget enligt 5.8 och ändrar ingenting.
 - **Objekt och länkar utan text visar sitt id.** En länk eller ett objekt som användaren inte har skrivit något till syns ändå, går att markera och visar var texten saknas. Id:t ersätts av texten när den skrivs. Exempel: en ny styråtgärd utan text visas med etiketten *ca3*, och med *ApplyBrakes* när den är ifylld.
-- **Ett verktyg kan begränsa markeringen till en sorts objekt.** Då lägger Shift+klick och Ctrl/⌘+klick bara till objekt av samma sort, och ett objekt av en annan sort ersätter markeringen. STPA gör så för block, styråtgärder och återkopplingar.
 - **Delete tar bort det markerade tillsammans med det som hör till det**, till exempel länkarna, och går att ångra i ett steg.
 - **Varje kommando har en knapp i verktygsfältet över diagrammet**, med tangenten i verktygstipset (5.4). Knappen är inaktiv när kommandot inte går att använda, så att den visar vad som är möjligt. Det är vanliga knappar: Enter är primary-knappens tangent (4.5).
 - **Bokstavstangenterna är avstängda medan man skriver**, och **?** öppnar hjälpen med de tangenter som gäller.

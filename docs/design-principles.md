@@ -544,9 +544,12 @@ Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (
 ### 5.5 Selecting several objects
 
 - **Shift+click and Ctrl/⌘+click** add an object to the selection or take it out. Shift+click is the convention in drawing tools and Ctrl/⌘+click in lists; both do the same, so the habit from either works. A plain click replaces the selection.
+- **The selection holds only one kind of object.** Shift+click and Ctrl/⌘+click only add objects of the same kind as those already selected. An object of another kind replaces the selection, like a plain click. Each tool states its kinds in `design-<tool>.md`; in STPA blocks, control actions and feedback are one kind each (5.10).
 - **Selected objects look the same** in every tool: the same shadow around the object.
 - **Esc or a click outside** clears the selection.
-- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects.
+- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects. Since the selection holds one kind only, a question cannot be scoped to objects of different kinds at once.
+
+**Current state (2026-11-09):** the rule is not built in any tool. HTA has only one kind. STPA today lets blocks, control actions and feedback be mixed in one selection, and Bowtie uses different modifiers for barriers and cards; both need to change and be checked.
 
 ### 5.6 Moving selected objects
 
@@ -563,11 +566,11 @@ Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (
 
 ### 5.8 A warning when the objects do not belong together
 
-Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, a card and a barrier, or tasks under different parent tasks, the tool **warns**:
+Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, or tasks under different parent tasks, the tool **warns**:
 
 - **The move is not carried out**, and a message says why and which objects can be moved together.
 - **The selection stays**, so the user can take out what does not belong with Shift+click.
-- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns.
+- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns. Objects of different kinds can never be selected together (5.5), so the warning applies to objects of the same kind that still do not belong together.
 
 ### 5.9 Linked views
 
@@ -597,7 +600,6 @@ The user must be able to build and change the structure of the analysis directly
 - **The whole addition is one undo step** (Ctrl/⌘+Z), even when several links were created.
 - **Several selected objects get one shared new object**, connected to all of them. If the selected objects do not belong together, for example for *Add Beside* when they have different parents, the tool warns as in 5.8 and changes nothing.
 - **Objects and links without text show their id.** A link or object that the user has not written anything for is still visible, can be selected and shows where text is missing. The id is replaced by the text when it is written. Example: a new control action without text is shown with the label *ca3*, and with *ApplyBrakes* once filled in.
-- **A tool can limit the selection to one kind of object.** Shift+click and Ctrl/⌘+click then only add objects of the same kind, and an object of another kind replaces the selection. STPA does this for blocks, control actions and feedback.
 - **Delete removes the selection together with what belongs to it**, for example its links, and can be undone in one step.
 - **Each command has a button in the toolbar above the diagram**, with the key in the tooltip (5.4). The button is inactive when the command cannot be used, so that it shows what is possible. They are ordinary buttons: Enter is the key of the primary button (4.5).
 - **The letter keys are off while typing**, and **?** opens the help with the keys that apply.
