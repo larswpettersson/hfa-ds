@@ -426,7 +426,7 @@ AI-stödet utgår från analysen som är öppen. Ligger det en stor eller domän
 Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Windows, macOS, Office):
 
 - **Open…** öppnar ett filval och öppnar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar. Den slutar med …, eftersom den alltid öppnar ett filval (4.1).
-- **Save** sparar analysen som en JSON-fil, utan …. I webbläsaren blir det i dag en nedladdning. Där webbläsaren tillåter det kan **Save** skriva tillbaka till samma fil, och **Save As…** fråga efter namn och plats.
+- **Save…** sparar analysen som en ny JSON-fil och slutar med …, eftersom den öppnar en dialog för namn och plats (4.1). I webbläsaren blir det i dag en nedladdning av en ny fil, inte en uppdatering av den gamla. Där webbläsaren tillåter det kan en senare **Save** skriva tillbaka till samma fil.
 - Namnen ersätter **Import** och **Export** i HTA och Bowtie.
 - Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
 - Kortkommandona Ctrl/⌘+O och Ctrl/⌘+S följer samma namn, där de införs.
@@ -484,6 +484,30 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 
 - **Den smala åtgärdsknappen** (till exempel *Compress*, *Expand*, *Clear* och *Export .md* i AI-panelen) är en variant av Action Button: `Type = Narrow`, med samma tillstånd (*Default*, *Hovered*, *Pressed*) och tokens som de andra. Texten är 12 px (`typography.caption`), marginalen 4 och 8 px och hörnradien 4.
 - **Pill** är en komponent med egenskapen `Status`: *Neutral*, *Info*, *Success*, *Warning* och *Error*. Statusen anges bara med fyllnadsfärgen (`background.info`, `success`, `warning`, `error`), texten är `foreground.base`, och kanten är `foreground.muted` på *Neutral* och `foreground.base` på statusvarianterna, så att den klarar 3:1. Leverantörsfältet i AI-panelen är en *Pill*: *Neutral* med leverantörens namn, och *Warning* med texten *No provider*.
+
+### 4.10 Titelraden
+
+Varje verktyg har en titelrad överst, lika i alla verktyg:
+
+- **Appnamnet** står längst till vänster, med en liten ruta i primary-färg (`brand.primary`) före namnet.
+- **Generella kommandon för hela applikationen** ligger efter namnet: *New*, *Open…*, *Save…*, *Undo*, *Settings…* och *?* (hjälp). De är **Compact Button**, en lägre variant av Action Button (28 px) med tillstånden *Default*, *Hovered* och *Pressed*.
+- **Theme och panelväxlingen** (*Hide panel*, 4.7) ligger längst till höger. Theme är en växlingsknapp med sol i ljust läge och halvmåne i mörkt. Nya generella knappar läggs i den högra gruppen.
+- **Verktygsspecifika kommandon** hör inte hemma i titelraden. Add-kommandona i STPA, HTA och Bowtie ligger i en rad över diagrammet (5.10).
+- **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla (till exempel *Undo*). Det är bara appnamnet som skiljer.
+- **Raden är responsiv i verktygen.** Bredden 1440 px gäller bara komponenten *Title bar* i HFA DS (varianterna `Tool` = STPA, HTA, Bowtie); i verktyget fyller raden bredden och den högra gruppen ligger kvar längst till höger.
+
+**Nuläge (2026-11-09):** ritad i Penpot (HFA DS), inte byggd. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.
+
+### 4.11 Dragfält mellan paneler
+
+Mellan alla paneler i alla verktyg finns ett **dragfält** för att ändra panelernas bredd:
+
+- **Utseende:** ett 16 px brett fält (`background.base`) med en 4 px bred, avrundad stapel (`background.info`) mitt i, 28 px kortare än fältet i båda ändar. Det är komponenten *Drag bar* i HFA DS.
+- **Var:** mellan alla paneler, inklusive mellan TTA-tabellen och analyspanelen i HTA och mellan diagrammet, tabellerna och analyspanelen i STPA.
+- **Tangentbord:** pilarna ←/→ ändrar bredden när fältet har fokus, som AI-panelens dragfält gör i dag (`ai-resize`, 4.7). Fältet har `role="separator"`.
+- Dragfält ersätter knappar som bara ändrar panelbredd.
+
+**Nuläge (2026-11-09):** ritad i Penpot för STPA, inte byggd. AI-panelen har ett osynligt dragfält i dag (8 px, syns först vid hover). Tillstånden för hover och dragning är inte ritade.
 
 ## 5. Navigera, markera och flytta objekt
 

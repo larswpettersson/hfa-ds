@@ -23,6 +23,10 @@ Svaren på de åtta öppna frågorna, i korthet:
 9. **Markering:** klick eller Enter på ett block markerar det. Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
 10. **Länkar och block utan text** visar sitt id (princip i 5.10).
 11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
+12. **Layout:** tre kolumner med dragfält emellan (4.11): kontrollstrukturen (diagrammet) till vänster, tabellerna i mitten och AI-analysen till höger, som i HTA. Titelraden (4.10) ligger överst. Rubrikraden i panelen försvinner, eftersom vybaren *CONTROL STRUCTURE* redan visar samma rubrik.
+13. **Add-kommandona** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) ligger i en rad över diagrammet i vänstra panelen, som *Compact Button* (4.10).
+14. **JSON visas inte i gränssnittet.** JSON-editorn och *Format* tas bort. Vill användaren se JSON ber hen AI-panelen lista den.
+15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 
@@ -237,6 +241,38 @@ Feature: Markera och avmarkera
     Then bara styråtgärden är markerad
 ```
 
+### STPA-VIEW: vyer och exempel
+
+**JSON-editorn visas inte. Användaren redigerar i diagrammet och tabellerna, och ber AI-panelen lista JSON när hen vill se den. *Open example…* finns i hjälpdialogen.**
+
+```gherkin
+Feature: Vyer och exempel
+  @STPA-VIEW-1
+  Scenario: JSON-editorn och Format finns inte i gränssnittet
+    When STPA Workbench är öppen
+    Then ingen JSON-editor syns
+    And det finns ingen knapp Format
+
+  @STPA-VIEW-2
+  Scenario: AI-panelen listar JSON på begäran
+    Given en analys är öppen
+    When användaren ber AI-panelen att visa JSON
+    Then svaret innehåller analysens JSON, i samma form som när den sparas
+
+  @STPA-VIEW-3
+  Scenario: Open example… finns i hjälpdialogen
+    When användaren trycker ? eller klickar på hjälpknappen
+    Then en dialog med tangentlistan och Open example… visas
+    And Open example… är en kontroll av vanlig höjd (28 px)
+
+  @STPA-VIEW-4
+  Scenario: Ett exempel ersätter analysen efter bekräftelse
+    Given hjälpdialogen är öppen
+    When användaren väljer ett exempel i Open example…
+    Then en bekräftelse frågar om analysen ska ersättas (4.2)
+    And efter bekräftelsen visar diagrammet och tabellerna exemplet
+```
+
 ### STPA-NEW: nytt diagram
 
 ```gherkin
@@ -289,7 +325,8 @@ Feature: Tangenter och knappar
 
 - **Add Above med en befintlig överordnad (STPA-ADD-3):** skjuts upp. Det nya blocket sätts in mellan dem och tar över länkarna, vilket är den mest osäkra delen, eftersom länkar flyttas.
 - **Aktuator- och sensorblock i layouten:** i dag ritas alla aktuatorer och sensorer på en rad ovanför processraden. När en styråtgärd mellan två controllers konverteras (STPA-LINK-4) ska blocket hamna mellan de två nivåerna. Schemat säger i dag att aktuatorns mål och sensorns källa är en controlled process, och den begränsningen ska bort.
-- **Var Convert sitter:** i dag finns knapparna bara i markeringsraden under diagrammet, och bara när något är markerat. Det är därför de är svåra att hitta.
+- **JSON-editorn i koden:** testerna läser och skriver modellen via `#editor`. När editorn inte visas ska elementet ändå finnas kvar (dolt), eller så skrivs testerna om. Det avgörs vid bygget.
+- **Hjälpdialogen** är inte ritad i Penpot (kvarstår från anteckningen i STPA-filen), med tangentlistan, *Open example…* och en primär knapp *Close*.
 - **A och I:** att flytta AI-växlingen från A till I ändrar HTA och Bowtie, 4.7 och testerna `tests/shared/ai-panel-toggle.spec.mjs` och `tests/hta/ai-assist.spec.mjs`. Det görs när *Add Above* byggs.
 
 ## 6. Nästa steg

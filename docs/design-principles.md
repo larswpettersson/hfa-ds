@@ -426,7 +426,7 @@ The AI support starts from the analysis that is open. If a large or domain-speci
 The analysis file is handled the same way in every tool, as in most programs (Windows, macOS, Office):
 
 - **Open…** opens a file chooser and opens an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes. It ends with …, since it always opens a file chooser (4.1).
-- **Save** saves the analysis as a JSON file, without …. In the browser this is a download today. Where the browser allows it, **Save** can write back to the same file, and **Save As…** ask for a name and place.
+- **Save…** saves the analysis as a new JSON file and ends with …, since it opens a dialog for name and place (4.1). In the browser it is a download of a new file today, not an update of the old one. Where the browser allows it, a later **Save** can write back to the same file.
 - The names replace **Import** and **Export** in HTA and Bowtie.
 - Export to formats *other* than the analysis file is still called **Export**, for example **Export CSV** in HTA and **Export .md** for the AI conversation.
 - The shortcuts Ctrl/⌘+O and Ctrl/⌘+S follow the same names, where they are introduced.
@@ -484,6 +484,30 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 
 - **The narrow action button** (for example *Compress*, *Expand*, *Clear* and *Export .md* in the AI panel) is a variant of Action Button: `Type = Narrow`, with the same states (*Default*, *Hovered*, *Pressed*) and tokens as the others. The text is 12 px (`typography.caption`), the padding 4 and 8 px and the corner radius 4.
 - **Pill** is a component with the property `Status`: *Neutral*, *Info*, *Success*, *Warning* and *Error*. The status is shown only with the fill colour (`background.info`, `success`, `warning`, `error`), the text is `foreground.base`, and the border is `foreground.muted` on *Neutral* and `foreground.base` on the status variants, so that it reaches 3:1. The provider pill in the AI panel is a *Pill*: *Neutral* with the provider's name, and *Warning* with the text *No provider*.
+
+### 4.10 The title bar
+
+Every tool has a title bar at the top, the same in all tools:
+
+- **The application name** is at the far left, with a small square in the primary colour (`brand.primary`) before the name.
+- **General commands for the whole application** follow the name: *New*, *Open…*, *Save…*, *Undo*, *Settings…* and *?* (help). They are **Compact Button**, a lower variant of Action Button (28 px) with the states *Default*, *Hovered* and *Pressed*.
+- **Theme and the panel toggle** (*Hide panel*, 4.7) are at the far right. Theme is a toggle button with a sun in light mode and a crescent moon in dark mode. New general buttons go in the right group.
+- **Tool-specific commands** do not belong in the title bar. The Add commands in STPA, HTA and Bowtie are in a row above the diagram (5.10).
+- **All tools have the same buttons** in the title bar, even when a tool does not use all of them (for example *Undo*). Only the application name differs.
+- **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
+
+**Current state (2026-11-09):** drawn in Penpot (HFA DS), not built. The old toolbars (the component *Toolbar*) are still in HFA DS.
+
+### 4.11 Drag bar between panels
+
+Between all panels in all tools there is a **drag bar** for changing the width of the panels:
+
+- **Look:** a 16 px wide field (`background.base`) with a 4 px wide, rounded bar (`background.info`) in the middle, 28 px shorter than the field at both ends. It is the component *Drag bar* in HFA DS.
+- **Where:** between all panels, including between the TTA table and the analysis panel in HTA and between the diagram, the tables and the analysis panel in STPA.
+- **Keyboard:** the arrows ←/→ change the width when the bar has focus, as the AI panel's drag bar does today (`ai-resize`, 4.7). The bar has `role="separator"`.
+- Drag bars replace buttons that only change the panel width.
+
+**Current state (2026-11-09):** drawn in Penpot for STPA, not built. The AI panel has an invisible drag bar today (8 px, visible only on hover). The states for hover and dragging are not drawn.
 
 ## 5. Navigating, selecting and moving objects
 

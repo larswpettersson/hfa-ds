@@ -23,6 +23,10 @@ The answers to the eight open questions, in short:
 9. **Selection:** a click or Enter on a block selects it. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
 10. **Links and blocks without text** show their id (principle in 5.10).
 11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
+12. **Layout:** three columns with drag bars between them (4.11): the control structure (the diagram) on the left, the tables in the middle and the AI analysis on the right, as in HTA. The title bar (4.10) is at the top. The header row in the panel is removed, since the view bar *CONTROL STRUCTURE* already shows the same heading.
+13. **The Add commands** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) are in a row above the diagram in the left panel, as *Compact Button* (4.10).
+14. **JSON is not shown in the interface.** The JSON editor and *Format* are removed. A user who wants to see the JSON asks the AI panel to list it.
+15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 
@@ -237,6 +241,38 @@ Feature: Selecting and deselecting
     Then only the control action is selected
 ```
 
+### STPA-VIEW: views and examples
+
+**The JSON editor is not shown. The user edits in the diagram and the tables, and asks the AI panel to list the JSON when they want to see it. *Open example…* is in the help dialog.**
+
+```gherkin
+Feature: Views and examples
+  @STPA-VIEW-1
+  Scenario: The JSON editor and Format are not in the interface
+    When STPA Workbench is open
+    Then no JSON editor is visible
+    And there is no Format button
+
+  @STPA-VIEW-2
+  Scenario: The AI panel lists the JSON on request
+    Given an analysis is open
+    When the user asks the AI panel to show the JSON
+    Then the answer contains the JSON of the analysis, in the same form as when it is saved
+
+  @STPA-VIEW-3
+  Scenario: Open example… is in the help dialog
+    When the user presses ? or clicks the help button
+    Then a dialog with the key list and Open example… is shown
+    And Open example… is a control of ordinary height (28 px)
+
+  @STPA-VIEW-4
+  Scenario: An example replaces the analysis after confirmation
+    Given the help dialog is open
+    When the user chooses an example in Open example…
+    Then a confirmation asks whether the analysis is to be replaced (4.2)
+    And after confirmation the diagram and the tables show the example
+```
+
 ### STPA-NEW: a new diagram
 
 ```gherkin
@@ -289,7 +325,8 @@ Feature: Keys and buttons
 
 - **Add Above with an existing parent (STPA-ADD-3):** postponed. The new block is inserted between them and takes over the links, which is the most uncertain part, because links are moved.
 - **Actuator and sensor blocks in the layout:** today all actuators and sensors are drawn on one row above the process row. When a control action between two controllers is converted (STPA-LINK-4), the block must end up between the two levels. The schema today says that an actuator's target and a sensor's source is a controlled process, and that limit is to go.
-- **Where Convert sits:** today the buttons are only in the selection bar under the diagram, and only when something is selected. That is why they are hard to find.
+- **The JSON editor in the code:** the tests read and write the model through `#editor`. When the editor is not shown the element must still exist (hidden), or the tests are rewritten. This is decided during the build.
+- **The help dialog** is not drawn in Penpot (still the note in the STPA file), with the key list, *Open example…* and a primary button *Close*.
 - **A and I:** moving the AI toggle from A to I changes HTA and Bowtie, 4.7 and the tests `tests/shared/ai-panel-toggle.spec.mjs` and `tests/hta/ai-assist.spec.mjs`. It is done when *Add Above* is built.
 
 ## 6. Next steps
