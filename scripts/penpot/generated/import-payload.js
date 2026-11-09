@@ -148,7 +148,7 @@ var HFA_DS_TOKEN_SETS = {
       "description": "Profilröd; logotyp, knappar, kanter."
     },
     {
-      "name": "brand.primary.subtle",
+      "name": "brand.primary-subtle",
       "type": "color",
       "value": "#FFE5E5",
       "description": "Ljus röd ton; hover, bakgrunder."
@@ -320,7 +320,7 @@ var HFA_DS_TOKEN_SETS = {
       "description": "Profilröd; ljusare för kontrast på mörk bakgrund."
     },
     {
-      "name": "brand.primary.subtle",
+      "name": "brand.primary-subtle",
       "type": "color",
       "value": "#3D1515",
       "description": "Mörk röd ton; hover, bakgrunder."

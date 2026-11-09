@@ -16,8 +16,8 @@ for (const setName of ["mode/light", "mode/dark"]) {
     console.error(`FAIL: ${setName} missing foreground.base`);
     process.exit(1);
   }
-  if (!names.has("brand.primary.subtle")) {
-    console.error(`FAIL: ${setName} missing brand.primary.subtle`);
+  if (!names.has("brand.primary-subtle")) {
+    console.error(`FAIL: ${setName} missing brand.primary-subtle`);
     process.exit(1);
   }
   console.log(`${setName}: ${tokens.length} tokens OK`);
