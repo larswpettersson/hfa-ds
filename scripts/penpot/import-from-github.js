@@ -112,7 +112,7 @@ function importFromJson(TOKEN_SETS) {
     darkResult: darkResult,
     bareForegroundStillDefined: !!penpotUtils.findTokenByName("foreground"),
     foregroundBase: penpotUtils.findTokenByName("foreground.base"),
-    brandPrimarySubtle: penpotUtils.findTokenByName("brand.primary.subtle"),
+    brandPrimarySubtle: penpotUtils.findTokenByName("brand.primary-subtle"),
     activeSets: penpot.library.local.tokens.sets.filter(function (s) { return s.active; }).map(function (s) { return s.name; }),
     tokenOverview: penpotUtils.tokenOverview(),
   };
