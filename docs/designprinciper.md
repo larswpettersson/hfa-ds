@@ -509,6 +509,17 @@ Mellan alla paneler i alla verktyg finns ett **dragfält** för att ändra panel
 
 **Nuläge (2026-11-09):** ritad i Penpot för STPA, inte byggd. AI-panelen har ett osynligt dragfält i dag (8 px, syns först vid hover). Tillstånden för hover och dragning är inte ritade.
 
+### 4.12 Vyer öppnas och stängs med ▾
+
+Varje vy (till exempel diagrammet, tabellerna och Safety case i STPA) har en vybar med en **▾ före titeln**:
+
+- **Ett klick på pilen eller titeln öppnar och stänger vyn**, och hela raden är klickbar. ▾ betyder öppen och ▸ stängd. Med tangentbordet gäller Enter eller mellanslag på raden, och raden har `aria-expanded`.
+- **Pilen är 16 px** (titeln 12 px, versaler, `font-weight` 600). Det är samma ▾ som chattens expanderbara rader, så mönstret är bekant.
+- **Det finns inga knappar för *Compress* och *Expand* i vybarerna.** Öppna vyer delar den lediga höjden, och stänger man en tar de andra platsen. Panelens bredd ändras med dragfälten (4.11). Diagrammet har dessutom *Full page*.
+- *Compress* och *Expand* i AI-panelen (4.9) gäller svaren i loggen och ändras inte av den här regeln.
+
+**Nuläge (2026-11-09):** ritad i Penpot för STPA. Verktyget har fortfarande knapparna *Compress* och *Expand* i vybarerna, och ett klick på titeln komprimerar redan i dag.
+
 ## 5. Navigera, markera och flytta objekt
 
 Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.

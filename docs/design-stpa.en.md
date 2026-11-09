@@ -27,6 +27,7 @@ The answers to the eight open questions, in short:
 13. **The Add commands** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) are in a row above the diagram in the left panel, as *Compact Button* (4.10).
 14. **JSON is not shown in the interface.** The JSON editor and *Format* are removed. A user who wants to see the JSON asks the AI panel to list it.
 15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
+16. **Views** open and close with a ▾ before the title (4.12). *Compress* and *Expand* are removed from the view bars.
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 
@@ -271,6 +272,18 @@ Feature: Views and examples
     When the user chooses an example in Open example…
     Then a confirmation asks whether the analysis is to be replaced (4.2)
     And after confirmation the diagram and the tables show the example
+
+  @STPA-VIEW-5
+  Scenario: The title bar opens and closes a view
+    Given the Safety case view is open
+    When the user clicks its title bar
+    Then the view is closed and the arrow shows ▸
+    And the other views in the column take the free height
+
+  @STPA-VIEW-6
+  Scenario: The view bars have no Compress and Expand buttons
+    When STPA Workbench is open
+    Then no view bar has the buttons Compress or Expand
 ```
 
 ### STPA-NEW: a new diagram

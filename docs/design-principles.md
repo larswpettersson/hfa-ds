@@ -509,6 +509,17 @@ Between all panels in all tools there is a **drag bar** for changing the width o
 
 **Current state (2026-11-09):** drawn in Penpot for STPA, not built. The AI panel has an invisible drag bar today (8 px, visible only on hover). The states for hover and dragging are not drawn.
 
+### 4.12 Views open and close with ▾
+
+Every view (for example the diagram, the tables and the safety case in STPA) has a view bar with a **▾ before the title**:
+
+- **A click on the arrow or the title opens and closes the view**, and the whole row is clickable. ▾ means open and ▸ closed. With the keyboard, Enter or Space on the row applies, and the row has `aria-expanded`.
+- **The arrow is 16 px** (the title 12 px, capitals, `font-weight` 600). It is the same ▾ as the expandable rows in the chat, so the pattern is familiar.
+- **There are no *Compress* and *Expand* buttons in the view bars.** Open views share the free height, and when one is closed the others take its space. The width of the panel is changed with the drag bars (4.11). The diagram also has *Full page*.
+- *Compress* and *Expand* in the AI panel (4.9) apply to the answers in the log and are not changed by this rule.
+
+**Current state (2026-11-09):** drawn in Penpot for STPA. The tool still has the buttons *Compress* and *Expand* in the view bars, and a click on the title already compresses today.
+
 ## 5. Navigating, selecting and moving objects
 
 The same principles apply in every tool and every kind of diagram: tasks in HTA, cards, barriers, hazard and top event in Bowtie, and blocks in STPA. The aim is that anyone who wants to can work in the diagram with the keyboard, without having to click every single object with the mouse.

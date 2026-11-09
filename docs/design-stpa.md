@@ -27,6 +27,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 13. **Add-kommandona** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) ligger i en rad över diagrammet i vänstra panelen, som *Compact Button* (4.10).
 14. **JSON visas inte i gränssnittet.** JSON-editorn och *Format* tas bort. Vill användaren se JSON ber hen AI-panelen lista den.
 15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
+16. **Vyer** öppnas och stängs med en ▾ före titeln (4.12). *Compress* och *Expand* tas bort ur vybarerna.
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 
@@ -271,6 +272,18 @@ Feature: Vyer och exempel
     When användaren väljer ett exempel i Open example…
     Then en bekräftelse frågar om analysen ska ersättas (4.2)
     And efter bekräftelsen visar diagrammet och tabellerna exemplet
+
+  @STPA-VIEW-5
+  Scenario: Titelraden öppnar och stänger en vy
+    Given vyn Safety case är öppen
+    When användaren klickar på dess titelrad
+    Then vyn är stängd och pilen visar ▸
+    And de andra vyerna i kolumnen tar den lediga höjden
+
+  @STPA-VIEW-6
+  Scenario: Vybarerna har inga knappar för Compress och Expand
+    When STPA Workbench är öppen
+    Then ingen vybar har knapparna Compress eller Expand
 ```
 
 ### STPA-NEW: nytt diagram
