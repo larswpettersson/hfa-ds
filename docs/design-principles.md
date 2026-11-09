@@ -467,6 +467,7 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **The icon has only the states Hovered and Pressed**, no status state. *Pressed* is temporary: it applies while the mouse button is down, until the user releases it and the click is over. Whether the panel is open or hidden is visible from the panel itself.
 - **The button has no …**, since it only shows or hides a panel and does not open a dialog (4.1). The tooltip is for example *Show AI panel* or *Hide AI panel*.
 - **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is an ordinary button, and the question field and *Send* are disabled.
+- **The I key shows and hides the panel** in all tools, when no text is being edited (5.4). It replaces A, which *Add Above* (5.10) is to use; until *Add Above* is built, A applies.
 - **The provider pill shows the chosen provider** (for example *Local*), not whether the connection responds.
 
 **Current state (2026-11-08):** HTA, Bowtie and STPA (`ai-assist.js`) follow 4.7: the panel is open by default, the icon button replaces *AI…* and ✕, and without a provider they show *No provider*, a warning box, *Settings…* as an ordinary button, and a disabled *Send* (primary once a provider exists) and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. Since 2026-11-08 STPA uses the same panel as the others (ARCHITECTURE.md, section 10), so the toggle and the state without a provider are the same in all three. The quick actions are still in the tools, while the design in Penpot has removed them.
@@ -531,15 +532,24 @@ Every key has a mouse counterpart:
 | Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
 | Double-click: edit | Enter or F2 |
 | Drag: move | Alt/Option+arrow (5.6) |
+| The toolbar buttons *Add Above*, *Add Below* and *Add Beside* (5.10) | STPA: **B**, **S** and **A** (*Add Above*, built later). HTA: **C** (child), **S** (sibling), **D** (duplicate) |
+| Delete the selected objects | Delete (5.10) |
+| The button that shows and hides the AI panel (4.7) | **I** (until *Add Above* is built: **A**) |
+| The help button | **?** |
 
 Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists.
+
+**The letter keys** (A, B, C, D, I, S, ?) work only when no text is being edited and not when Ctrl, ⌘ or Alt is held. Each letter has one meaning in a tool.
 
 ### 5.5 Selecting several objects
 
 - **Shift+click and Ctrl/⌘+click** add an object to the selection or take it out. Shift+click is the convention in drawing tools and Ctrl/⌘+click in lists; both do the same, so the habit from either works. A plain click replaces the selection.
+- **The selection holds only one kind of object.** Shift+click and Ctrl/⌘+click only add objects of the same kind as those already selected. An object of another kind replaces the selection, like a plain click. Each tool states its kinds in `design-<tool>.md`; in STPA blocks, control actions and feedback are one kind each (5.10).
 - **Selected objects look the same** in every tool: the same shadow around the object.
 - **Esc or a click outside** clears the selection.
-- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects.
+- **The selection scopes AI questions:** the whole analysis is sent as context, but the question concerns the selected objects. Since the selection holds one kind only, a question cannot be scoped to objects of different kinds at once.
+
+**Current state (2026-11-09):** the rule is not built in any tool. HTA has only one kind. STPA today lets blocks, control actions and feedback be mixed in one selection, and Bowtie uses different modifiers for barriers and cards; both need to change and be checked.
 
 ### 5.6 Moving selected objects
 
@@ -556,11 +566,11 @@ Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (
 
 ### 5.8 A warning when the objects do not belong together
 
-Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, a card and a barrier, or tasks under different parent tasks, the tool **warns**:
+Moving several objects must make sense as one move. If the selected objects do not belong together, for example preventive and recovery barriers, or tasks under different parent tasks, the tool **warns**:
 
 - **The move is not carried out**, and a message says why and which objects can be moved together.
 - **The selection stays**, so the user can take out what does not belong with Shift+click.
-- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns.
+- The selection itself is allowed, since it also scopes AI questions (5.5). It is the move that warns. Objects of different kinds can never be selected together (5.5), so the warning applies to objects of the same kind that still do not belong together.
 
 ### 5.9 Linked views
 
@@ -580,3 +590,20 @@ When the same model is shown in two views, for example the diagram and the TTA t
 | STPA | Missing | – | A click in the diagram shows the row in the structure table | Shift+click on blocks, control actions and feedback (connections should be reached through the table instead, 5.1) | Missing (the diagram places itself) | The diagram places itself | – |
 | HTA | Follows the tree: ↑ parent, ↓ next in tree order, ←/→ only among siblings | The mouse does not clear the keyboard's indication | With the mouse in both directions; missing with the keyboard, and Tab goes between the text fields in the tasks | Missing (one task at a time) | Missing; plain arrows move a selected task | The tree places itself | – |
 | Bowtie | Own rules per object type | The mouse does not clear the keyboard's indication | – (no table) | Shift+click on barriers, Ctrl/⌘+click on cards | ←/→ moves selected barriers, Alt+↑/↓ moves cards | Yes | Yes: preventive and recovery barriers are not moved together |
+
+### 5.10 Building and changing the structure in the diagram
+
+The user must be able to build and change the structure of the analysis directly in the diagram, with keyboard and mouse and without AI (1.2, points 3 and 4). The AI panel is a complement. The rules are common; each tool states its own requirements in `design-<tool>.md`, for STPA [design-stpa.en.md](design-stpa.en.md).
+
+- **Three ways to add: above, below and beside the selected object.** The commands are called *Add Above*, *Add Below* and *Add Beside*. The words say where the new object ends up in the diagram, not how it relates in the model. With nothing selected the commands cannot be used.
+- **One command does the whole job.** The object is added, connected according to the rules of the model, selected, and its name can be typed at once: focus goes to the name cell on the object's row in the table (5.9), not to a box in the diagram. Texts the user is meant to write are left empty; the tool does not make anything up.
+- **The whole addition is one undo step** (Ctrl/⌘+Z), even when several links were created.
+- **Several selected objects get one shared new object**, connected to all of them. If the selected objects do not belong together, for example for *Add Beside* when they have different parents, the tool warns as in 5.8 and changes nothing.
+- **Objects and links without text show their id.** A link or object that the user has not written anything for is still visible, can be selected and shows where text is missing. The id is replaced by the text when it is written. Example: a new control action without text is shown with the label *ca3*, and with *ApplyBrakes* once filled in.
+- **Delete removes the selection together with what belongs to it**, for example its links, and can be undone in one step.
+- **Each command has a button in the toolbar above the diagram**, with the key in the tooltip (5.4). The button is inactive when the command cannot be used, so that it shows what is possible. They are ordinary buttons: Enter is the key of the primary button (4.5).
+- **The letter keys are off while typing**, and **?** opens the help with the keys that apply.
+- **Links between existing objects** are changed in the tables, not with link modes of their own (5.1).
+- **Diagram and tables are two ways into the same model.** The selection is shared and the text is edited in the table (5.9).
+
+**Current state (2026-11-08):** not built, and *Add Above* is postponed. STPA is the first tool (see [design-stpa.en.md](design-stpa.en.md)). HTA has *C*, *S* and *D* today, with the tool's own words *Child*, *Sibling* and *Duplicate*; aligning the words in all tools is a separate decision.

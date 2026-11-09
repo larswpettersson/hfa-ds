@@ -467,6 +467,7 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Ikonen har bara tillstånden Hovered och Pressed**, inget statustillstånd. *Pressed* är tillfälligt: det gäller medan musknappen är nedtryckt, till dess att användaren släpper den och klicket är slut. Om panelen är öppen eller dold syns på panelen själv.
 - **Knappen har ingen …**, eftersom den bara visar eller döljer en panel och inte öppnar en dialog (4.1). Verktygstipset heter till exempel *Show AI panel* eller *Hide AI panel*.
 - **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är en vanlig knapp och snabbåtgärder, frågefält och *Send* är inaktiva.
+- **Tangenten I visar och döljer panelen** i alla verktyg, när ingen text redigeras (5.4). Den ersätter A, som *Add Above* (5.10) ska använda; tills *Add Above* är byggt gäller A.
 - **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
 
 **Nuläge (2026-11-08):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som vanlig knapp, och inaktiva *Send* (primary först när det finns en leverantör) och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA använder sedan 2026-11-08 samma panel som de andra (arkitektur.md, avsnitt 10), så knappen och läget utan leverantör är lika i alla tre. Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
@@ -531,15 +532,24 @@ Varje tangent har en motsvarighet med musen:
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
 | Dubbelklick: redigera | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
+| Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
+| Ta bort markerade objekt | Delete (5.10) |
+| Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
+| Hjälpknappen | **?** |
 
 Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
+
+**Bokstavstangenterna** (A, B, C, D, I, S, ?) gäller bara när ingen text redigeras och inte när Ctrl, ⌘ eller Alt hålls nere. Varje bokstav har en enda betydelse i ett verktyg.
 
 ### 5.5 Markera flera objekt
 
 - **Shift+klick och Ctrl/⌘+klick** lägger till ett objekt i markeringen eller tar bort det ur den. Shift+klick är konventionen i ritverktyg och Ctrl/⌘+klick i listor; båda gör samma sak, så att vanan från båda fungerar. Ett vanligt klick ersätter markeringen.
+- **Markeringen innehåller bara en sorts objekt.** Shift+klick och Ctrl/⌘+klick lägger bara till objekt av samma sort som de redan markerade. Ett objekt av en annan sort ersätter markeringen, som ett vanligt klick. Varje verktyg anger sina sorter i `design-<verktyg>.md`; i STPA är block, styråtgärder och återkopplingar var sin sort (5.10).
 - **Markerade objekt ser likadana ut** i alla verktyg: samma skugga runt objektet.
 - **Esc eller ett klick utanför** tar bort markeringen.
-- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten.
+- **Markeringen avgränsar AI-frågor:** hela analysen skickas som sammanhang, men frågan gäller de markerade objekten. Eftersom markeringen bara har en sort går det inte att avgränsa en fråga till objekt av olika sorter på en gång.
+
+**Nuläge (2026-11-09):** regeln är inte byggd i något verktyg. HTA har bara en sort. STPA låter i dag blocken, styråtgärderna och återkopplingarna blandas i en markering, och Bowtie har olika modifierare för barriärer och kort; båda behöver ändras och kontrolleras.
 
 ### 5.6 Flytta markerade objekt
 
@@ -556,11 +566,11 @@ Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) f�
 
 ### 5.8 Varning när objekten inte hör ihop
 
-En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, ett kort och en barriär, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
+En flytt av flera objekt måste ha en gemensam mening. Hör de markerade objekten inte ihop, till exempel förebyggande och återställande barriärer, eller uppgifter under olika överordnade uppgifter, ska verktyget **varna**:
 
 - **Flytten genomförs inte**, och ett meddelande säger varför och vilka objekt som kan flyttas tillsammans.
 - **Markeringen ligger kvar**, så att användaren kan ta bort det som inte hör dit med Shift+klick.
-- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar.
+- Markeringen i sig är tillåten, eftersom den också används för att avgränsa AI-frågor (5.5). Det är flytten som varnar. Objekt av olika sorter kan aldrig vara markerade tillsammans (5.5), så varningen gäller objekt av samma sort som ändå inte hör ihop.
 
 ### 5.9 Länkade vyer
 
@@ -580,3 +590,20 @@ När samma modell visas i två vyer, till exempel diagrammet och TTA-tabellen i 
 | STPA | Saknas | – | Klick i diagrammet visar raden i strukturtabellen | Shift+klick på block, styråtgärder och återkopplingar (kopplingarna bör i stället nås via tabellen, 5.1) | Saknas (diagrammet placerar själv) | Diagrammet placerar själv | – |
 | HTA | Efter trädet: ↑ förälder, ↓ nästa i trädordning, ←/→ bara bland syskon | Musen tar inte bort tangentbordets indikering | Med musen i båda riktningarna; med tangentbordet saknas det, och Tab går mellan textfälten i uppgifterna | Saknas (en uppgift åt gången) | Saknas; vanliga pilar flyttar en markerad uppgift | Trädet placerar själv | – |
 | Bowtie | Egna regler per objekttyp | Musen tar inte bort tangentbordets indikering | – (ingen tabell) | Shift+klick på barriärer, Ctrl/⌘+klick på kort | ←/→ flyttar markerade barriärer, Alt+↑/↓ flyttar kort | Ja | Ja: förebyggande och återställande barriärer flyttas inte tillsammans |
+
+### 5.10 Bygga och ändra strukturen i diagrammet
+
+Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, med tangentbord och mus och utan AI (1.2, punkt 3 och 4). AI-panelen är ett komplement. Reglerna är gemensamma; varje verktyg anger sina egna krav i `design-<verktyg>.md`, för STPA [design-stpa.md](design-stpa.md).
+
+- **Tre sätt att lägga till: ovanför, nedanför och bredvid det markerade objektet.** Kommandona heter *Add Above*, *Add Below* och *Add Beside*. Orden säger var det nya objektet hamnar i diagrammet, inte hur det hör ihop i modellen. Är inget markerat går kommandona inte att använda.
+- **Ett kommando gör hela jobbet.** Objektet läggs till, kopplas enligt modellens regler, markeras, och dess namn kan skrivas direkt: fokus hamnar på namncellen på objektets rad i tabellen (5.9), inte i en ruta i diagrammet. Texter som användaren ska skriva lämnas tomma; verktyget hittar inte på något.
+- **Hela tillägget är ett steg att ångra** (Ctrl/⌘+Z), även när flera länkar skapades.
+- **Flera markerade objekt får ett gemensamt nytt objekt**, som kopplas till alla. Hör de markerade objekten inte ihop, till exempel för *Add Beside* när de har olika överordnade, varnar verktyget enligt 5.8 och ändrar ingenting.
+- **Objekt och länkar utan text visar sitt id.** En länk eller ett objekt som användaren inte har skrivit något till syns ändå, går att markera och visar var texten saknas. Id:t ersätts av texten när den skrivs. Exempel: en ny styråtgärd utan text visas med etiketten *ca3*, och med *ApplyBrakes* när den är ifylld.
+- **Delete tar bort det markerade tillsammans med det som hör till det**, till exempel länkarna, och går att ångra i ett steg.
+- **Varje kommando har en knapp i verktygsfältet över diagrammet**, med tangenten i verktygstipset (5.4). Knappen är inaktiv när kommandot inte går att använda, så att den visar vad som är möjligt. Det är vanliga knappar: Enter är primary-knappens tangent (4.5).
+- **Bokstavstangenterna är avstängda medan man skriver**, och **?** öppnar hjälpen med de tangenter som gäller.
+- **Kopplingar mellan befintliga objekt** ändras i tabellerna, inte med egna länklägen (5.1).
+- **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).
+
+**Nuläge (2026-11-08):** inte byggt, och *Add Above* skjuts upp. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.
