@@ -114,19 +114,19 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     await expect(node(page, "a1")).toHaveClass(/proc/);
   });
 
-  test("views compress and expand, keep their state after a reload, and edits stay undoable with the JSON compressed", async ({ page }) => {
-    const json = page.locator("#vJson");
-    await json.locator(".vcomp").click();
-    await expect(json).toHaveClass(/compressed/);
-    expect(await json.locator(".vbody").evaluate((el) => el.getBoundingClientRect().height)).toBe(0);
-    expect((await json.boundingBox()).height).toBeLessThan(40); // only the bar is left
-    await page.locator("#vDiagram .vexp").click();
-    await expect(page.locator("#vDiagram")).toHaveClass(/expanded/);
-    expect(await page.locator("#diagramWrap").evaluate((el) => getComputedStyle(el).maxHeight)).toBe("none");
+  test("a view bar opens and closes its view, keeps its state after a reload, and edits stay undoable (STPA-VIEW-5, 6)", async ({ page }) => {
+    const view = page.locator("#vStructure");
+    await expect(page.locator(".vcomp, .vexp")).toHaveCount(0); // no Compress or Expand buttons (STPA-VIEW-6)
+    await view.locator(".vtitle").click();
+    await expect(view).toHaveClass(/compressed/);
+    expect(await view.locator(".vbody").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(2);
+    expect((await view.boundingBox()).height).toBeLessThan(40); // only the bar is left
+    expect(await view.locator(".vtitle").evaluate((el) => getComputedStyle(el, "::before").content)).toContain("▸");
     await page.reload();
     await page.waitForSelector("#diagram g.node");
-    await expect(json).toHaveClass(/compressed/);
-    await expect(page.locator("#vDiagram")).toHaveClass(/expanded/);
+    await expect(view).toHaveClass(/compressed/);
+    await view.locator(".vtitle").click();
+    await expect(view).not.toHaveClass(/compressed/);
 
     await node(page, "c0").click();
     await page.keyboard.press("Enter");
@@ -138,7 +138,7 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     await expect(node(page, "c0")).toContainText("Driver");
     await expect(node(page, "c0")).not.toContainText("Human");
 
-    // compressing the structure tables does not stop Enter on a block from opening the row
+    // closing the structure tables does not stop Enter on a block from opening the row
     await page.locator("#vStructure .vtitle").click();
     await expect(page.locator("#vStructure")).toHaveClass(/compressed/);
     await node(page, "p1").click();

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool, setEditor, getEditorJson } from "../lib/page.mjs";
 
-// Requirements: STPA-KEYS-1, STPA-KEYS-3, STPA-VIEW-3 and STPA-VIEW-4 (the help dialog) in docs/design-stpa.md.
+// Requirements: STPA-KEYS-1, STPA-KEYS-3, STPA-VIEW-1, 3 and 4 in docs/design-stpa.md.
 const T = tool("stpa-workbench");
 const json = (page) => getEditorJson(page, "#editor");
 const node = (page, id) => page.locator(`#diagram g.node[data-sel="${id}"]`);
@@ -28,6 +28,11 @@ test.describe("STPA workbench: keys, Delete and the help dialog", () => {
     await page.locator("body").click({ position: { x: 5, y: 5 } });
   });
   test.afterEach(() => expect(errors).toEqual([]));
+
+  test("STPA-VIEW-1: JSON-editorn och Format finns inte i gränssnittet", async ({ page }) => {
+    await expect(page.locator("#editor")).toBeHidden();
+    await expect(page.getByRole("button", { name: "Format" })).toHaveCount(0);
+  });
 
   test("STPA-KEYS-1: knapparna och tangenterna gör samma sak", async ({ page }) => {
     await node(page, "c1").click();
