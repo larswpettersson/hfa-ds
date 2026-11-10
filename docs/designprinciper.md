@@ -135,7 +135,7 @@ Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av white
 - **Bilden stannar inte kvar.** Den sparas inte i verktyget eller i exporten och skickas inte om vid följdfrågor.
 - **Tydligt vad som lämnar datorn.** Ett skärmklipp kan innehålla mer än man tänkt. Vid en molnleverantör ska det framgå vid bilagan; för sekretessbelagda analyser krävs en lokal modell med bildstöd.
 
-Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 7.
+Inget av detta är byggt ännu (2026-11-03). **Det ingår i bygget av STPA Workbench (beslutat 2026-11-10):** funktionen byggs i den delade AI-panelen (`ai-assist.js`, 4.7), så att HTA och Bowtie får den samtidigt. Kraven för STPA står i [design-stpa.md](design-stpa.md) (*STPA-AI-IMG*). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 7.
 
 ### 1.7 Anpassningsbara TTA-kolumner (planerat)
 
@@ -364,7 +364,7 @@ En dialog ovanpå en panel ovanpå sidan får sitt djup på andra sätt än med 
 - **Toning bakom modala dialoger.** Allt under dialogen dämpas, till exempel `foreground.base` vid 40–50 %, i stället för att dialogen får en egen yta. Webbläsarens `<dialog>` har redan en `::backdrop` för det. Toningen är ingen bakgrund som text ligger på, så färgreglerna för bakgrunder gäller den inte.
 - **Kant alltid**, enligt ovan.
 
-Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process Block*). Penpot har tokentypen *shadow*, men HFA DS har inga definierade. De införs när de behövs, och då i `tokens.json` och Penpot samtidigt.
+Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process Block*). Penpot har tokentypen *shadow*, men HFA DS har inga definierade. De första som införs är `shadow.hovered` och `shadow.selected` för indikering och markering (5.3), och då i Penpot och `tokens.json` samtidigt.
 
 #### Gäller inte
 
@@ -426,7 +426,7 @@ AI-stödet utgår från analysen som är öppen. Ligger det en stor eller domän
 Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Windows, macOS, Office):
 
 - **Open…** öppnar ett filval och öppnar en analys (JSON). Den ersätter analysen som är öppen och frågar först om det finns osparade ändringar. Den slutar med …, eftersom den alltid öppnar ett filval (4.1).
-- **Save** sparar analysen som en JSON-fil, utan …. I webbläsaren blir det i dag en nedladdning. Där webbläsaren tillåter det kan **Save** skriva tillbaka till samma fil, och **Save As…** fråga efter namn och plats.
+- **Save…** sparar analysen som en ny JSON-fil och slutar med …, eftersom den öppnar en dialog för namn och plats (4.1). I webbläsaren blir det i dag en nedladdning av en ny fil, inte en uppdatering av den gamla. Där webbläsaren tillåter det kan en senare **Save** skriva tillbaka till samma fil.
 - Namnen ersätter **Import** och **Export** i HTA och Bowtie.
 - Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
 - Kortkommandona Ctrl/⌘+O och Ctrl/⌘+S följer samma namn, där de införs.
@@ -485,6 +485,54 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 - **Den smala åtgärdsknappen** (till exempel *Compress*, *Expand*, *Clear* och *Export .md* i AI-panelen) är en variant av Action Button: `Type = Narrow`, med samma tillstånd (*Default*, *Hovered*, *Pressed*) och tokens som de andra. Texten är 12 px (`typography.caption`), marginalen 4 och 8 px och hörnradien 4.
 - **Pill** är en komponent med egenskapen `Status`: *Neutral*, *Info*, *Success*, *Warning* och *Error*. Statusen anges bara med fyllnadsfärgen (`background.info`, `success`, `warning`, `error`), texten är `foreground.base`, och kanten är `foreground.muted` på *Neutral* och `foreground.base` på statusvarianterna, så att den klarar 3:1. Leverantörsfältet i AI-panelen är en *Pill*: *Neutral* med leverantörens namn, och *Warning* med texten *No provider*.
 
+### 4.10 Titelraden
+
+Varje verktyg har en titelrad överst, lika i alla verktyg:
+
+- **Appnamnet** står längst till vänster, med en liten ruta i primary-färg (`brand.primary`) före namnet.
+- **Generella kommandon för hela applikationen** ligger efter namnet: *New*, *Open…*, *Save…*, *Undo*, *Settings…* och *?* (hjälp). De är **Compact Button**, en lägre variant av Action Button (28 px) med tillstånden *Default*, *Hovered* och *Pressed*.
+- **Theme och panelväxlingen** (*Hide panel*, 4.7) ligger längst till höger. Theme är en växlingsknapp med sol i ljust läge och halvmåne i mörkt. Nya generella knappar läggs i den högra gruppen.
+- **Verktygsspecifika kommandon** hör inte hemma i titelraden. Add-kommandona i STPA, HTA och Bowtie ligger i en rad över diagrammet (5.10).
+- **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla (till exempel *Undo*). Det är bara appnamnet som skiljer.
+- **Raden är responsiv i verktygen.** Bredden 1440 px gäller bara komponenten *Title bar* i HFA DS (varianterna `Tool` = STPA, HTA, Bowtie); i verktyget fyller raden bredden och den högra gruppen ligger kvar längst till höger.
+
+**Nuläge (2026-11-09):** ritad i Penpot (HFA DS), inte byggd. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.
+
+### 4.11 Dragfält mellan paneler
+
+Mellan alla paneler i alla verktyg finns ett **dragfält** för att ändra panelernas bredd:
+
+- **Utseende:** ett 16 px brett fält (`background.base`) med en 4 px bred, avrundad stapel (`background.info`) mitt i, 28 px kortare än fältet i båda ändar. Det är komponenten *Drag bar* i HFA DS.
+- **Var:** mellan alla paneler, inklusive mellan TTA-tabellen och analyspanelen i HTA och mellan diagrammet, tabellerna och analyspanelen i STPA.
+- **Tangentbord:** pilarna ←/→ ändrar bredden när fältet har fokus, som AI-panelens dragfält gör i dag (`ai-resize`, 4.7). Fältet har `role="separator"`.
+- Dragfält ersätter knappar som bara ändrar panelbredd.
+
+**Nuläge (2026-11-09):** ritad i Penpot för STPA, inte byggd. AI-panelen har ett osynligt dragfält i dag (8 px, syns först vid hover). Tillstånden för hover och dragning är inte ritade.
+
+### 4.12 Vyer öppnas och stängs med ▾
+
+Varje vy (till exempel diagrammet, tabellerna och Safety case i STPA) har en vybar med en **▾ före titeln**:
+
+- **Ett klick på pilen eller titeln öppnar och stänger vyn**, och hela raden är klickbar. ▾ betyder öppen och ▸ stängd. Med tangentbordet gäller Enter eller mellanslag på raden, och raden har `aria-expanded`.
+- **Pilen är 16 px** (titeln 12 px, versaler, `font-weight` 600). Det är samma ▾ som chattens expanderbara rader, så mönstret är bekant.
+- **Det finns inga knappar för *Compress* och *Expand* i vybarerna.** Öppna vyer delar den lediga höjden, och stänger man en tar de andra platsen. Panelens bredd ändras med dragfälten (4.11). Diagrammet har dessutom *Full page*.
+- *Compress* och *Expand* i AI-panelen (4.9) gäller svaren i loggen och ändras inte av den här regeln.
+- **Förklaringen (legenden) följer samma mönster.** Dess rubrikrad, **▾ Legend**, öppnar och stänger den, och stängd är den bara rubrikraden. Valet sparas. Legenden ligger i en egen kolumn bredvid panelen och **täcker aldrig diagrammet**, och den höjer sig inte när musen passerar (det fungerar inte med tangentbord eller pekskärm).
+
+**Nuläge (2026-11-09):** ritad i Penpot för STPA. Verktyget har fortfarande knapparna *Compress* och *Expand* i vybarerna, och ett klick på titeln komprimerar redan i dag.
+
+### 4.13 Paneler: titel och kommandon på samma rad
+
+Alla verktyg har sina paneler uppbyggda på samma sätt:
+
+- **Panelen är ett kort:** `background.elevated` på sidan (`base`), kant 1 px `foreground.muted` inåt och radie 8 (3.3). Kanten bär kontrasten, eftersom `elevated` och `base` bara skiljer sig med 1,11:1. En panel utan kant fungerar inte som en egen yta.
+- **Rubrikraden har titeln först och panelens kommandon efter den, på samma rad och med samma mittlinje.** Kommandona är *Compact Button* (4.10). Exempel: **HTA** med *Add Child*, *Add Sibling* och *Duplicate*; **Bowtie** med *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence*; **TTA** med *Columns…*, *Filter*, *Export CSV* och *Add row*; **▾ CONTROL STRUCTURE** med *Add Below*, *Add Beside* och *Add Above*. Kommandon som gäller en markering (*Convert to actuator*, *Convert to sensor* och *Delete*) kan ligga i en rad under rubrikraden när de inte ryms på den.
+- **Kommandon för hela applikationen** ligger i titelraden (4.10), inte i panelens rubrikrad.
+- **Förklaringen (legenden)** ligger utanför panelerna, är `sunken` med samma kant, och är vikbar (4.12).
+- **Tangenten visas på knappen som en understruken bokstav i texten**, till exempel Add <u>B</u>elow, inte bara i verktygstipset (5.10).
+
+**Nuläge (2026-11-10):** ritad i Penpot för HTA, Bowtie och STPA, inte byggd. I STPA ligger *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE*, och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
+
 ## 5. Navigera, markera och flytta objekt
 
 Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.
@@ -509,7 +557,7 @@ En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen peka
 
 Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
 
-**Ctrl/⌘+pil hoppar en större enhet i strukturen**, som i textredigerare: till exempel till föräldern eller första barnet i HTA, eller till topphändelsen eller ytterkanten i Bowtie. Här är det modellen som bestämmer vart hoppet går.
+**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3).
 
 ### 5.3 En indikering för mus och tangentbord
 
@@ -519,6 +567,8 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
+- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** (eller F2 eller dubbelklick). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
+- **Skuggorna är tokens, lika för alla objekt.** `shadow.hovered` (indikeringen) och `shadow.selected` (markeringen: en suddig skugga runt hela objektet, spridning 4 px, oskärpa 2 px, `foreground.base` vid 40 %) definieras en gång i Penpot (HFA DS), exporteras till `tokens.json` och används av alla objekt i alla verktyg, så att indikering och markering ser likadana ut överallt (1.2, punkt 6). `shadow.hovered` är en skarp skugga nere till höger (4 px åt höger och ned, oskärpa 4 px, `foreground.base` vid 40 %). **Att utvärdera i framtiden (alternativ B):** att byta `shadow.hovered` till en ring plus glöd runt hela objektet, för bättre kontrast. Det ändrar utseendet på varje hovrat objekt i alla verktyg, men eftersom skuggan är en token görs bytet på ett ställe.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
 ### 5.4 Tangenterna speglar musen
@@ -530,14 +580,14 @@ Varje tangent har en motsvarighet med musen:
 | Hovra | Pil (5.2) |
 | Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
-| Dubbelklick: redigera | Enter eller F2 |
+| Dubbelklick: textredigering | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
 | Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
 | Ta bort markerade objekt | Delete (5.10) |
 | Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
 | Hjälpknappen | **?** |
 
-Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
+Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
 
 **Bokstavstangenterna** (A, B, C, D, I, S, ?) gäller bara när ingen text redigeras och inte när Ctrl, ⌘ eller Alt hålls nere. Varje bokstav har en enda betydelse i ett verktyg.
 
@@ -602,6 +652,11 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Objekt och länkar utan text visar sitt id.** En länk eller ett objekt som användaren inte har skrivit något till syns ändå, går att markera och visar var texten saknas. Id:t ersätts av texten när den skrivs. Exempel: en ny styråtgärd utan text visas med etiketten *ca3*, och med *ApplyBrakes* när den är ifylld.
 - **Delete tar bort det markerade tillsammans med det som hör till det**, till exempel länkarna, och går att ångra i ett steg.
 - **Varje kommando har en knapp i verktygsfältet över diagrammet**, med tangenten i verktygstipset (5.4). Knappen är inaktiv när kommandot inte går att använda, så att den visar vad som är möjligt. Det är vanliga knappar: Enter är primary-knappens tangent (4.5).
+- **Tangenten är en understruken bokstav i knappens text.** Den tar ingen plats, och knapparna är redan breda. Bokstaven är en ensam tangent som trycks utan Alt, med objektet markerat. Understrykningen betyder i Windows annars "tryck Alt + bokstaven" i menyer, så det förklaras på tre ställen:
+  - hjälpdialogen (*?*) har överst raden "Den understrukna bokstaven är tangenten. Tryck den ensam, utan Alt.",
+  - verktygstipset visar tangenten utan modifierare, till exempel *Add Below (B)*,
+  - knappen har `aria-keyshortcuts`, så att skärmläsare också får tangenten.
+- **Knappar utan bokstav i texten har ingen understrykning.** *Delete* visar sin tangent i verktygstipset (en understruken **D** skulle peka på *Duplicate* i HTA), och *Convert to actuator* och *Convert to sensor* har ingen tangent. *Compact Button* har ett valfritt element, *Key*, för den understrukna bokstaven.
 - **Bokstavstangenterna är avstängda medan man skriver**, och **?** öppnar hjälpen med de tangenter som gäller.
 - **Kopplingar mellan befintliga objekt** ändras i tabellerna, inte med egna länklägen (5.1).
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).

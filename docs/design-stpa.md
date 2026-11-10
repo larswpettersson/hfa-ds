@@ -20,9 +20,16 @@ Svaren på de åtta öppna frågorna, i korthet:
 6. **Flera markerade:** ett gemensamt nytt block som kopplas till alla markerade.
 7. **Nytt diagram** börjar med en controller och en controlled process, kopplade med styråtgärd och återkoppling.
 8. **Tabeller och JSON** behålls som de är. Markeringen visas i tabellen och texten redigeras där (5.9).
-9. **Markering:** klick eller Enter på ett block markerar det. Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
+9. **Markering och redigering:** klick eller Ctrl/⌘+Enter markerar ett block (en suddig skugga runt hela blocket). Enter ensam går in i textredigeringsläget (textmarkör i namncellen). Pilar flyttar bara indikeringen (en hovrad skugga), och Ctrl/⌘+pil används inte (5.3, 5.4). Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
 10. **Länkar och block utan text** visar sitt id (princip i 5.10).
 11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
+12. **Layout:** tre kolumner med dragfält emellan (4.11): kontrollstrukturen (diagrammet) till vänster, tabellerna i mitten och AI-analysen till höger, som i HTA. Titelraden (4.10) ligger överst. Rubrikraden i panelen försvinner, eftersom vybaren *CONTROL STRUCTURE* redan visar samma rubrik.
+13. **Kommandona** ligger som *Compact Button* (4.10) i vänstra panelen: *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE* (4.13), och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
+14. **JSON visas inte i gränssnittet.** JSON-editorn och *Format* tas bort. Vill användaren se JSON ber hen AI-panelen lista den.
+15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
+16. **Vyer** öppnas och stängs med en ▾ före titeln (4.12). *Compress* och *Expand* tas bort ur vybarerna.
+17. **Tangenten** visas som en understruken bokstav i knappens text: Add <u>B</u>elow, Be<u>s</u>ide och <u>A</u>bove (5.10). *Delete* och *Convert …* har ingen understrykning. Hjälpdialogen får en rad överst om att den understrukna bokstaven är tangenten, och att den trycks ensam, utan Alt.
+18. **Bilder i AI-panelen** (1.6) ingår i bygget: användaren kan klistra in ett skärmklipp (Ctrl/⌘+V) eller dra in en bildfil i frågefältet. Funktionen byggs i den delade panelen, så att HTA och Bowtie får den samtidigt.
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 
@@ -191,9 +198,9 @@ Feature: Länkar och konvertering
 
 ### STPA-SEL: markera och avmarkera
 
-**Ett klick eller Enter på ett block markerar det och ger namncellen på dess rad fokus. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
+**Ett klick eller Ctrl/⌘+Enter på ett block markerar det (en suddig skugga runt hela blocket). Enter ensam markerar inte, utan går in i textredigeringsläget. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
 
-Det skiljer sig från 5.4, där Ctrl/⌘+Enter motsvarar klick och Enter redigerar. I STPA gör Enter och Ctrl/⌘+Enter samma sak som ett klick, eftersom ett klick redan flyttar fokus till namncellen. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
+Det följer 5.4: Ctrl/⌘+Enter motsvarar klick, och Enter (eller F2) redigerar. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
 
 ```gherkin
 Feature: Markera och avmarkera
@@ -202,12 +209,14 @@ Feature: Markera och avmarkera
     Given inget är markerat
     When användaren klickar på blocket "Driver"
     Then bara "Driver" är markerad
-    And namncellen på dess rad i tabellen har fokus
+    And blocket har en suddig skugga runt hela blocket
+    And blockets rad i tabellen visas som markerad
+    And ingen text redigeras
 
   @STPA-SEL-2
-  Scenario: Enter markerar det indikerade blocket
+  Scenario: Ctrl/⌘+Enter markerar det indikerade blocket
     Given indikeringen står på "Driver"
-    When användaren trycker Enter
+    When användaren trycker Ctrl/⌘+Enter
     Then resultatet är detsamma som vid ett klick på "Driver"
 
   @STPA-SEL-3
@@ -235,6 +244,169 @@ Feature: Markera och avmarkera
     Given blocket "Driver" är markerat
     When användaren Shift+klickar på en styråtgärd
     Then bara styråtgärden är markerad
+
+  @STPA-SEL-7
+  Scenario: Enter ensam går in i textredigeringsläget och markerar inte
+    Given indikeringen står på "Driver" och inget är markerat
+    When användaren trycker Enter
+    Then namncellen på blockets rad har fokus och en textmarkör
+    And inget är markerat
+```
+
+### STPA-NAV: pilnavigering
+
+**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste block åt pilens håll på skärmen (5.2). Musen och piltangenterna delar samma indikering (5.3). Pilar markerar inte, och Ctrl/⌘+pil används inte.**
+
+```gherkin
+Feature: Pilnavigering
+  Background:
+    Given STPA Workbench är öppen med blocken "Driver", "ECU" och "Brakes", där "ECU" ligger under "Driver" och "Brakes" under "ECU"
+
+  @STPA-NAV-1
+  Scenario: En pil flyttar indikeringen
+    Given indikeringen står på "Driver"
+    When användaren trycker ↓
+    Then indikeringen står på "ECU" och visas som en hovrad skugga
+    And "Driver" har ingen indikering längre
+    And markeringen är oförändrad
+
+  @STPA-NAV-2
+  Scenario: Objekt på samma rad eller i samma kolumn går först
+    Given "Driver" har ett block "Supervisor" på samma rad och ett närmare block "Brakes" snett nedåt
+    And indikeringen står på "Driver"
+    When användaren trycker →
+    Then indikeringen står på "Supervisor"
+
+  @STPA-NAV-3
+  Scenario: Vid kanten stannar indikeringen
+    Given indikeringen står på det nedersta blocket "Brakes"
+    When användaren trycker ↓
+    Then indikeringen står kvar på "Brakes"
+
+  @STPA-NAV-4
+  Scenario: Musen tar över indikeringen
+    Given indikeringen står på "Driver" efter en piltryckning
+    When musen rör sig över "Brakes"
+    Then indikeringen står på "Brakes"
+    And "Driver" har ingen indikering
+    When användaren trycker ↑
+    Then indikeringen står på "ECU"
+
+  @STPA-NAV-5
+  Scenario: Piltangenten tar över från musen
+    Given musen hovrar över "Brakes"
+    When användaren trycker ↑
+    Then indikeringen står på "ECU"
+    And "Brakes" har ingen hovrad skugga längre
+
+  @STPA-NAV-6
+  Scenario: Bara verklig musrörelse räknas
+    Given indikeringen står på "Driver" efter en piltryckning
+    When diagrammet rullas så att "Brakes" hamnar under en stilla muspekare
+    Then indikeringen står kvar på "Driver"
+
+  @STPA-NAV-7
+  Scenario: Pilar markerar inte, och Ctrl/⌘+pil används inte
+    Given "Driver" är markerad
+    When användaren trycker →
+    Then indikeringen flyttas men "Driver" är fortfarande markerad
+    When användaren trycker Ctrl/⌘+→
+    Then indikeringen är oförändrad
+```
+
+### STPA-VIEW: vyer och exempel
+
+**JSON-editorn visas inte. Användaren redigerar i diagrammet och tabellerna, och ber AI-panelen lista JSON när hen vill se den. *Open example…* finns i hjälpdialogen.**
+
+```gherkin
+Feature: Vyer och exempel
+  @STPA-VIEW-1
+  Scenario: JSON-editorn och Format finns inte i gränssnittet
+    When STPA Workbench är öppen
+    Then ingen JSON-editor syns
+    And det finns ingen knapp Format
+
+  @STPA-VIEW-2
+  Scenario: AI-panelen listar JSON på begäran
+    Given en analys är öppen
+    When användaren ber AI-panelen att visa JSON
+    Then svaret innehåller analysens JSON, i samma form som när den sparas
+
+  @STPA-VIEW-3
+  Scenario: Open example… finns i hjälpdialogen
+    When användaren trycker ? eller klickar på hjälpknappen
+    Then en dialog med tangentlistan och Open example… visas
+    And Open example… är en kontroll av vanlig höjd (28 px)
+
+  @STPA-VIEW-4
+  Scenario: Ett exempel ersätter analysen efter bekräftelse
+    Given hjälpdialogen är öppen
+    When användaren väljer ett exempel i Open example…
+    Then en bekräftelse frågar om analysen ska ersättas (4.2)
+    And efter bekräftelsen visar diagrammet och tabellerna exemplet
+
+  @STPA-VIEW-5
+  Scenario: Titelraden öppnar och stänger en vy
+    Given vyn Safety case är öppen
+    When användaren klickar på dess titelrad
+    Then vyn är stängd och pilen visar ▸
+    And de andra vyerna i kolumnen tar den lediga höjden
+
+  @STPA-VIEW-6
+  Scenario: Vybarerna har inga knappar för Compress och Expand
+    When STPA Workbench är öppen
+    Then ingen vybar har knapparna Compress eller Expand
+```
+
+### STPA-AI-IMG: bilder i AI-panelen
+
+**Användaren kan ge AI:n en bild tillsammans med frågan, genom att klistra in ett skärmklipp eller dra in en bildfil i frågefältet. En miniatyr med ✕ visar vad som skickas, och bilden stannar inte kvar efter frågan.**
+
+```gherkin
+Feature: Bilder i AI-panelen
+  Background:
+    Given STPA Workbench är öppen med AI-panelen öppen och en leverantör vald
+
+  @STPA-AI-IMG-1
+  Scenario: Ett inklistrat skärmklipp visas som miniatyr
+    Given frågefältet har fokus och urklippet innehåller en bild
+    When användaren trycker Ctrl/⌘+V
+    Then en miniatyr med ✕ visas i frågefältet
+    And texten i frågefältet är oförändrad
+
+  @STPA-AI-IMG-2
+  Scenario: En indragen bildfil visas som miniatyr
+    When användaren drar en bildfil till frågefältet
+    Then en miniatyr med ✕ visas i frågefältet
+
+  @STPA-AI-IMG-3
+  Scenario: ✕ tar bort bilden
+    Given en miniatyr visas
+    When användaren klickar på ✕
+    Then miniatyren försvinner
+    And nästa fråga skickas utan bild
+
+  @STPA-AI-IMG-4
+  Scenario: Bilden skickas med frågan och bara den
+    Given en miniatyr visas
+    When användaren skickar frågan
+    Then frågan skickas med bilden
+    And miniatyren är borta efteråt
+    And bilden sparas inte i analysen eller i exporten
+    And följdfrågor skickas utan bilden
+
+  @STPA-AI-IMG-5
+  Scenario: Det framgår vad som lämnar datorn
+    Given leverantören är en molntjänst
+    When en bild bifogas
+    Then det framgår vid bilagan att bilden skickas till leverantören
+
+  @STPA-AI-IMG-6
+  Scenario: En leverantör utan bildstöd avvisar bilden
+    Given den valda modellen saknar bildstöd
+    When användaren klistrar in en bild
+    Then ingen bild bifogas
+    And ett meddelande säger att modellen inte tar emot bilder
 ```
 
 ### STPA-NEW: nytt diagram
@@ -289,7 +461,9 @@ Feature: Tangenter och knappar
 
 - **Add Above med en befintlig överordnad (STPA-ADD-3):** skjuts upp. Det nya blocket sätts in mellan dem och tar över länkarna, vilket är den mest osäkra delen, eftersom länkar flyttas.
 - **Aktuator- och sensorblock i layouten:** i dag ritas alla aktuatorer och sensorer på en rad ovanför processraden. När en styråtgärd mellan två controllers konverteras (STPA-LINK-4) ska blocket hamna mellan de två nivåerna. Schemat säger i dag att aktuatorns mål och sensorns källa är en controlled process, och den begränsningen ska bort.
-- **Var Convert sitter:** i dag finns knapparna bara i markeringsraden under diagrammet, och bara när något är markerat. Det är därför de är svåra att hitta.
+- **JSON-editorn i koden:** testerna läser och skriver modellen via `#editor`. När editorn inte visas ska elementet ändå finnas kvar (dolt), eller så skrivs testerna om. Det avgörs vid bygget.
+- **Miniatyren med ✕ i frågefältet** och bilagans anmärkning om vad som lämnar datorn är inte ritade i Penpot. De ritas i *AI panel* i HFA DS (en variant av *Prompt* med bild) innan bygget.
+- **Hjälpdialogen** är inte ritad i Penpot (kvarstår från anteckningen i STPA-filen), med tangentlistan, *Open example…* och en primär knapp *Close*.
 - **A och I:** att flytta AI-växlingen från A till I ändrar HTA och Bowtie, 4.7 och testerna `tests/shared/ai-panel-toggle.spec.mjs` och `tests/hta/ai-assist.spec.mjs`. Det görs när *Add Above* byggs.
 
 ## 6. Nästa steg
@@ -298,3 +472,4 @@ Feature: Tangenter och knappar
 2. Granska grafiken.
 3. Skriv testerna i `tests/stpa/` och bygg i STPA Workbench, med *Add Below* först, sedan *Add Beside*, markeringen (STPA-SEL) och Convert. *Add Above* byggs senare.
 4. Lägg till det gemensamma testet som kontrollerar att varje `@STPA-…`-id här har ett test. Scenarier med `@later` hoppas över.
+5. Bygg bildinklistringen (*STPA-AI-IMG*) i den delade AI-panelen tillsammans med resten av STPA-bygget.

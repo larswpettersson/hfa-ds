@@ -20,9 +20,16 @@ The answers to the eight open questions, in short:
 6. **Several selected:** one shared new block connected to all selected blocks.
 7. **A new diagram** starts with one controller and one controlled process, connected by a control action and a feedback.
 8. **Tables and JSON** stay as they are. The selection is shown in the table and the text is edited there (5.9).
-9. **Selection:** a click or Enter on a block selects it. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
+9. **Selection and editing:** a click or Ctrl/⌘+Enter selects a block (a blurred shadow all around the block). Enter alone goes into the text editing mode (a text cursor in the name cell). Arrows only move the indication (a hovered shadow), and Ctrl/⌘+arrow is not used (5.3, 5.4). Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
 10. **Links and blocks without text** show their id (principle in 5.10).
 11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
+12. **Layout:** three columns with drag bars between them (4.11): the control structure (the diagram) on the left, the tables in the middle and the AI analysis on the right, as in HTA. The title bar (4.10) is at the top. The header row in the panel is removed, since the view bar *CONTROL STRUCTURE* already shows the same heading.
+13. **The commands** are *Compact Button* (4.10) in the left panel: *Add Below*, *Add Beside* and *Add Above* on the same row as the view bar's title *▾ CONTROL STRUCTURE* (4.13), and *Convert to actuator*, *Convert to sensor* and *Delete* in a row below.
+14. **JSON is not shown in the interface.** The JSON editor and *Format* are removed. A user who wants to see the JSON asks the AI panel to list it.
+15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
+16. **Views** open and close with a ▾ before the title (4.12). *Compress* and *Expand* are removed from the view bars.
+17. **The key** is shown as an underlined letter in the button's text: Add <u>B</u>elow, Be<u>s</u>ide and <u>A</u>bove (5.10). *Delete* and *Convert …* have no underline. The help dialog gets a line at the top saying that the underlined letter is the key, and that it is pressed alone, without Alt.
+18. **Images in the AI panel** (1.6) are part of the build: the user can paste a screenshot (Ctrl/⌘+V) or drag an image file into the question field. The function is built in the shared panel, so that HTA and Bowtie get it at the same time.
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 
@@ -191,9 +198,9 @@ Feature: Links and conversion
 
 ### STPA-SEL: selecting and deselecting
 
-**A click or Enter on a block selects it and gives the name cell on its row focus. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
+**A click or Ctrl/⌘+Enter on a block selects it (a blurred shadow all around the block). Enter alone does not select, but goes into the text editing mode. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
 
-This differs from 5.4, where Ctrl/⌘+Enter corresponds to a click and Enter edits. In STPA, Enter and Ctrl/⌘+Enter do the same as a click, because a click already moves focus to the name cell. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
+This follows 5.4: Ctrl/⌘+Enter corresponds to a click, and Enter (or F2) edits. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
 
 ```gherkin
 Feature: Selecting and deselecting
@@ -202,12 +209,14 @@ Feature: Selecting and deselecting
     Given nothing is selected
     When the user clicks the block "Driver"
     Then only "Driver" is selected
-    And the name cell on its row in the table has focus
+    And the block has a blurred shadow all around it
+    And the block's row in the table is shown as selected
+    And no text is being edited
 
   @STPA-SEL-2
-  Scenario: Enter selects the indicated block
+  Scenario: Ctrl/⌘+Enter selects the indicated block
     Given the indication is on "Driver"
-    When the user presses Enter
+    When the user presses Ctrl/⌘+Enter
     Then the result is the same as a click on "Driver"
 
   @STPA-SEL-3
@@ -235,6 +244,169 @@ Feature: Selecting and deselecting
     Given the block "Driver" is selected
     When the user Shift+clicks a control action
     Then only the control action is selected
+
+  @STPA-SEL-7
+  Scenario: Enter alone goes into the text editing mode and does not select
+    Given the indication is on "Driver" and nothing is selected
+    When the user presses Enter
+    Then the name cell on the block's row has focus and a text cursor
+    And nothing is selected
+```
+
+### STPA-NAV: arrow navigation
+
+**The arrow keys move the indication (a hovered shadow) to the nearest block in the direction of the arrow on the screen (5.2). The mouse and the arrow keys share the same indication (5.3). Arrows do not select, and Ctrl/⌘+arrow is not used.**
+
+```gherkin
+Feature: Arrow navigation
+  Background:
+    Given STPA Workbench is open with the blocks "Driver", "ECU" and "Brakes", where "ECU" is below "Driver" and "Brakes" below "ECU"
+
+  @STPA-NAV-1
+  Scenario: An arrow moves the indication
+    Given the indication is on "Driver"
+    When the user presses ↓
+    Then the indication is on "ECU" and is shown as a hovered shadow
+    And "Driver" no longer has an indication
+    And the selection is unchanged
+
+  @STPA-NAV-2
+  Scenario: Objects on the same row or in the same column come first
+    Given "Driver" has a block "Supervisor" on the same row and a nearer block "Brakes" diagonally below
+    And the indication is on "Driver"
+    When the user presses →
+    Then the indication is on "Supervisor"
+
+  @STPA-NAV-3
+  Scenario: At the edge the indication stops
+    Given the indication is on the lowest block "Brakes"
+    When the user presses ↓
+    Then the indication stays on "Brakes"
+
+  @STPA-NAV-4
+  Scenario: The mouse takes over the indication
+    Given the indication is on "Driver" after an arrow press
+    When the mouse moves over "Brakes"
+    Then the indication is on "Brakes"
+    And "Driver" has no indication
+    When the user presses ↑
+    Then the indication is on "ECU"
+
+  @STPA-NAV-5
+  Scenario: The arrow key takes over from the mouse
+    Given the mouse hovers over "Brakes"
+    When the user presses ↑
+    Then the indication is on "ECU"
+    And "Brakes" no longer has a hovered shadow
+
+  @STPA-NAV-6
+  Scenario: Only real mouse movement counts
+    Given the indication is on "Driver" after an arrow press
+    When the diagram scrolls so that "Brakes" ends up under a still mouse pointer
+    Then the indication stays on "Driver"
+
+  @STPA-NAV-7
+  Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
+    Given "Driver" is selected
+    When the user presses →
+    Then the indication moves but "Driver" is still selected
+    When the user presses Ctrl/⌘+→
+    Then the indication is unchanged
+```
+
+### STPA-VIEW: views and examples
+
+**The JSON editor is not shown. The user edits in the diagram and the tables, and asks the AI panel to list the JSON when they want to see it. *Open example…* is in the help dialog.**
+
+```gherkin
+Feature: Views and examples
+  @STPA-VIEW-1
+  Scenario: The JSON editor and Format are not in the interface
+    When STPA Workbench is open
+    Then no JSON editor is visible
+    And there is no Format button
+
+  @STPA-VIEW-2
+  Scenario: The AI panel lists the JSON on request
+    Given an analysis is open
+    When the user asks the AI panel to show the JSON
+    Then the answer contains the JSON of the analysis, in the same form as when it is saved
+
+  @STPA-VIEW-3
+  Scenario: Open example… is in the help dialog
+    When the user presses ? or clicks the help button
+    Then a dialog with the key list and Open example… is shown
+    And Open example… is a control of ordinary height (28 px)
+
+  @STPA-VIEW-4
+  Scenario: An example replaces the analysis after confirmation
+    Given the help dialog is open
+    When the user chooses an example in Open example…
+    Then a confirmation asks whether the analysis is to be replaced (4.2)
+    And after confirmation the diagram and the tables show the example
+
+  @STPA-VIEW-5
+  Scenario: The title bar opens and closes a view
+    Given the Safety case view is open
+    When the user clicks its title bar
+    Then the view is closed and the arrow shows ▸
+    And the other views in the column take the free height
+
+  @STPA-VIEW-6
+  Scenario: The view bars have no Compress and Expand buttons
+    When STPA Workbench is open
+    Then no view bar has the buttons Compress or Expand
+```
+
+### STPA-AI-IMG: images in the AI panel
+
+**The user can give the AI an image together with the question, by pasting a screenshot or dragging an image file into the question field. A thumbnail with ✕ shows what is sent, and the image does not stay after the question.**
+
+```gherkin
+Feature: Images in the AI panel
+  Background:
+    Given STPA Workbench is open with the AI panel open and a provider chosen
+
+  @STPA-AI-IMG-1
+  Scenario: A pasted screenshot is shown as a thumbnail
+    Given the question field has focus and the clipboard holds an image
+    When the user presses Ctrl/⌘+V
+    Then a thumbnail with ✕ is shown in the question field
+    And the text in the question field is unchanged
+
+  @STPA-AI-IMG-2
+  Scenario: A dragged image file is shown as a thumbnail
+    When the user drags an image file to the question field
+    Then a thumbnail with ✕ is shown in the question field
+
+  @STPA-AI-IMG-3
+  Scenario: ✕ removes the image
+    Given a thumbnail is shown
+    When the user clicks ✕
+    Then the thumbnail disappears
+    And the next question is sent without an image
+
+  @STPA-AI-IMG-4
+  Scenario: The image is sent with the question and only that
+    Given a thumbnail is shown
+    When the user sends the question
+    Then the question is sent with the image
+    And the thumbnail is gone afterwards
+    And the image is not saved in the analysis or in the export
+    And follow-up questions are sent without the image
+
+  @STPA-AI-IMG-5
+  Scenario: It is clear what leaves the computer
+    Given the provider is a cloud service
+    When an image is attached
+    Then the attachment shows that the image is sent to the provider
+
+  @STPA-AI-IMG-6
+  Scenario: A provider without image support refuses the image
+    Given the chosen model has no image support
+    When the user pastes an image
+    Then no image is attached
+    And a message says that the model does not accept images
 ```
 
 ### STPA-NEW: a new diagram
@@ -289,7 +461,9 @@ Feature: Keys and buttons
 
 - **Add Above with an existing parent (STPA-ADD-3):** postponed. The new block is inserted between them and takes over the links, which is the most uncertain part, because links are moved.
 - **Actuator and sensor blocks in the layout:** today all actuators and sensors are drawn on one row above the process row. When a control action between two controllers is converted (STPA-LINK-4), the block must end up between the two levels. The schema today says that an actuator's target and a sensor's source is a controlled process, and that limit is to go.
-- **Where Convert sits:** today the buttons are only in the selection bar under the diagram, and only when something is selected. That is why they are hard to find.
+- **The JSON editor in the code:** the tests read and write the model through `#editor`. When the editor is not shown the element must still exist (hidden), or the tests are rewritten. This is decided during the build.
+- **The thumbnail with ✕ in the question field** and the attachment's note about what leaves the computer are not drawn in Penpot. They are drawn in *AI panel* in HFA DS (a variant of *Prompt* with an image) before the build.
+- **The help dialog** is not drawn in Penpot (still the note in the STPA file), with the key list, *Open example…* and a primary button *Close*.
 - **A and I:** moving the AI toggle from A to I changes HTA and Bowtie, 4.7 and the tests `tests/shared/ai-panel-toggle.spec.mjs` and `tests/hta/ai-assist.spec.mjs`. It is done when *Add Above* is built.
 
 ## 6. Next steps
@@ -298,3 +472,4 @@ Feature: Keys and buttons
 2. Review the graphics.
 3. Write the tests in `tests/stpa/` and build in STPA Workbench, with *Add Below* first, then *Add Beside*, the selection (STPA-SEL) and Convert. *Add Above* is built later.
 4. Add the shared test that checks that every `@STPA-…` id here has a test. Scenarios tagged `@later` are skipped.
+5. Build the image paste (*STPA-AI-IMG*) in the shared AI panel together with the rest of the STPA build.

@@ -135,7 +135,7 @@ The user should be able to give the AI an image along with the question: a photo
 - **The image does not stay.** It is not saved in the tool or in the export, and it is not sent again with follow-up questions.
 - **Clear about what leaves the computer.** A screenshot can contain more than intended. With a cloud provider this is stated at the attachment; confidential analyses require a local model that reads images.
 
-None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 7.
+None of this is built yet (2026-11-03). **It is part of the build of STPA Workbench (decided 2026-11-10):** the function is built in the shared AI panel (`ai-assist.js`, 4.7), so that HTA and Bowtie get it at the same time. The requirements for STPA are in [design-stpa.en.md](design-stpa.en.md) (*STPA-AI-IMG*). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 7.
 
 ### 1.7 Customisable TTA columns (planned)
 
@@ -364,7 +364,7 @@ A dialog on top of a panel on top of the page gets its depth in other ways than 
 - **A scrim behind modal dialogs.** Everything under the dialog is dimmed, for example `foreground.base` at 40–50 %, instead of the dialog getting a surface of its own. The browser's `<dialog>` already has a `::backdrop` for it. The scrim is not a background text sits on, so the colour rules for backgrounds do not apply to it.
 - **Border always**, as above.
 
-The shadows are currently fixed values in the Penpot components (for example *Process Block*). Penpot has the token type *shadow*, but HFA DS has none defined. They are introduced when needed, and then in `tokens.json` and Penpot at the same time.
+The shadows are currently fixed values in the Penpot components (for example *Process Block*). Penpot has the token type *shadow*, but HFA DS has none defined. The first ones to be introduced are `shadow.hovered` and `shadow.selected` for indication and selection (5.3), and then in Penpot and `tokens.json` at the same time.
 
 #### Does not apply
 
@@ -426,7 +426,7 @@ The AI support starts from the analysis that is open. If a large or domain-speci
 The analysis file is handled the same way in every tool, as in most programs (Windows, macOS, Office):
 
 - **Open…** opens a file chooser and opens an analysis (JSON). It replaces the analysis that is open and asks first if there are unsaved changes. It ends with …, since it always opens a file chooser (4.1).
-- **Save** saves the analysis as a JSON file, without …. In the browser this is a download today. Where the browser allows it, **Save** can write back to the same file, and **Save As…** ask for a name and place.
+- **Save…** saves the analysis as a new JSON file and ends with …, since it opens a dialog for name and place (4.1). In the browser it is a download of a new file today, not an update of the old one. Where the browser allows it, a later **Save** can write back to the same file.
 - The names replace **Import** and **Export** in HTA and Bowtie.
 - Export to formats *other* than the analysis file is still called **Export**, for example **Export CSV** in HTA and **Export .md** for the AI conversation.
 - The shortcuts Ctrl/⌘+O and Ctrl/⌘+S follow the same names, where they are introduced.
@@ -485,6 +485,54 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 - **The narrow action button** (for example *Compress*, *Expand*, *Clear* and *Export .md* in the AI panel) is a variant of Action Button: `Type = Narrow`, with the same states (*Default*, *Hovered*, *Pressed*) and tokens as the others. The text is 12 px (`typography.caption`), the padding 4 and 8 px and the corner radius 4.
 - **Pill** is a component with the property `Status`: *Neutral*, *Info*, *Success*, *Warning* and *Error*. The status is shown only with the fill colour (`background.info`, `success`, `warning`, `error`), the text is `foreground.base`, and the border is `foreground.muted` on *Neutral* and `foreground.base` on the status variants, so that it reaches 3:1. The provider pill in the AI panel is a *Pill*: *Neutral* with the provider's name, and *Warning* with the text *No provider*.
 
+### 4.10 The title bar
+
+Every tool has a title bar at the top, the same in all tools:
+
+- **The application name** is at the far left, with a small square in the primary colour (`brand.primary`) before the name.
+- **General commands for the whole application** follow the name: *New*, *Open…*, *Save…*, *Undo*, *Settings…* and *?* (help). They are **Compact Button**, a lower variant of Action Button (28 px) with the states *Default*, *Hovered* and *Pressed*.
+- **Theme and the panel toggle** (*Hide panel*, 4.7) are at the far right. Theme is a toggle button with a sun in light mode and a crescent moon in dark mode. New general buttons go in the right group.
+- **Tool-specific commands** do not belong in the title bar. The Add commands in STPA, HTA and Bowtie are in a row above the diagram (5.10).
+- **All tools have the same buttons** in the title bar, even when a tool does not use all of them (for example *Undo*). Only the application name differs.
+- **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
+
+**Current state (2026-11-09):** drawn in Penpot (HFA DS), not built. The old toolbars (the component *Toolbar*) are still in HFA DS.
+
+### 4.11 Drag bar between panels
+
+Between all panels in all tools there is a **drag bar** for changing the width of the panels:
+
+- **Look:** a 16 px wide field (`background.base`) with a 4 px wide, rounded bar (`background.info`) in the middle, 28 px shorter than the field at both ends. It is the component *Drag bar* in HFA DS.
+- **Where:** between all panels, including between the TTA table and the analysis panel in HTA and between the diagram, the tables and the analysis panel in STPA.
+- **Keyboard:** the arrows ←/→ change the width when the bar has focus, as the AI panel's drag bar does today (`ai-resize`, 4.7). The bar has `role="separator"`.
+- Drag bars replace buttons that only change the panel width.
+
+**Current state (2026-11-09):** drawn in Penpot for STPA, not built. The AI panel has an invisible drag bar today (8 px, visible only on hover). The states for hover and dragging are not drawn.
+
+### 4.12 Views open and close with ▾
+
+Every view (for example the diagram, the tables and the safety case in STPA) has a view bar with a **▾ before the title**:
+
+- **A click on the arrow or the title opens and closes the view**, and the whole row is clickable. ▾ means open and ▸ closed. With the keyboard, Enter or Space on the row applies, and the row has `aria-expanded`.
+- **The arrow is 16 px** (the title 12 px, capitals, `font-weight` 600). It is the same ▾ as the expandable rows in the chat, so the pattern is familiar.
+- **There are no *Compress* and *Expand* buttons in the view bars.** Open views share the free height, and when one is closed the others take its space. The width of the panel is changed with the drag bars (4.11). The diagram also has *Full page*.
+- *Compress* and *Expand* in the AI panel (4.9) apply to the answers in the log and are not changed by this rule.
+- **The legend follows the same pattern.** Its header row, **▾ Legend**, opens and closes it, and closed it is only the header row. The choice is remembered. The legend is in a column of its own beside the panel and **never covers the diagram**, and it does not rise when the mouse passes (that does not work with keyboard or touch).
+
+**Current state (2026-11-09):** drawn in Penpot for STPA. The tool still has the buttons *Compress* and *Expand* in the view bars, and a click on the title already compresses today.
+
+### 4.13 Panels: title and commands on the same row
+
+All tools build their panels in the same way:
+
+- **A panel is a card:** `background.elevated` on the page (`base`), a 1 px `foreground.muted` border inside and radius 8 (3.3). The border carries the contrast, since `elevated` and `base` differ by only 1.11:1. A panel without a border does not work as a surface of its own.
+- **The header row has the title first and the panel's commands after it, on the same row and with the same centre line.** The commands are *Compact Button* (4.10). Examples: **HTA** with *Add Child*, *Add Sibling* and *Duplicate*; **Bowtie** with *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence*; **TTA** with *Columns…*, *Filter*, *Export CSV* and *Add row*; **▾ CONTROL STRUCTURE** with *Add Below*, *Add Beside* and *Add Above*. Commands that apply to a selection (*Convert to actuator*, *Convert to sensor* and *Delete*) can be in a row below the header row when they do not fit on it.
+- **Commands for the whole application** are in the title bar (4.10), not in the panel's header row.
+- **The legend** is outside the panels, is `sunken` with the same border, and can be folded (4.12).
+- **The key is shown on the button as an underlined letter in the text**, for example Add <u>B</u>elow, not only in the tooltip (5.10).
+
+**Current state (2026-11-10):** drawn in Penpot for HTA, Bowtie and STPA, not built. In STPA *Add Below*, *Add Beside* and *Add Above* are on the same row as the view bar's title *▾ CONTROL STRUCTURE*, and *Convert to actuator*, *Convert to sensor* and *Delete* are in a row below.
+
 ## 5. Navigating, selecting and moving objects
 
 The same principles apply in every tool and every kind of diagram: tasks in HTA, cards, barriers, hazard and top event in Bowtie, and blocks in STPA. The aim is that anyone who wants to can work in the diagram with the keyboard, without having to click every single object with the mouse.
@@ -509,7 +557,7 @@ An arrow moves the indication (5.3) to the nearest object in the direction the a
 
 Examples: → from a task in HTA goes to the nearest box to the right on the same level, even if it belongs to another branch. → from a barrier in Bowtie goes to whatever is nearest to the right, another barrier or the top event depending on where the barrier is.
 
-**Ctrl/⌘+arrow jumps a larger unit in the structure**, as in text editors: for example to the parent or the first child in HTA, or to the top event or the outer edge in Bowtie. Here the model decides where the jump goes.
+**Ctrl/⌘+arrow is not used for navigation.** Only plain arrows move the indication, and they never select anything (5.3).
 
 ### 5.3 One indication for mouse and keyboard
 
@@ -519,6 +567,8 @@ What the mouse hovers over and what the arrow keys point out are the same thing,
 - **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
 - **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
 - **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
+- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *text editing mode* (a text cursor in the object's text, in STPA in the name cell in the table, 5.9) is started by **Enter** (or F2 or a double-click). Enter confirms the text, and Esc cancels. So Enter alone does not select, and an arrow does not select.
+- **The shadows are tokens, the same for all objects.** `shadow.hovered` (the indication) and `shadow.selected` (the selection: a blurred shadow all around the object, spread 4 px, blur 2 px, `foreground.base` at 40 %) are defined once in Penpot (HFA DS), exported to `tokens.json` and used by all objects in all tools, so that indication and selection look the same everywhere (1.2, point 6). `shadow.hovered` is a sharp shadow down and to the right (4 px right and down, blur 4 px, `foreground.base` at 40 %). **To be evaluated in the future (alternative B):** changing `shadow.hovered` to a ring plus glow around the whole object, for better contrast. That changes the look of every hovered object in all tools, but since the shadow is a token the change is made in one place.
 - **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
 
 ### 5.4 The keys mirror the mouse
@@ -530,14 +580,14 @@ Every key has a mouse counterpart:
 | Hover | Arrow (5.2) |
 | Click: select, or whatever the tool otherwise does on a click, for example link mode for a barrier | Ctrl/⌘+Enter |
 | Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
-| Double-click: edit | Enter or F2 |
+| Double-click: text editing | Enter or F2 |
 | Drag: move | Alt/Option+arrow (5.6) |
 | The toolbar buttons *Add Above*, *Add Below* and *Add Beside* (5.10) | STPA: **B**, **S** and **A** (*Add Above*, built later). HTA: **C** (child), **S** (sibling), **D** (duplicate) |
 | Delete the selected objects | Delete (5.10) |
 | The button that shows and hides the AI panel (4.7) | **I** (until *Add Above* is built: **A**) |
 | The help button | **?** |
 
-Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists.
+Arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists. Ctrl/⌘+arrow is not used.
 
 **The letter keys** (A, B, C, D, I, S, ?) work only when no text is being edited and not when Ctrl, ⌘ or Alt is held. Each letter has one meaning in a tool.
 
@@ -602,6 +652,11 @@ The user must be able to build and change the structure of the analysis directly
 - **Objects and links without text show their id.** A link or object that the user has not written anything for is still visible, can be selected and shows where text is missing. The id is replaced by the text when it is written. Example: a new control action without text is shown with the label *ca3*, and with *ApplyBrakes* once filled in.
 - **Delete removes the selection together with what belongs to it**, for example its links, and can be undone in one step.
 - **Each command has a button in the toolbar above the diagram**, with the key in the tooltip (5.4). The button is inactive when the command cannot be used, so that it shows what is possible. They are ordinary buttons: Enter is the key of the primary button (4.5).
+- **The key is an underlined letter in the button's text.** It takes no space, and the buttons are already wide. The letter is a single key pressed without Alt, with the object selected. An underline otherwise means "press Alt + the letter" in Windows menus, so this is explained in three places:
+  - the help dialog (*?*) has the line "The underlined letter is the key. Press it alone, without Alt." at the top,
+  - the tooltip shows the key without a modifier, for example *Add Below (B)*,
+  - the button has `aria-keyshortcuts`, so that screen readers also get the key.
+- **Buttons without a letter in the text have no underline.** *Delete* shows its key in the tooltip (an underlined **D** would point to *Duplicate* in HTA), and *Convert to actuator* and *Convert to sensor* have no key. *Compact Button* has an optional element, *Key*, for the underlined letter.
 - **The letter keys are off while typing**, and **?** opens the help with the keys that apply.
 - **Links between existing objects** are changed in the tables, not with link modes of their own (5.1).
 - **Diagram and tables are two ways into the same model.** The selection is shared and the text is edited in the table (5.9).
