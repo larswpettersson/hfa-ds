@@ -1,6 +1,6 @@
 # Design: Bowtie
 
-**Status:** decided (2026-11-10). None of this is built. The look is drawn in Penpot (the Bowtie file); tests and the build wait until the graphics have been reviewed. Swedish version: [design-bowtie.md](design-bowtie.md).
+**Status:** decided (2026-11-10). The title bar, the panel with the Add commands, the legend and the arrow navigation are built; the rest waits. The look is drawn in Penpot (the Bowtie file); tests and the build wait until the graphics have been reviewed. Swedish version: [design-bowtie.md](design-bowtie.md).
 
 The general rules are in the design principles ([4.10 the title bar](design-principles.md), [4.11 drag bar](design-principles.md), [4.12 views and legend](design-principles.md), [4.13 panels](design-principles.md) and [5.10](design-principles.md)). This document describes what applies to Bowtie. The same pattern as [design-stpa.en.md](design-stpa.en.md): general rules in the design principles, the tool's own requirements here.
 
@@ -90,6 +90,91 @@ Feature: The Add commands
     Then each Add button shows its key as an underlined letter in the text (C, B, R or Q)
 ```
 
+### BOWTIE-NAV: indication, selection and arrow navigation
+
+**The arrow keys move the indication (a hovered shadow) to the nearest card, barrier, hazard or top event in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected objects (5.6). Ctrl/⌘+Enter selects the indicated object and Enter alone edits it.**
+
+```gherkin
+Feature: Indication, selection and arrow navigation
+  Background:
+    Given Bowtie is open with the example diagram (causes C1–C4, barriers P1–P4, the hazard, the top event, R1–R3 and consequences K1–K3)
+
+  @BOWTIE-NAV-1
+  Scenario: An arrow moves the indication
+    Given the indication is on the top event
+    When the user presses →
+    Then the indication is on an object to the right of the top event and is shown as a hovered shadow
+    And the selection is unchanged
+
+  @BOWTIE-NAV-2
+  Scenario: Objects on the same row come first
+    Given the indication is on the cause "C1"
+    When the user presses →
+    Then the indication is on a barrier on the same row as "C1"
+
+  @BOWTIE-NAV-3
+  Scenario: At the edge the indication stays
+    Given the indication is on the consequence "K3", at the bottom and the far right
+    When the user presses ↓ and then →
+    Then the indication stays on "K3"
+
+  @BOWTIE-NAV-4
+  Scenario: The mouse takes over the indication
+    Given the indication is on an object after a key press
+    When the mouse moves over "K2"
+    Then the indication is on "K2" and the previous object has no indication
+    When the user presses ↑
+    Then the indication moves from "K2"
+
+  @BOWTIE-NAV-5
+  Scenario: The arrow key takes over from the mouse
+    Given the mouse is over "C1"
+    When the user presses ↓
+    Then the indication is on another object
+    And "C1" no longer has the hovered shadow
+
+  @BOWTIE-NAV-6
+  Scenario: Only a real mouse movement counts
+    Given the indication is on an object after a key press
+    When another object ends up under a still pointer, for example when the diagram scrolls
+    Then the indication stays
+
+  @BOWTIE-NAV-7
+  Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
+    Given "C2" is selected
+    When the user presses ↓
+    Then the indication moves but "C2" is still selected
+    When the user presses Ctrl/⌘+→
+    Then the indication is unchanged
+
+  @BOWTIE-NAV-8
+  Scenario: Alt/Option+arrow moves the selected barriers
+    Given the barrier "P4" is selected with Shift+click
+    When the user presses ←
+    Then the barrier stays
+    When the user presses Alt/Option+←
+    Then the barrier has moved one column to the left
+
+  @BOWTIE-NAV-9
+  Scenario: Alt/Option+arrow moves the selected card one row
+    Given the cause "C2" is selected
+    When the user presses Alt/Option+↓
+    Then "C2" has swapped places with the cause below
+
+  @BOWTIE-SEL-1
+  Scenario: Ctrl/⌘+Enter selects the indicated object
+    Given the indication is on "C3"
+    When the user presses Ctrl/⌘+Enter
+    Then "C3" is selected
+
+  @BOWTIE-SEL-2
+  Scenario: Enter alone starts the text editing mode and does not select
+    Given the indication is on "C3" and nothing is selected
+    When the user presses Enter
+    Then the card's text has a text cursor
+    And "C3" is not selected
+```
+
 ## 4. Not included
 
 - Drag bars between the zones of the diagram.
@@ -102,7 +187,7 @@ Feature: The Add commands
 - **How the key looks** is decided: an underlined letter in the button's text (5.10). *Compact Button* has an optional element, *Key*, for it. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence* get an underlined **C**, **B**, **R** and **Q**.
 - **The width of the screen.** The open state is 2014 px wide, since the diagram (1294 px) and the legend keep their size. That is wider than STPA and HTA. This is decided at the review.
 - **The hover rise** is removed from the Bowtie code during the build.
-- **Arrow navigation.** Bowtie has its own rules per object type today. They are to be replaced by 5.2 (the nearest object in the direction of the arrow on the screen), with indication and selection as in 5.3 and 5.4, and Ctrl/⌘+arrow is not used. The requirements exist for STPA (*STPA-NAV* and *STPA-SEL* in [design-stpa.en.md](design-stpa.en.md)) and corresponding scenarios are written for Bowtie when it is built. The link mode for barriers (*Link mode*) is not affected.
+- **Arrow navigation** is built (BOWTIE-NAV and BOWTIE-SEL above): the arrows follow the screen and only count objects in the arrow's direction (an object far to the side does not), and moving has moved from the arrows to Alt/Option+arrow, also in the link mode for barriers. The link mode is otherwise unchanged.
 
 ## 6. Next steps
 

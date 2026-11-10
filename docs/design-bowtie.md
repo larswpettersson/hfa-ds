@@ -1,6 +1,6 @@
 # Design: Bowtie
 
-**Status:** beslutat (2026-11-10). Inget av detta är byggt. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
+**Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
 
 De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
 
@@ -90,6 +90,91 @@ Feature: Add-kommandona
     Then varje Add-knapp visar sin tangent som en understruken bokstav i texten (C, B, R eller Q)
 ```
 
+### BOWTIE-NAV: indikering, markering och pilnavigering
+
+**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste kort, barriär, fara eller topphändelse åt pilens håll på skärmen (5.2). Musen och piltangenterna delar indikeringen (5.3). Pilar markerar inte, Ctrl/⌘+pil används inte, och Alt/Option+pil flyttar det markerade (5.6). Ctrl/⌘+Enter markerar det indikerade och Enter ensam redigerar det.**
+
+```gherkin
+Feature: Indikering, markering och pilnavigering
+  Background:
+    Given Bowtie är öppen med exempeldiagrammet (orsakerna C1–C4, barriärerna P1–P4, faran, topphändelsen, R1–R3 och konsekvenserna K1–K3)
+
+  @BOWTIE-NAV-1
+  Scenario: En pil flyttar indikeringen
+    Given indikeringen står på topphändelsen
+    When användaren trycker →
+    Then indikeringen står på ett objekt till höger om topphändelsen och visas som en hovrad skugga
+    And markeringen är oförändrad
+
+  @BOWTIE-NAV-2
+  Scenario: Objekt på samma rad går först
+    Given indikeringen står på orsaken "C1"
+    When användaren trycker →
+    Then indikeringen står på en barriär på samma rad som "C1"
+
+  @BOWTIE-NAV-3
+  Scenario: Vid kanten stannar indikeringen
+    Given indikeringen står på konsekvensen "K3", längst ned och längst till höger
+    When användaren trycker ↓ och sedan →
+    Then indikeringen står kvar på "K3"
+
+  @BOWTIE-NAV-4
+  Scenario: Musen tar över indikeringen
+    Given indikeringen står på ett objekt efter en piltryckning
+    When musen rör sig över "K2"
+    Then indikeringen står på "K2" och det förra objektet har ingen indikering
+    When användaren trycker ↑
+    Then indikeringen flyttas från "K2"
+
+  @BOWTIE-NAV-5
+  Scenario: Piltangenten tar över från musen
+    Given musen hovrar över "C1"
+    When användaren trycker ↓
+    Then indikeringen står på ett annat objekt
+    And "C1" har ingen hovrad skugga längre
+
+  @BOWTIE-NAV-6
+  Scenario: Bara verklig musrörelse räknas
+    Given indikeringen står på ett objekt efter en piltryckning
+    When ett annat objekt hamnar under en stilla muspekare, till exempel när diagrammet rullas
+    Then indikeringen står kvar
+
+  @BOWTIE-NAV-7
+  Scenario: Pilar markerar inte, och Ctrl/⌘+pil används inte
+    Given "C2" är markerad
+    When användaren trycker ↓
+    Then indikeringen flyttas men "C2" är fortfarande markerad
+    When användaren trycker Ctrl/⌘+→
+    Then indikeringen är oförändrad
+
+  @BOWTIE-NAV-8
+  Scenario: Alt/Option+pil flyttar de markerade barriärerna
+    Given barriären "P4" är markerad med Shift+klick
+    When användaren trycker ←
+    Then barriären står kvar
+    When användaren trycker Alt/Option+←
+    Then barriären har flyttat en kolumn åt vänster
+
+  @BOWTIE-NAV-9
+  Scenario: Alt/Option+pil flyttar det markerade kortet en rad
+    Given orsaken "C2" är markerad
+    When användaren trycker Alt/Option+↓
+    Then "C2" har bytt plats med orsaken under
+
+  @BOWTIE-SEL-1
+  Scenario: Ctrl/⌘+Enter markerar det indikerade objektet
+    Given indikeringen står på "C3"
+    When användaren trycker Ctrl/⌘+Enter
+    Then "C3" är markerad
+
+  @BOWTIE-SEL-2
+  Scenario: Enter ensam går in i textredigeringsläget och markerar inte
+    Given indikeringen står på "C3" och inget är markerat
+    When användaren trycker Enter
+    Then kortets text har en textmarkör
+    And "C3" är inte markerad
+```
+
 ## 4. Det som inte ingår
 
 - Dragfält mellan zonerna i diagrammet.
@@ -102,7 +187,7 @@ Feature: Add-kommandona
 - **Tangentens utseende** är beslutat: en understruken bokstav i knappens text (5.10). *Compact Button* har ett valfritt element, *Key*, för det. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence* får understruket **C**, **B**, **R** och **Q**.
 - **Skärmens bredd.** Det öppna läget är 2014 px bred, eftersom diagrammet (1294 px) och legenden behåller sin storlek. Det är bredare än STPA och HTA. Det avgörs vid granskningen.
 - **Hover-höjningen** tas bort ur Bowtie-koden vid bygget.
-- **Pilnavigering.** Bowtie har egna regler per objekttyp i dag. De ska bytas mot 5.2 (närmaste objekt åt pilens håll på skärmen), med indikering och markering enligt 5.3 och 5.4, och Ctrl/⌘+pil används inte. Kraven finns för STPA (*STPA-NAV* och *STPA-SEL* i [design-stpa.md](design-stpa.md)) och motsvarande scenarier skrivs för Bowtie när det byggs. Länkläget för barriärer (*Link mode*) berörs inte.
+- **Pilnavigering** är byggd (BOWTIE-NAV och BOWTIE-SEL ovan): pilarna följer skärmen och gäller bara riktningen (ett objekt långt åt sidan räknas inte), och att flytta har gått från pilarna till Alt/Option+pil, också i länkläget för barriärer. Länkläget i övrigt är oförändrat.
 
 ## 6. Nästa steg
 
