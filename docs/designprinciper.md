@@ -517,8 +517,21 @@ Varje vy (till exempel diagrammet, tabellerna och Safety case i STPA) har en vyb
 - **Pilen är 16 px** (titeln 12 px, versaler, `font-weight` 600). Det är samma ▾ som chattens expanderbara rader, så mönstret är bekant.
 - **Det finns inga knappar för *Compress* och *Expand* i vybarerna.** Öppna vyer delar den lediga höjden, och stänger man en tar de andra platsen. Panelens bredd ändras med dragfälten (4.11). Diagrammet har dessutom *Full page*.
 - *Compress* och *Expand* i AI-panelen (4.9) gäller svaren i loggen och ändras inte av den här regeln.
+- **Förklaringen (legenden) följer samma mönster.** Dess rubrikrad, **▾ Legend**, öppnar och stänger den, och stängd är den bara rubrikraden. Valet sparas. Legenden ligger i en egen kolumn bredvid panelen och **täcker aldrig diagrammet**, och den höjer sig inte när musen passerar (det fungerar inte med tangentbord eller pekskärm).
 
 **Nuläge (2026-11-09):** ritad i Penpot för STPA. Verktyget har fortfarande knapparna *Compress* och *Expand* i vybarerna, och ett klick på titeln komprimerar redan i dag.
+
+### 4.13 Paneler: titel och kommandon på samma rad
+
+Alla verktyg har sina paneler uppbyggda på samma sätt:
+
+- **Panelen är ett kort:** `background.elevated` på sidan (`base`), kant 1 px `foreground.muted` inåt och radie 8 (3.3). Kanten bär kontrasten, eftersom `elevated` och `base` bara skiljer sig med 1,11:1. En panel utan kant fungerar inte som en egen yta.
+- **Rubrikraden har titeln först och panelens kommandon efter den, på samma rad och med samma mittlinje.** Kommandona är *Compact Button* (4.10). Exempel: **HTA** med *Add Child*, *Add Sibling* och *Duplicate*; **Bowtie** med *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence*; **TTA** med *Columns…*, *Filter*, *Export CSV* och *Add row*; **▾ CONTROL STRUCTURE** med *Add Below*, *Add Beside* och *Add Above*.
+- **Kommandon för hela applikationen** ligger i titelraden (4.10), inte i panelens rubrikrad.
+- **Förklaringen (legenden)** ligger utanför panelerna, är `sunken` med samma kant, och är vikbar (4.12).
+- **Tangenten visas på knappen**, inte bara i verktygstipset (5.10).
+
+**Nuläge (2026-11-10):** ritad i Penpot för HTA och Bowtie. I STPA ligger *Add*-raden under vybaren *▾ CONTROL STRUCTURE*, inte på samma rad. Det ändras.
 
 ## 5. Navigera, markera och flytta objekt
 

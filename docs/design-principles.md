@@ -517,8 +517,21 @@ Every view (for example the diagram, the tables and the safety case in STPA) has
 - **The arrow is 16 px** (the title 12 px, capitals, `font-weight` 600). It is the same ▾ as the expandable rows in the chat, so the pattern is familiar.
 - **There are no *Compress* and *Expand* buttons in the view bars.** Open views share the free height, and when one is closed the others take its space. The width of the panel is changed with the drag bars (4.11). The diagram also has *Full page*.
 - *Compress* and *Expand* in the AI panel (4.9) apply to the answers in the log and are not changed by this rule.
+- **The legend follows the same pattern.** Its header row, **▾ Legend**, opens and closes it, and closed it is only the header row. The choice is remembered. The legend is in a column of its own beside the panel and **never covers the diagram**, and it does not rise when the mouse passes (that does not work with keyboard or touch).
 
 **Current state (2026-11-09):** drawn in Penpot for STPA. The tool still has the buttons *Compress* and *Expand* in the view bars, and a click on the title already compresses today.
+
+### 4.13 Panels: title and commands on the same row
+
+All tools build their panels in the same way:
+
+- **A panel is a card:** `background.elevated` on the page (`base`), a 1 px `foreground.muted` border inside and radius 8 (3.3). The border carries the contrast, since `elevated` and `base` differ by only 1.11:1. A panel without a border does not work as a surface of its own.
+- **The header row has the title first and the panel's commands after it, on the same row and with the same centre line.** The commands are *Compact Button* (4.10). Examples: **HTA** with *Add Child*, *Add Sibling* and *Duplicate*; **Bowtie** with *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence*; **TTA** with *Columns…*, *Filter*, *Export CSV* and *Add row*; **▾ CONTROL STRUCTURE** with *Add Below*, *Add Beside* and *Add Above*.
+- **Commands for the whole application** are in the title bar (4.10), not in the panel's header row.
+- **The legend** is outside the panels, is `sunken` with the same border, and can be folded (4.12).
+- **The key is shown on the button**, not only in the tooltip (5.10).
+
+**Current state (2026-11-10):** drawn in Penpot for HTA and Bowtie. In STPA the *Add* row is under the view bar *▾ CONTROL STRUCTURE*, not on the same row. That will change.
 
 ## 5. Navigating, selecting and moving objects
 
