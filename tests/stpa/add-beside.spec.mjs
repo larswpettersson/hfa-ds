@@ -19,8 +19,8 @@ const blocks = (m) => [...(m.controllers || []), ...(m.controlled_processes || [
 const added = (m) => blocks(m).filter((b) => !["c1", "c2", "p1"].includes(b.id));
 const empty = (l) => l === undefined || l === "" || (Array.isArray(l) && l.every((x) => !x));
 async function select(page, ...ids) {
-  for (const id of ids) await node(page, id).click({ modifiers: ["Shift"] });
-  await page.keyboard.press("Escape");
+  for (const [i, id] of ids.entries()) await node(page, id).click({ modifiers: i ? ["Shift"] : [] });
+  await page.mouse.move(2, 2); // the mouse leaves the diagram so that keys act on the selection
 }
 
 test.describe("STPA workbench: Add Beside and type follows position", () => {

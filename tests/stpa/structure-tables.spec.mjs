@@ -26,8 +26,9 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
   });
   test.afterEach(() => expect(errors).toEqual([]));
 
-  test("clicking a block focuses its row; a new name goes to the JSON and the diagram", async ({ page }) => {
-    await node(page, "p1").click();
+  test("Enter on the indicated block focuses its row; a new name goes to the JSON and the diagram", async ({ page }) => {
+    await node(page, "p1").click(); // selects; the pointer indicates the block
+    await page.keyboard.press("Enter"); // Enter starts the text editing mode (STPA-SEL-7)
     expect(await focusedKey(page)).toBe("p1|name");
     await expect(page.locator('#structureWrap tr[data-row="p1"]')).toHaveClass(/cur/);
     await expect(node(page, "p1")).toHaveClass(/editing/);
@@ -43,6 +44,7 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
 
   test("control actions and feedback take several labels, one per line", async ({ page }) => {
     await page.locator('#diagram text[data-sel="ca1"]').click();
+    await page.keyboard.press("Enter");
     expect(await focusedKey(page)).toBe("ca1|labels");
     await field(page, "ca1|labels").fill("ApplyBrakingForce\nHoldBrakingForce\n");
     await field(page, "ca1|source").focus(); // leaving the field commits it
@@ -127,6 +129,7 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     await expect(page.locator("#vDiagram")).toHaveClass(/expanded/);
 
     await node(page, "c0").click();
+    await page.keyboard.press("Enter");
     await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("Human driver");
     await page.keyboard.press("Enter");
@@ -135,10 +138,11 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     await expect(node(page, "c0")).toContainText("Driver");
     await expect(node(page, "c0")).not.toContainText("Human");
 
-    // compressing the structure tables does not stop a diagram click from opening the row
+    // compressing the structure tables does not stop Enter on a block from opening the row
     await page.locator("#vStructure .vtitle").click();
     await expect(page.locator("#vStructure")).toHaveClass(/compressed/);
     await node(page, "p1").click();
+    await page.keyboard.press("Enter");
     await expect(page.locator("#vStructure")).not.toHaveClass(/compressed/);
     expect(await focusedKey(page)).toBe("p1|name");
   });
