@@ -29,6 +29,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
 16. **Vyer** öppnas och stängs med en ▾ före titeln (4.12). *Compress* och *Expand* tas bort ur vybarerna.
 17. **Tangenten** visas som en understruken bokstav i knappens text: Add <u>B</u>elow, Be<u>s</u>ide och <u>A</u>bove (5.10). *Delete* och *Convert …* har ingen understrykning. Hjälpdialogen får en rad överst om att den understrukna bokstaven är tangenten, och att den trycks ensam, utan Alt.
+18. **Bilder i AI-panelen** (1.6) ingår i bygget: användaren kan klistra in ett skärmklipp (Ctrl/⌘+V) eller dra in en bildfil i frågefältet. Funktionen byggs i den delade panelen, så att HTA och Bowtie får den samtidigt.
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 
@@ -287,6 +288,57 @@ Feature: Vyer och exempel
     Then ingen vybar har knapparna Compress eller Expand
 ```
 
+### STPA-AI-IMG: bilder i AI-panelen
+
+**Användaren kan ge AI:n en bild tillsammans med frågan, genom att klistra in ett skärmklipp eller dra in en bildfil i frågefältet. En miniatyr med ✕ visar vad som skickas, och bilden stannar inte kvar efter frågan.**
+
+```gherkin
+Feature: Bilder i AI-panelen
+  Background:
+    Given STPA Workbench är öppen med AI-panelen öppen och en leverantör vald
+
+  @STPA-AI-IMG-1
+  Scenario: Ett inklistrat skärmklipp visas som miniatyr
+    Given frågefältet har fokus och urklippet innehåller en bild
+    When användaren trycker Ctrl/⌘+V
+    Then en miniatyr med ✕ visas i frågefältet
+    And texten i frågefältet är oförändrad
+
+  @STPA-AI-IMG-2
+  Scenario: En indragen bildfil visas som miniatyr
+    When användaren drar en bildfil till frågefältet
+    Then en miniatyr med ✕ visas i frågefältet
+
+  @STPA-AI-IMG-3
+  Scenario: ✕ tar bort bilden
+    Given en miniatyr visas
+    When användaren klickar på ✕
+    Then miniatyren försvinner
+    And nästa fråga skickas utan bild
+
+  @STPA-AI-IMG-4
+  Scenario: Bilden skickas med frågan och bara den
+    Given en miniatyr visas
+    When användaren skickar frågan
+    Then frågan skickas med bilden
+    And miniatyren är borta efteråt
+    And bilden sparas inte i analysen eller i exporten
+    And följdfrågor skickas utan bilden
+
+  @STPA-AI-IMG-5
+  Scenario: Det framgår vad som lämnar datorn
+    Given leverantören är en molntjänst
+    When en bild bifogas
+    Then det framgår vid bilagan att bilden skickas till leverantören
+
+  @STPA-AI-IMG-6
+  Scenario: En leverantör utan bildstöd avvisar bilden
+    Given den valda modellen saknar bildstöd
+    When användaren klistrar in en bild
+    Then ingen bild bifogas
+    And ett meddelande säger att modellen inte tar emot bilder
+```
+
 ### STPA-NEW: nytt diagram
 
 ```gherkin
@@ -340,6 +392,7 @@ Feature: Tangenter och knappar
 - **Add Above med en befintlig överordnad (STPA-ADD-3):** skjuts upp. Det nya blocket sätts in mellan dem och tar över länkarna, vilket är den mest osäkra delen, eftersom länkar flyttas.
 - **Aktuator- och sensorblock i layouten:** i dag ritas alla aktuatorer och sensorer på en rad ovanför processraden. När en styråtgärd mellan två controllers konverteras (STPA-LINK-4) ska blocket hamna mellan de två nivåerna. Schemat säger i dag att aktuatorns mål och sensorns källa är en controlled process, och den begränsningen ska bort.
 - **JSON-editorn i koden:** testerna läser och skriver modellen via `#editor`. När editorn inte visas ska elementet ändå finnas kvar (dolt), eller så skrivs testerna om. Det avgörs vid bygget.
+- **Miniatyren med ✕ i frågefältet** och bilagans anmärkning om vad som lämnar datorn är inte ritade i Penpot. De ritas i *AI panel* i HFA DS (en variant av *Prompt* med bild) innan bygget.
 - **Hjälpdialogen** är inte ritad i Penpot (kvarstår från anteckningen i STPA-filen), med tangentlistan, *Open example…* och en primär knapp *Close*.
 - **A och I:** att flytta AI-växlingen från A till I ändrar HTA och Bowtie, 4.7 och testerna `tests/shared/ai-panel-toggle.spec.mjs` och `tests/hta/ai-assist.spec.mjs`. Det görs när *Add Above* byggs.
 
@@ -349,3 +402,4 @@ Feature: Tangenter och knappar
 2. Granska grafiken.
 3. Skriv testerna i `tests/stpa/` och bygg i STPA Workbench, med *Add Below* först, sedan *Add Beside*, markeringen (STPA-SEL) och Convert. *Add Above* byggs senare.
 4. Lägg till det gemensamma testet som kontrollerar att varje `@STPA-…`-id här har ett test. Scenarier med `@later` hoppas över.
+5. Bygg bildinklistringen (*STPA-AI-IMG*) i den delade AI-panelen tillsammans med resten av STPA-bygget.

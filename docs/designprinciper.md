@@ -135,7 +135,7 @@ Användaren ska kunna ge AI:n en bild tillsammans med frågan: ett foto av white
 - **Bilden stannar inte kvar.** Den sparas inte i verktyget eller i exporten och skickas inte om vid följdfrågor.
 - **Tydligt vad som lämnar datorn.** Ett skärmklipp kan innehålla mer än man tänkt. Vid en molnleverantör ska det framgå vid bilagan; för sekretessbelagda analyser krävs en lokal modell med bildstöd.
 
-Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 7.
+Inget av detta är byggt ännu (2026-11-03). **Det ingår i bygget av STPA Workbench (beslutat 2026-11-10):** funktionen byggs i den delade AI-panelen (`ai-assist.js`, 4.7), så att HTA och Bowtie får den samtidigt. Kraven för STPA står i [design-stpa.md](design-stpa.md) (*STPA-AI-IMG*). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 7.
 
 ### 1.7 Anpassningsbara TTA-kolumner (planerat)
 

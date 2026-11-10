@@ -29,6 +29,7 @@ The answers to the eight open questions, in short:
 15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
 16. **Views** open and close with a ▾ before the title (4.12). *Compress* and *Expand* are removed from the view bars.
 17. **The key** is shown as an underlined letter in the button's text: Add <u>B</u>elow, Be<u>s</u>ide and <u>A</u>bove (5.10). *Delete* and *Convert …* have no underline. The help dialog gets a line at the top saying that the underlined letter is the key, and that it is pressed alone, without Alt.
+18. **Images in the AI panel** (1.6) are part of the build: the user can paste a screenshot (Ctrl/⌘+V) or drag an image file into the question field. The function is built in the shared panel, so that HTA and Bowtie get it at the same time.
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 
@@ -287,6 +288,57 @@ Feature: Views and examples
     Then no view bar has the buttons Compress or Expand
 ```
 
+### STPA-AI-IMG: images in the AI panel
+
+**The user can give the AI an image together with the question, by pasting a screenshot or dragging an image file into the question field. A thumbnail with ✕ shows what is sent, and the image does not stay after the question.**
+
+```gherkin
+Feature: Images in the AI panel
+  Background:
+    Given STPA Workbench is open with the AI panel open and a provider chosen
+
+  @STPA-AI-IMG-1
+  Scenario: A pasted screenshot is shown as a thumbnail
+    Given the question field has focus and the clipboard holds an image
+    When the user presses Ctrl/⌘+V
+    Then a thumbnail with ✕ is shown in the question field
+    And the text in the question field is unchanged
+
+  @STPA-AI-IMG-2
+  Scenario: A dragged image file is shown as a thumbnail
+    When the user drags an image file to the question field
+    Then a thumbnail with ✕ is shown in the question field
+
+  @STPA-AI-IMG-3
+  Scenario: ✕ removes the image
+    Given a thumbnail is shown
+    When the user clicks ✕
+    Then the thumbnail disappears
+    And the next question is sent without an image
+
+  @STPA-AI-IMG-4
+  Scenario: The image is sent with the question and only that
+    Given a thumbnail is shown
+    When the user sends the question
+    Then the question is sent with the image
+    And the thumbnail is gone afterwards
+    And the image is not saved in the analysis or in the export
+    And follow-up questions are sent without the image
+
+  @STPA-AI-IMG-5
+  Scenario: It is clear what leaves the computer
+    Given the provider is a cloud service
+    When an image is attached
+    Then the attachment shows that the image is sent to the provider
+
+  @STPA-AI-IMG-6
+  Scenario: A provider without image support refuses the image
+    Given the chosen model has no image support
+    When the user pastes an image
+    Then no image is attached
+    And a message says that the model does not accept images
+```
+
 ### STPA-NEW: a new diagram
 
 ```gherkin
@@ -340,6 +392,7 @@ Feature: Keys and buttons
 - **Add Above with an existing parent (STPA-ADD-3):** postponed. The new block is inserted between them and takes over the links, which is the most uncertain part, because links are moved.
 - **Actuator and sensor blocks in the layout:** today all actuators and sensors are drawn on one row above the process row. When a control action between two controllers is converted (STPA-LINK-4), the block must end up between the two levels. The schema today says that an actuator's target and a sensor's source is a controlled process, and that limit is to go.
 - **The JSON editor in the code:** the tests read and write the model through `#editor`. When the editor is not shown the element must still exist (hidden), or the tests are rewritten. This is decided during the build.
+- **The thumbnail with ✕ in the question field** and the attachment's note about what leaves the computer are not drawn in Penpot. They are drawn in *AI panel* in HFA DS (a variant of *Prompt* with an image) before the build.
 - **The help dialog** is not drawn in Penpot (still the note in the STPA file), with the key list, *Open example…* and a primary button *Close*.
 - **A and I:** moving the AI toggle from A to I changes HTA and Bowtie, 4.7 and the tests `tests/shared/ai-panel-toggle.spec.mjs` and `tests/hta/ai-assist.spec.mjs`. It is done when *Add Above* is built.
 
@@ -349,3 +402,4 @@ Feature: Keys and buttons
 2. Review the graphics.
 3. Write the tests in `tests/stpa/` and build in STPA Workbench, with *Add Below* first, then *Add Beside*, the selection (STPA-SEL) and Convert. *Add Above* is built later.
 4. Add the shared test that checks that every `@STPA-…` id here has a test. Scenarios tagged `@later` are skipped.
+5. Build the image paste (*STPA-AI-IMG*) in the shared AI panel together with the rest of the STPA build.

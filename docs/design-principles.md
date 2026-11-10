@@ -135,7 +135,7 @@ The user should be able to give the AI an image along with the question: a photo
 - **The image does not stay.** It is not saved in the tool or in the export, and it is not sent again with follow-up questions.
 - **Clear about what leaves the computer.** A screenshot can contain more than intended. With a cloud provider this is stated at the attachment; confidential analyses require a local model that reads images.
 
-None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 7.
+None of this is built yet (2026-11-03). **It is part of the build of STPA Workbench (decided 2026-11-10):** the function is built in the shared AI panel (`ai-assist.js`, 4.7), so that HTA and Bowtie get it at the same time. The requirements for STPA are in [design-stpa.en.md](design-stpa.en.md) (*STPA-AI-IMG*). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 7.
 
 ### 1.7 Customisable TTA columns (planned)
 
