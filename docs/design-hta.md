@@ -111,6 +111,7 @@ Feature: Analyspanelen och titelraden
 
 ## 5. Öppna punkter att avgöra vid bygget
 
+- **Pilnavigering.** HTA navigerar i dag efter trädet (↑ förälder, ↓ nästa i trädordning, ←/→ bland syskon). Det ska bytas mot 5.2 (närmaste uppgift åt pilens håll på skärmen), med indikering och markering enligt 5.3 och 5.4. Kraven finns för STPA (*STPA-NAV* och *STPA-SEL* i [design-stpa.md](design-stpa.md)) och motsvarande scenarier skrivs för HTA när det byggs.
 - **Undo.** *Title bar* har *Undo* i alla verktyg, men HTA saknar ångra i dag. Antingen byggs ångra i HTA, eller så visas knappen inaktiv tills den finns.
 - **TTA-tabellens bredd.** I det öppna läget är *TTA Panel* 746 px bred, men de sex kolumnerna är tillsammans cirka 880 px. Tabellen skrollar i sidled eller kolumnerna krymper. Det avgörs vid granskningen.
 - **Tangenten för panelväxlingen.** I dag är den **A**, och planen är att den flyttas till **I** när *Add Above* byggs (4.7). Den delade panelen avgör det vid bygget.

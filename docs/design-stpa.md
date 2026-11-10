@@ -20,7 +20,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 6. **Flera markerade:** ett gemensamt nytt block som kopplas till alla markerade.
 7. **Nytt diagram** börjar med en controller och en controlled process, kopplade med styråtgärd och återkoppling.
 8. **Tabeller och JSON** behålls som de är. Markeringen visas i tabellen och texten redigeras där (5.9).
-9. **Markering:** klick eller Enter på ett block markerar det. Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
+9. **Markering och redigering:** klick eller Ctrl/⌘+Enter markerar ett block (en suddig skugga runt hela blocket). Enter ensam går in i redigering. Pilar flyttar bara indikeringen (en hovrad skugga), och Ctrl/⌘+pil används inte (5.3, 5.4). Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
 10. **Länkar och block utan text** visar sitt id (princip i 5.10).
 11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
 12. **Layout:** tre kolumner med dragfält emellan (4.11): kontrollstrukturen (diagrammet) till vänster, tabellerna i mitten och AI-analysen till höger, som i HTA. Titelraden (4.10) ligger överst. Rubrikraden i panelen försvinner, eftersom vybaren *CONTROL STRUCTURE* redan visar samma rubrik.
@@ -198,9 +198,9 @@ Feature: Länkar och konvertering
 
 ### STPA-SEL: markera och avmarkera
 
-**Ett klick eller Enter på ett block markerar det och ger namncellen på dess rad fokus. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
+**Ett klick eller Ctrl/⌘+Enter på ett block markerar det (en suddig skugga runt hela blocket). Enter ensam markerar inte, utan går in i redigering. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
 
-Det skiljer sig från 5.4, där Ctrl/⌘+Enter motsvarar klick och Enter redigerar. I STPA gör Enter och Ctrl/⌘+Enter samma sak som ett klick, eftersom ett klick redan flyttar fokus till namncellen. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
+Det följer 5.4: Ctrl/⌘+Enter motsvarar klick, och Enter (eller F2) redigerar. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
 
 ```gherkin
 Feature: Markera och avmarkera
@@ -209,12 +209,14 @@ Feature: Markera och avmarkera
     Given inget är markerat
     When användaren klickar på blocket "Driver"
     Then bara "Driver" är markerad
-    And namncellen på dess rad i tabellen har fokus
+    And blocket har en suddig skugga runt hela blocket
+    And blockets rad i tabellen visas som markerad
+    And ingen text redigeras
 
   @STPA-SEL-2
-  Scenario: Enter markerar det indikerade blocket
+  Scenario: Ctrl/⌘+Enter markerar det indikerade blocket
     Given indikeringen står på "Driver"
-    When användaren trycker Enter
+    When användaren trycker Ctrl/⌘+Enter
     Then resultatet är detsamma som vid ett klick på "Driver"
 
   @STPA-SEL-3
@@ -242,6 +244,74 @@ Feature: Markera och avmarkera
     Given blocket "Driver" är markerat
     When användaren Shift+klickar på en styråtgärd
     Then bara styråtgärden är markerad
+
+  @STPA-SEL-7
+  Scenario: Enter ensam går in i redigering och markerar inte
+    Given indikeringen står på "Driver" och inget är markerat
+    When användaren trycker Enter
+    Then namncellen på blockets rad har fokus
+    And inget är markerat
+```
+
+### STPA-NAV: pilnavigering
+
+**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste block åt pilens håll på skärmen (5.2). Musen och piltangenterna delar samma indikering (5.3). Pilar markerar inte, och Ctrl/⌘+pil används inte.**
+
+```gherkin
+Feature: Pilnavigering
+  Background:
+    Given STPA Workbench är öppen med blocken "Driver", "ECU" och "Brakes", där "ECU" ligger under "Driver" och "Brakes" under "ECU"
+
+  @STPA-NAV-1
+  Scenario: En pil flyttar indikeringen
+    Given indikeringen står på "Driver"
+    When användaren trycker ↓
+    Then indikeringen står på "ECU" och visas som en hovrad skugga
+    And "Driver" har ingen indikering längre
+    And markeringen är oförändrad
+
+  @STPA-NAV-2
+  Scenario: Objekt på samma rad eller i samma kolumn går först
+    Given "Driver" har ett block "Supervisor" på samma rad och ett närmare block "Brakes" snett nedåt
+    And indikeringen står på "Driver"
+    When användaren trycker →
+    Then indikeringen står på "Supervisor"
+
+  @STPA-NAV-3
+  Scenario: Vid kanten stannar indikeringen
+    Given indikeringen står på det nedersta blocket "Brakes"
+    When användaren trycker ↓
+    Then indikeringen står kvar på "Brakes"
+
+  @STPA-NAV-4
+  Scenario: Musen tar över indikeringen
+    Given indikeringen står på "Driver" efter en piltryckning
+    When musen rör sig över "Brakes"
+    Then indikeringen står på "Brakes"
+    And "Driver" har ingen indikering
+    When användaren trycker ↑
+    Then indikeringen står på "ECU"
+
+  @STPA-NAV-5
+  Scenario: Piltangenten tar över från musen
+    Given musen hovrar över "Brakes"
+    When användaren trycker ↑
+    Then indikeringen står på "ECU"
+    And "Brakes" har ingen hovrad skugga längre
+
+  @STPA-NAV-6
+  Scenario: Bara verklig musrörelse räknas
+    Given indikeringen står på "Driver" efter en piltryckning
+    When diagrammet rullas så att "Brakes" hamnar under en stilla muspekare
+    Then indikeringen står kvar på "Driver"
+
+  @STPA-NAV-7
+  Scenario: Pilar markerar inte, och Ctrl/⌘+pil används inte
+    Given "Driver" är markerad
+    When användaren trycker →
+    Then indikeringen flyttas men "Driver" är fortfarande markerad
+    When användaren trycker Ctrl/⌘+→
+    Then indikeringen är oförändrad
 ```
 
 ### STPA-VIEW: vyer och exempel

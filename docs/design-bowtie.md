@@ -102,6 +102,7 @@ Feature: Add-kommandona
 - **Tangentens utseende** är beslutat: en understruken bokstav i knappens text (5.10). *Compact Button* har ett valfritt element, *Key*, för det. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence* får understruket **C**, **B**, **R** och **Q**.
 - **Skärmens bredd.** Det öppna läget är 2014 px bred, eftersom diagrammet (1294 px) och legenden behåller sin storlek. Det är bredare än STPA och HTA. Det avgörs vid granskningen.
 - **Hover-höjningen** tas bort ur Bowtie-koden vid bygget.
+- **Pilnavigering.** Bowtie har egna regler per objekttyp i dag. De ska bytas mot 5.2 (närmaste objekt åt pilens håll på skärmen), med indikering och markering enligt 5.3 och 5.4, och Ctrl/⌘+pil används inte. Kraven finns för STPA (*STPA-NAV* och *STPA-SEL* i [design-stpa.md](design-stpa.md)) och motsvarande scenarier skrivs för Bowtie när det byggs. Länkläget för barriärer (*Link mode*) berörs inte.
 
 ## 6. Nästa steg
 

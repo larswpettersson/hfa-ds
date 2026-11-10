@@ -102,6 +102,7 @@ Feature: The Add commands
 - **How the key looks** is decided: an underlined letter in the button's text (5.10). *Compact Button* has an optional element, *Key*, for it. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence* get an underlined **C**, **B**, **R** and **Q**.
 - **The width of the screen.** The open state is 2014 px wide, since the diagram (1294 px) and the legend keep their size. That is wider than STPA and HTA. This is decided at the review.
 - **The hover rise** is removed from the Bowtie code during the build.
+- **Arrow navigation.** Bowtie has its own rules per object type today. They are to be replaced by 5.2 (the nearest object in the direction of the arrow on the screen), with indication and selection as in 5.3 and 5.4, and Ctrl/⌘+arrow is not used. The requirements exist for STPA (*STPA-NAV* and *STPA-SEL* in [design-stpa.en.md](design-stpa.en.md)) and corresponding scenarios are written for Bowtie when it is built. The link mode for barriers (*Link mode*) is not affected.
 
 ## 6. Next steps
 

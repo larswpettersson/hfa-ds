@@ -557,7 +557,7 @@ An arrow moves the indication (5.3) to the nearest object in the direction the a
 
 Examples: → from a task in HTA goes to the nearest box to the right on the same level, even if it belongs to another branch. → from a barrier in Bowtie goes to whatever is nearest to the right, another barrier or the top event depending on where the barrier is.
 
-**Ctrl/⌘+arrow jumps a larger unit in the structure**, as in text editors: for example to the parent or the first child in HTA, or to the top event or the outer edge in Bowtie. Here the model decides where the jump goes.
+**Ctrl/⌘+arrow is not used for navigation.** Only plain arrows move the indication, and they never select anything (5.3).
 
 ### 5.3 One indication for mouse and keyboard
 
@@ -567,6 +567,7 @@ What the mouse hovers over and what the arrow keys point out are the same thing,
 - **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
 - **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
 - **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
+- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *editing* happens in the text field and is started by **Enter** (or F2 or a double-click). So Enter alone does not select, and an arrow does not select.
 - **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
 
 ### 5.4 The keys mirror the mouse
@@ -585,7 +586,7 @@ Every key has a mouse counterpart:
 | The button that shows and hides the AI panel (4.7) | **I** (until *Add Above* is built: **A**) |
 | The help button | **?** |
 
-Arrow, Ctrl/⌘+arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists.
+Arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists. Ctrl/⌘+arrow is not used.
 
 **The letter keys** (A, B, C, D, I, S, ?) work only when no text is being edited and not when Ctrl, ⌘ or Alt is held. Each letter has one meaning in a tool.
 

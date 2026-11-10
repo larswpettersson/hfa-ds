@@ -20,7 +20,7 @@ The answers to the eight open questions, in short:
 6. **Several selected:** one shared new block connected to all selected blocks.
 7. **A new diagram** starts with one controller and one controlled process, connected by a control action and a feedback.
 8. **Tables and JSON** stay as they are. The selection is shown in the table and the text is edited there (5.9).
-9. **Selection:** a click or Enter on a block selects it. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
+9. **Selection and editing:** a click or Ctrl/⌘+Enter selects a block (a blurred shadow all around the block). Enter alone goes into editing. Arrows only move the indication (a hovered shadow), and Ctrl/⌘+arrow is not used (5.3, 5.4). Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
 10. **Links and blocks without text** show their id (principle in 5.10).
 11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
 12. **Layout:** three columns with drag bars between them (4.11): the control structure (the diagram) on the left, the tables in the middle and the AI analysis on the right, as in HTA. The title bar (4.10) is at the top. The header row in the panel is removed, since the view bar *CONTROL STRUCTURE* already shows the same heading.
@@ -198,9 +198,9 @@ Feature: Links and conversion
 
 ### STPA-SEL: selecting and deselecting
 
-**A click or Enter on a block selects it and gives the name cell on its row focus. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
+**A click or Ctrl/⌘+Enter on a block selects it (a blurred shadow all around the block). Enter alone does not select, but goes into editing. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
 
-This differs from 5.4, where Ctrl/⌘+Enter corresponds to a click and Enter edits. In STPA, Enter and Ctrl/⌘+Enter do the same as a click, because a click already moves focus to the name cell. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
+This follows 5.4: Ctrl/⌘+Enter corresponds to a click, and Enter (or F2) edits. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
 
 ```gherkin
 Feature: Selecting and deselecting
@@ -209,12 +209,14 @@ Feature: Selecting and deselecting
     Given nothing is selected
     When the user clicks the block "Driver"
     Then only "Driver" is selected
-    And the name cell on its row in the table has focus
+    And the block has a blurred shadow all around it
+    And the block's row in the table is shown as selected
+    And no text is being edited
 
   @STPA-SEL-2
-  Scenario: Enter selects the indicated block
+  Scenario: Ctrl/⌘+Enter selects the indicated block
     Given the indication is on "Driver"
-    When the user presses Enter
+    When the user presses Ctrl/⌘+Enter
     Then the result is the same as a click on "Driver"
 
   @STPA-SEL-3
@@ -242,6 +244,74 @@ Feature: Selecting and deselecting
     Given the block "Driver" is selected
     When the user Shift+clicks a control action
     Then only the control action is selected
+
+  @STPA-SEL-7
+  Scenario: Enter alone goes into editing and does not select
+    Given the indication is on "Driver" and nothing is selected
+    When the user presses Enter
+    Then the name cell on the block's row has focus
+    And nothing is selected
+```
+
+### STPA-NAV: arrow navigation
+
+**The arrow keys move the indication (a hovered shadow) to the nearest block in the direction of the arrow on the screen (5.2). The mouse and the arrow keys share the same indication (5.3). Arrows do not select, and Ctrl/⌘+arrow is not used.**
+
+```gherkin
+Feature: Arrow navigation
+  Background:
+    Given STPA Workbench is open with the blocks "Driver", "ECU" and "Brakes", where "ECU" is below "Driver" and "Brakes" below "ECU"
+
+  @STPA-NAV-1
+  Scenario: An arrow moves the indication
+    Given the indication is on "Driver"
+    When the user presses ↓
+    Then the indication is on "ECU" and is shown as a hovered shadow
+    And "Driver" no longer has an indication
+    And the selection is unchanged
+
+  @STPA-NAV-2
+  Scenario: Objects on the same row or in the same column come first
+    Given "Driver" has a block "Supervisor" on the same row and a nearer block "Brakes" diagonally below
+    And the indication is on "Driver"
+    When the user presses →
+    Then the indication is on "Supervisor"
+
+  @STPA-NAV-3
+  Scenario: At the edge the indication stops
+    Given the indication is on the lowest block "Brakes"
+    When the user presses ↓
+    Then the indication stays on "Brakes"
+
+  @STPA-NAV-4
+  Scenario: The mouse takes over the indication
+    Given the indication is on "Driver" after an arrow press
+    When the mouse moves over "Brakes"
+    Then the indication is on "Brakes"
+    And "Driver" has no indication
+    When the user presses ↑
+    Then the indication is on "ECU"
+
+  @STPA-NAV-5
+  Scenario: The arrow key takes over from the mouse
+    Given the mouse hovers over "Brakes"
+    When the user presses ↑
+    Then the indication is on "ECU"
+    And "Brakes" no longer has a hovered shadow
+
+  @STPA-NAV-6
+  Scenario: Only real mouse movement counts
+    Given the indication is on "Driver" after an arrow press
+    When the diagram scrolls so that "Brakes" ends up under a still mouse pointer
+    Then the indication stays on "Driver"
+
+  @STPA-NAV-7
+  Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
+    Given "Driver" is selected
+    When the user presses →
+    Then the indication moves but "Driver" is still selected
+    When the user presses Ctrl/⌘+→
+    Then the indication is unchanged
 ```
 
 ### STPA-VIEW: views and examples

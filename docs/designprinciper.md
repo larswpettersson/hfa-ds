@@ -557,7 +557,7 @@ En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen peka
 
 Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
 
-**Ctrl/⌘+pil hoppar en större enhet i strukturen**, som i textredigerare: till exempel till föräldern eller första barnet i HTA, eller till topphändelsen eller ytterkanten i Bowtie. Här är det modellen som bestämmer vart hoppet går.
+**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3).
 
 ### 5.3 En indikering för mus och tangentbord
 
@@ -567,6 +567,7 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
+- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Redigeringen* sker i textfältet och startas av **Enter** (eller F2 eller dubbelklick). Enter ensam markerar alltså inte, och en pil markerar inte.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
 ### 5.4 Tangenterna speglar musen
@@ -585,7 +586,7 @@ Varje tangent har en motsvarighet med musen:
 | Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
 | Hjälpknappen | **?** |
 
-Pil, Ctrl/⌘+pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor.
+Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
 
 **Bokstavstangenterna** (A, B, C, D, I, S, ?) gäller bara när ingen text redigeras och inte när Ctrl, ⌘ eller Alt hålls nere. Varje bokstav har en enda betydelse i ett verktyg.
 

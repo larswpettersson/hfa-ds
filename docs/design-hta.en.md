@@ -111,6 +111,7 @@ Feature: The analysis panel and the title bar
 
 ## 5. Open points to settle during the build
 
+- **Arrow navigation.** HTA navigates by the tree today (↑ parent, ↓ next in tree order, ←/→ among siblings). That is to be replaced by 5.2 (the nearest task in the direction of the arrow on the screen), with indication and selection as in 5.3 and 5.4. The requirements exist for STPA (*STPA-NAV* and *STPA-SEL* in [design-stpa.en.md](design-stpa.en.md)) and corresponding scenarios are written for HTA when it is built.
 - **Undo.** *Title bar* has *Undo* in all tools, but HTA has no undo today. Either undo is built in HTA, or the button is shown inactive until it exists.
 - **The width of the TTA table.** In the open state *TTA Panel* is 746 px wide, but the six columns together are about 880 px. The table scrolls sideways or the columns shrink. This is decided at the review.
 - **The key for the panel toggle.** Today it is **A**, and the plan is that it moves to **I** when *Add Above* is built (4.7). The shared panel decides this during the build.
