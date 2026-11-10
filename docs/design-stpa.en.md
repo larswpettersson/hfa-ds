@@ -24,7 +24,7 @@ The answers to the eight open questions, in short:
 10. **Links and blocks without text** show their id (principle in 5.10).
 11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
 12. **Layout:** three columns with drag bars between them (4.11): the control structure (the diagram) on the left, the tables in the middle and the AI analysis on the right, as in HTA. The title bar (4.10) is at the top. The header row in the panel is removed, since the view bar *CONTROL STRUCTURE* already shows the same heading.
-13. **The Add commands** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) are in a row above the diagram in the left panel, as *Compact Button* (4.10).
+13. **The commands** are *Compact Button* (4.10) in the left panel: *Add Below*, *Add Beside* and *Add Above* on the same row as the view bar's title *▾ CONTROL STRUCTURE* (4.13), and *Convert to actuator*, *Convert to sensor* and *Delete* in a row below.
 14. **JSON is not shown in the interface.** The JSON editor and *Format* are removed. A user who wants to see the JSON asks the AI panel to list it.
 15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
 16. **Views** open and close with a ▾ before the title (4.12). *Compress* and *Expand* are removed from the view bars.

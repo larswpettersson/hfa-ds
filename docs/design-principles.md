@@ -526,12 +526,12 @@ Every view (for example the diagram, the tables and the safety case in STPA) has
 All tools build their panels in the same way:
 
 - **A panel is a card:** `background.elevated` on the page (`base`), a 1 px `foreground.muted` border inside and radius 8 (3.3). The border carries the contrast, since `elevated` and `base` differ by only 1.11:1. A panel without a border does not work as a surface of its own.
-- **The header row has the title first and the panel's commands after it, on the same row and with the same centre line.** The commands are *Compact Button* (4.10). Examples: **HTA** with *Add Child*, *Add Sibling* and *Duplicate*; **Bowtie** with *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence*; **TTA** with *Columns…*, *Filter*, *Export CSV* and *Add row*; **▾ CONTROL STRUCTURE** with *Add Below*, *Add Beside* and *Add Above*.
+- **The header row has the title first and the panel's commands after it, on the same row and with the same centre line.** The commands are *Compact Button* (4.10). Examples: **HTA** with *Add Child*, *Add Sibling* and *Duplicate*; **Bowtie** with *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence*; **TTA** with *Columns…*, *Filter*, *Export CSV* and *Add row*; **▾ CONTROL STRUCTURE** with *Add Below*, *Add Beside* and *Add Above*. Commands that apply to a selection (*Convert to actuator*, *Convert to sensor* and *Delete*) can be in a row below the header row when they do not fit on it.
 - **Commands for the whole application** are in the title bar (4.10), not in the panel's header row.
 - **The legend** is outside the panels, is `sunken` with the same border, and can be folded (4.12).
 - **The key is shown on the button**, not only in the tooltip (5.10).
 
-**Current state (2026-11-10):** drawn in Penpot for HTA and Bowtie. In STPA the *Add* row is under the view bar *▾ CONTROL STRUCTURE*, not on the same row. That will change.
+**Current state (2026-11-10):** drawn in Penpot for HTA, Bowtie and STPA, not built. In STPA *Add Below*, *Add Beside* and *Add Above* are on the same row as the view bar's title *▾ CONTROL STRUCTURE*, and *Convert to actuator*, *Convert to sensor* and *Delete* are in a row below.
 
 ## 5. Navigating, selecting and moving objects
 

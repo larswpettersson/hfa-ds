@@ -24,7 +24,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 10. **Länkar och block utan text** visar sitt id (princip i 5.10).
 11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
 12. **Layout:** tre kolumner med dragfält emellan (4.11): kontrollstrukturen (diagrammet) till vänster, tabellerna i mitten och AI-analysen till höger, som i HTA. Titelraden (4.10) ligger överst. Rubrikraden i panelen försvinner, eftersom vybaren *CONTROL STRUCTURE* redan visar samma rubrik.
-13. **Add-kommandona** (*Add Below*, *Add Beside*, *Add Above*, *Convert to actuator*, *Convert to sensor*, *Delete*) ligger i en rad över diagrammet i vänstra panelen, som *Compact Button* (4.10).
+13. **Kommandona** ligger som *Compact Button* (4.10) i vänstra panelen: *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE* (4.13), och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
 14. **JSON visas inte i gränssnittet.** JSON-editorn och *Format* tas bort. Vill användaren se JSON ber hen AI-panelen lista den.
 15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
 16. **Vyer** öppnas och stängs med en ▾ före titeln (4.12). *Compress* och *Expand* tas bort ur vybarerna.

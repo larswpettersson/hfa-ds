@@ -526,12 +526,12 @@ Varje vy (till exempel diagrammet, tabellerna och Safety case i STPA) har en vyb
 Alla verktyg har sina paneler uppbyggda på samma sätt:
 
 - **Panelen är ett kort:** `background.elevated` på sidan (`base`), kant 1 px `foreground.muted` inåt och radie 8 (3.3). Kanten bär kontrasten, eftersom `elevated` och `base` bara skiljer sig med 1,11:1. En panel utan kant fungerar inte som en egen yta.
-- **Rubrikraden har titeln först och panelens kommandon efter den, på samma rad och med samma mittlinje.** Kommandona är *Compact Button* (4.10). Exempel: **HTA** med *Add Child*, *Add Sibling* och *Duplicate*; **Bowtie** med *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence*; **TTA** med *Columns…*, *Filter*, *Export CSV* och *Add row*; **▾ CONTROL STRUCTURE** med *Add Below*, *Add Beside* och *Add Above*.
+- **Rubrikraden har titeln först och panelens kommandon efter den, på samma rad och med samma mittlinje.** Kommandona är *Compact Button* (4.10). Exempel: **HTA** med *Add Child*, *Add Sibling* och *Duplicate*; **Bowtie** med *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence*; **TTA** med *Columns…*, *Filter*, *Export CSV* och *Add row*; **▾ CONTROL STRUCTURE** med *Add Below*, *Add Beside* och *Add Above*. Kommandon som gäller en markering (*Convert to actuator*, *Convert to sensor* och *Delete*) kan ligga i en rad under rubrikraden när de inte ryms på den.
 - **Kommandon för hela applikationen** ligger i titelraden (4.10), inte i panelens rubrikrad.
 - **Förklaringen (legenden)** ligger utanför panelerna, är `sunken` med samma kant, och är vikbar (4.12).
 - **Tangenten visas på knappen**, inte bara i verktygstipset (5.10).
 
-**Nuläge (2026-11-10):** ritad i Penpot för HTA och Bowtie. I STPA ligger *Add*-raden under vybaren *▾ CONTROL STRUCTURE*, inte på samma rad. Det ändras.
+**Nuläge (2026-11-10):** ritad i Penpot för HTA, Bowtie och STPA, inte byggd. I STPA ligger *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE*, och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
 
 ## 5. Navigera, markera och flytta objekt
 
