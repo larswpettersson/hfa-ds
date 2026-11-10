@@ -28,6 +28,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 14. **JSON visas inte i gränssnittet.** JSON-editorn och *Format* tas bort. Vill användaren se JSON ber hen AI-panelen lista den.
 15. **Open example…** flyttas från panelens rubrikrad till hjälpdialogen (*?*), som en lägre kontroll (28 px).
 16. **Vyer** öppnas och stängs med en ▾ före titeln (4.12). *Compress* och *Expand* tas bort ur vybarerna.
+17. **Tangenten** visas som en understruken bokstav i knappens text: Add <u>B</u>elow, Be<u>s</u>ide och <u>A</u>bove (5.10). *Delete* och *Convert …* har ingen understrykning. Hjälpdialogen får en rad överst om att den understrukna bokstaven är tangenten, och att den trycks ensam, utan Alt.
 
 Dra för att koppla är inte relevant för STPA. Vänster och höger sparas inte i modellen: sidordningen följer länkarna och listordningen i JSON, och *Add Beside* anger ingen sida.
 

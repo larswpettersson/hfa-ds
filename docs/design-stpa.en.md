@@ -28,6 +28,7 @@ The answers to the eight open questions, in short:
 14. **JSON is not shown in the interface.** The JSON editor and *Format* are removed. A user who wants to see the JSON asks the AI panel to list it.
 15. **Open example…** moves from the panel's header row to the help dialog (*?*), as a lower control (28 px).
 16. **Views** open and close with a ▾ before the title (4.12). *Compress* and *Expand* are removed from the view bars.
+17. **The key** is shown as an underlined letter in the button's text: Add <u>B</u>elow, Be<u>s</u>ide and <u>A</u>bove (5.10). *Delete* and *Convert …* have no underline. The help dialog gets a line at the top saying that the underlined letter is the key, and that it is pressed alone, without Alt.
 
 Dragging to connect is not relevant for STPA. Left and right are not stored in the model: the order sideways follows the links and the list order in the JSON, and *Add Beside* does not name a side.
 

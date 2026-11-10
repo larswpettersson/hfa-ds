@@ -529,7 +529,7 @@ Alla verktyg har sina paneler uppbyggda på samma sätt:
 - **Rubrikraden har titeln först och panelens kommandon efter den, på samma rad och med samma mittlinje.** Kommandona är *Compact Button* (4.10). Exempel: **HTA** med *Add Child*, *Add Sibling* och *Duplicate*; **Bowtie** med *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence*; **TTA** med *Columns…*, *Filter*, *Export CSV* och *Add row*; **▾ CONTROL STRUCTURE** med *Add Below*, *Add Beside* och *Add Above*. Kommandon som gäller en markering (*Convert to actuator*, *Convert to sensor* och *Delete*) kan ligga i en rad under rubrikraden när de inte ryms på den.
 - **Kommandon för hela applikationen** ligger i titelraden (4.10), inte i panelens rubrikrad.
 - **Förklaringen (legenden)** ligger utanför panelerna, är `sunken` med samma kant, och är vikbar (4.12).
-- **Tangenten visas på knappen**, inte bara i verktygstipset (5.10).
+- **Tangenten visas på knappen som en understruken bokstav i texten**, till exempel Add <u>B</u>elow, inte bara i verktygstipset (5.10).
 
 **Nuläge (2026-11-10):** ritad i Penpot för HTA, Bowtie och STPA, inte byggd. I STPA ligger *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE*, och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
 
@@ -650,6 +650,11 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Objekt och länkar utan text visar sitt id.** En länk eller ett objekt som användaren inte har skrivit något till syns ändå, går att markera och visar var texten saknas. Id:t ersätts av texten när den skrivs. Exempel: en ny styråtgärd utan text visas med etiketten *ca3*, och med *ApplyBrakes* när den är ifylld.
 - **Delete tar bort det markerade tillsammans med det som hör till det**, till exempel länkarna, och går att ångra i ett steg.
 - **Varje kommando har en knapp i verktygsfältet över diagrammet**, med tangenten i verktygstipset (5.4). Knappen är inaktiv när kommandot inte går att använda, så att den visar vad som är möjligt. Det är vanliga knappar: Enter är primary-knappens tangent (4.5).
+- **Tangenten är en understruken bokstav i knappens text.** Den tar ingen plats, och knapparna är redan breda. Bokstaven är en ensam tangent som trycks utan Alt, med objektet markerat. Understrykningen betyder i Windows annars "tryck Alt + bokstaven" i menyer, så det förklaras på tre ställen:
+  - hjälpdialogen (*?*) har överst raden "Den understrukna bokstaven är tangenten. Tryck den ensam, utan Alt.",
+  - verktygstipset visar tangenten utan modifierare, till exempel *Add Below (B)*,
+  - knappen har `aria-keyshortcuts`, så att skärmläsare också får tangenten.
+- **Knappar utan bokstav i texten har ingen understrykning.** *Delete* visar sin tangent i verktygstipset (en understruken **D** skulle peka på *Duplicate* i HTA), och *Convert to actuator* och *Convert to sensor* har ingen tangent. *Compact Button* har ett valfritt element, *Key*, för den understrukna bokstaven.
 - **Bokstavstangenterna är avstängda medan man skriver**, och **?** öppnar hjälpen med de tangenter som gäller.
 - **Kopplingar mellan befintliga objekt** ändras i tabellerna, inte med egna länklägen (5.1).
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).

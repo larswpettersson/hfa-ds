@@ -12,7 +12,7 @@ Bowtie must have **the same structure as HTA and STPA**, so that someone who kno
 
 1. **Panel.** The diagram is in the panel *Bowtie Panel* (`background.elevated`, 1 px `foreground.muted` border, radius 8) on the page (`base`). The cards and barriers are `elevated` directly on the panel and keep their border (`foreground.base`) and the barriers' status colour.
 2. **Header row.** The title **Bowtie** comes first, and the Add commands *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence* follow it, on the same row (4.13). They used to be in a toolbar.
-3. **Keys.** *Add Cause* **C**, *Add Preventive Barrier* **B**, *Add Reactive Barrier* **R** and *Add Consequence* **Q** (as in the help dialog). The key is shown on the button (4.13).
+3. **Keys.** *Add Cause* **C**, *Add Preventive Barrier* **B**, *Add Reactive Barrier* **R** and *Add Consequence* **Q** (as in the help dialog). The key is shown as an underlined letter in the button's text (5.10).
 4. **Title bar and analysis panel.** The title bar (4.10, *Tool* = *Bowtie*) spans the app area. The analysis panel (420 px, titled *Bowtie analysis*) is in full height at the far right with a drag bar between (4.11). When the panel is closed the title bar spans the full width and has *Hide panel* at the far right.
 5. **The legend** is in a column of its own beside the panel, `sunken` with a border, and can be folded with ▾ (4.12). It no longer rises when the mouse passes, and it never covers the diagram.
 6. **Typography.** All texts are bound to typography tokens (Open Sans).
@@ -87,7 +87,7 @@ Feature: The Add commands
   @BOWTIE-ADD-3
   Scenario: The key is visible on the button
     When Bowtie is open
-    Then each Add button shows its key (C, B, R or Q)
+    Then each Add button shows its key as an underlined letter in the text (C, B, R or Q)
 ```
 
 ## 4. Not included
@@ -99,7 +99,7 @@ Feature: The Add commands
 
 - **The legend in HFA DS.** The component *Legend* has no header row and no states (*Expanded* and *Collapsed*) yet, and no border. That is done in HFA DS, and then the closed state is drawn in the Bowtie file.
 - **Narrow windows.** Should the legend be closed by default below a certain width? A suggestion, not a decision.
-- **How the key looks on the button.** A key badge after the text (for example a small square with **B**) or the key in parentheses (*Add Cause (C)*). I suggest the badge.
+- **How the key looks** is decided: an underlined letter in the button's text (5.10). *Compact Button* has an optional element, *Key*, for it. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence* get an underlined **C**, **B**, **R** and **Q**.
 - **The width of the screen.** The open state is 2014 px wide, since the diagram (1294 px) and the legend keep their size. That is wider than STPA and HTA. This is decided at the review.
 - **The hover rise** is removed from the Bowtie code during the build.
 

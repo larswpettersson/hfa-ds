@@ -12,7 +12,7 @@ Bowtie ska ha **samma struktur som HTA och STPA**, så att den som kan ett verkt
 
 1. **Panel.** Diagrammet ligger i panelen *Bowtie Panel* (`background.elevated`, kant 1 px `foreground.muted`, radie 8) på sidan (`base`). Korten och barriärerna ligger som `elevated` direkt på panelen och behåller sin kant (`foreground.base`) och barriärernas statusfärg.
 2. **Rubrikrad.** Titeln **Bowtie** står först, och Add-kommandona *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence* står efter den, på samma rad (4.13). De var tidigare i ett verktygsfält.
-3. **Tangenter.** *Add Cause* **C**, *Add Preventive Barrier* **B**, *Add Reactive Barrier* **R** och *Add Consequence* **Q** (som i hjälpdialogen). Tangenten visas på knappen (4.13).
+3. **Tangenter.** *Add Cause* **C**, *Add Preventive Barrier* **B**, *Add Reactive Barrier* **R** och *Add Consequence* **Q** (som i hjälpdialogen). Tangenten visas som en understruken bokstav i knappens text (5.10).
 4. **Titelrad och analyspanel.** Titelraden (4.10, *Tool* = *Bowtie*) går över appytan. Analyspanelen (420 px, titeln *Bowtie analysis*) går i full höjd längst till höger med ett dragfält emellan (4.11). När panelen är stängd går titelraden över hela bredden och har *Hide panel* längst till höger.
 5. **Legenden** ligger i en egen kolumn bredvid panelen, `sunken` med kant, och är vikbar med ▾ (4.12). Den höjer sig inte längre när musen passerar, och den täcker aldrig diagrammet.
 6. **Typografi.** Alla texter är bundna till typografitokens (Open Sans).
@@ -87,7 +87,7 @@ Feature: Add-kommandona
   @BOWTIE-ADD-3
   Scenario: Tangenten syns på knappen
     When Bowtie är öppen
-    Then varje Add-knapp visar sin tangent (C, B, R eller Q)
+    Then varje Add-knapp visar sin tangent som en understruken bokstav i texten (C, B, R eller Q)
 ```
 
 ## 4. Det som inte ingår
@@ -99,7 +99,7 @@ Feature: Add-kommandona
 
 - **Legenden i HFA DS.** Komponenten *Legend* har ingen rubrikrad och inga tillstånd (*Expanded* och *Collapsed*) än, och ingen kant. Det görs i HFA DS, och därefter ritas det stängda läget i Bowtie-filen.
 - **Smala fönster.** Ska legenden vara stängd som standard under en viss bredd? Ett förslag, inte ett beslut.
-- **Tangentens utseende på knappen.** En tangentbricka efter texten (till exempel en liten ruta med **B**) eller tangenten i parentes (*Add Cause (C)*). Jag föreslår brickan.
+- **Tangentens utseende** är beslutat: en understruken bokstav i knappens text (5.10). *Compact Button* har ett valfritt element, *Key*, för det. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence* får understruket **C**, **B**, **R** och **Q**.
 - **Skärmens bredd.** Det öppna läget är 2014 px bred, eftersom diagrammet (1294 px) och legenden behåller sin storlek. Det är bredare än STPA och HTA. Det avgörs vid granskningen.
 - **Hover-höjningen** tas bort ur Bowtie-koden vid bygget.
 

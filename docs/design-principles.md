@@ -529,7 +529,7 @@ All tools build their panels in the same way:
 - **The header row has the title first and the panel's commands after it, on the same row and with the same centre line.** The commands are *Compact Button* (4.10). Examples: **HTA** with *Add Child*, *Add Sibling* and *Duplicate*; **Bowtie** with *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence*; **TTA** with *Columns…*, *Filter*, *Export CSV* and *Add row*; **▾ CONTROL STRUCTURE** with *Add Below*, *Add Beside* and *Add Above*. Commands that apply to a selection (*Convert to actuator*, *Convert to sensor* and *Delete*) can be in a row below the header row when they do not fit on it.
 - **Commands for the whole application** are in the title bar (4.10), not in the panel's header row.
 - **The legend** is outside the panels, is `sunken` with the same border, and can be folded (4.12).
-- **The key is shown on the button**, not only in the tooltip (5.10).
+- **The key is shown on the button as an underlined letter in the text**, for example Add <u>B</u>elow, not only in the tooltip (5.10).
 
 **Current state (2026-11-10):** drawn in Penpot for HTA, Bowtie and STPA, not built. In STPA *Add Below*, *Add Beside* and *Add Above* are on the same row as the view bar's title *▾ CONTROL STRUCTURE*, and *Convert to actuator*, *Convert to sensor* and *Delete* are in a row below.
 
@@ -650,6 +650,11 @@ The user must be able to build and change the structure of the analysis directly
 - **Objects and links without text show their id.** A link or object that the user has not written anything for is still visible, can be selected and shows where text is missing. The id is replaced by the text when it is written. Example: a new control action without text is shown with the label *ca3*, and with *ApplyBrakes* once filled in.
 - **Delete removes the selection together with what belongs to it**, for example its links, and can be undone in one step.
 - **Each command has a button in the toolbar above the diagram**, with the key in the tooltip (5.4). The button is inactive when the command cannot be used, so that it shows what is possible. They are ordinary buttons: Enter is the key of the primary button (4.5).
+- **The key is an underlined letter in the button's text.** It takes no space, and the buttons are already wide. The letter is a single key pressed without Alt, with the object selected. An underline otherwise means "press Alt + the letter" in Windows menus, so this is explained in three places:
+  - the help dialog (*?*) has the line "The underlined letter is the key. Press it alone, without Alt." at the top,
+  - the tooltip shows the key without a modifier, for example *Add Below (B)*,
+  - the button has `aria-keyshortcuts`, so that screen readers also get the key.
+- **Buttons without a letter in the text have no underline.** *Delete* shows its key in the tooltip (an underlined **D** would point to *Duplicate* in HTA), and *Convert to actuator* and *Convert to sensor* have no key. *Compact Button* has an optional element, *Key*, for the underlined letter.
 - **The letter keys are off while typing**, and **?** opens the help with the keys that apply.
 - **Links between existing objects** are changed in the tables, not with link modes of their own (5.1).
 - **Diagram and tables are two ways into the same model.** The selection is shared and the text is edited in the table (5.9).
