@@ -1,6 +1,6 @@
 # Design: HTA
 
-**Status:** decided (2026-11-10). None of this is built. The look is drawn in Penpot (the HTA file and HFA DS); tests and the build wait until the graphics have been reviewed. Swedish version: [design-hta.md](design-hta.md).
+**Status:** decided (2026-11-10). The header rows, the title bar, the drag bar and the arrow navigation are built; the rest waits. The look is drawn in Penpot (the HTA file and HFA DS); tests and the build wait until the graphics have been reviewed. Swedish version: [design-hta.md](design-hta.md).
 
 The general rules are in the design principles ([4.10 the title bar](design-principles.md), [4.11 drag bar](design-principles.md), [4.12 views](design-principles.md), [4.13 panels](design-principles.md), [5.10](design-principles.md) and [1.6 images in the AI support](design-principles.md)). This document describes what applies to HTA. The same pattern as [design-stpa.en.md](design-stpa.en.md) and [design-bowtie.en.md](design-bowtie.en.md): general rules in the design principles, the tool's own requirements here.
 
@@ -103,6 +103,85 @@ Feature: The analysis panel and the title bar
     And Hide panel is gone from the title bar
 ```
 
+### HTA-NAV: indication, selection and arrow navigation
+
+**The arrow keys move the indication (a hovered shadow) to the nearest task in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected task (5.6). Ctrl/⌘+Enter selects the indicated task and Enter alone edits it.**
+
+```gherkin
+Feature: Indication, selection and arrow navigation
+  Background:
+    Given HTA is open with the task "1" and, below it, "1.1" and "1.2" on the same row
+
+  @HTA-NAV-1
+  Scenario: An arrow moves the indication
+    Given the indication is on "1"
+    When the user presses ↓
+    Then the indication is on another task and is shown as a hovered shadow
+    And the selection is unchanged
+
+  @HTA-NAV-2
+  Scenario: Tasks on the same row come first
+    Given the indication is on "1.1"
+    When the user presses →
+    Then the indication is on "1.2"
+    When the user presses ←
+    Then the indication is on "1.1"
+
+  @HTA-NAV-3
+  Scenario: At the edge the indication stays
+    Given the indication is on "1.2", at the far right and the bottom
+    When the user presses → and then ↓
+    Then the indication stays on "1.2"
+
+  @HTA-NAV-4
+  Scenario: The mouse takes over the indication
+    Given the indication is on "1.2" after a key press
+    When the mouse moves over "1"
+    Then the indication is on "1" and "1.2" has no indication
+    When the user presses ↓
+    Then the indication moves from "1"
+
+  @HTA-NAV-5
+  Scenario: The arrow key takes over from the mouse
+    Given the mouse is over "1.1"
+    When the user presses →
+    Then the indication is on "1.2"
+    And "1.1" no longer has the hovered shadow
+
+  @HTA-NAV-6
+  Scenario: Only a real mouse movement counts
+    Given the indication is on "1.2" after a key press
+    When a task ends up under a still pointer, for example when the tree scrolls
+    Then the indication stays on "1.2"
+
+  @HTA-NAV-7
+  Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
+    Given "1" is selected
+    When the user presses ↓
+    Then the indication moves but "1" is still selected
+    When the user presses Ctrl/⌘+→
+    Then the indication is unchanged
+
+  @HTA-NAV-8
+  Scenario: Alt/Option+arrow moves the selected task
+    Given "1.1" is selected
+    When the user presses Alt/Option+→
+    Then "1.1" has swapped places with "1.2"
+
+  @HTA-SEL-1
+  Scenario: Ctrl/⌘+Enter selects the indicated task
+    Given the indication is on "1.1"
+    When the user presses Ctrl/⌘+Enter
+    Then only "1.1" is selected
+
+  @HTA-SEL-2
+  Scenario: Enter alone starts the text editing mode and does not select
+    Given the indication is on "1.1" and nothing is selected
+    When the user presses Enter
+    Then the task's text has a text cursor
+    And nothing is selected
+```
+
 ## 4. Not included
 
 - Keys on the TTA buttons (*Columns…*, *Filter*, *Export CSV* and *Add row*).
@@ -111,7 +190,7 @@ Feature: The analysis panel and the title bar
 
 ## 5. Open points to settle during the build
 
-- **Arrow navigation.** HTA navigates by the tree today (↑ parent, ↓ next in tree order, ←/→ among siblings). That is to be replaced by 5.2 (the nearest task in the direction of the arrow on the screen), with indication and selection as in 5.3 and 5.4. The requirements exist for STPA (*STPA-NAV* and *STPA-SEL* in [design-stpa.en.md](design-stpa.en.md)) and corresponding scenarios are written for HTA when it is built.
+- **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and moving the selected task has moved from the arrows to Alt/Option+arrow (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
 - **Undo.** *Title bar* has *Undo* in all tools, but HTA has no undo today. Either undo is built in HTA, or the button is shown inactive until it exists.
 - **The width of the TTA table.** In the open state *TTA Panel* is 746 px wide, but the six columns together are about 880 px. The table scrolls sideways or the columns shrink. This is decided at the review.
 - **The key for the panel toggle.** Today it is **A**, and the plan is that it moves to **I** when *Add Above* is built (4.7). The shared panel decides this during the build.

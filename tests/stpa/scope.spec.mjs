@@ -21,23 +21,23 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
   });
   test.afterEach(() => expect(errors).toEqual([]));
 
-  test("Shift+click toggles blocks, control actions and feedback; a plain click does not select", async ({ page }) => {
+  test("a click selects, Shift+click adds objects of the same kind, another kind replaces the selection", async ({ page }) => {
     await node(page, "p1").click();
-    expect(await selected(page)).toEqual([]);
-    await node(page, "p1").click({ modifiers: ["Shift"] });
+    expect(await selected(page)).toEqual(["p1"]);
+    await node(page, "c0").click({ modifiers: ["Shift"] });
+    expect(await selected(page)).toEqual(["c0", "p1"]);
     await page.locator('#diagram text[data-sel="ca1"]').click({ modifiers: ["Shift"] });
+    expect(await selected(page)).toEqual(["ca1"]);
     await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click({ modifiers: ["Shift"] });
-    expect(await selected(page)).toEqual(["ca1", "fb1", "p1"]);
-    await expect(page.locator(".ai-scope")).toContainText("p1, ca1, fb1");
-    await node(page, "p1").click({ modifiers: ["Shift"] });
-    expect(await selected(page)).toEqual(["ca1", "fb1"]);
+    expect(await selected(page)).toEqual(["fb1"]);
+    await expect(page.locator(".ai-scope")).toContainText("fb1");
     // the selected state uses the halo filter from the Penpot "Selected" variant
-    const filter = await page.locator('#diagram text[data-sel="ca1"]').evaluate((el) => getComputedStyle(el).filter);
+    const filter = await page.locator('#diagram text[data-sel="fb1"]').evaluate((el) => getComputedStyle(el).filter);
     expect(filter).toContain("sel-halo");
   });
 
   test("the selection survives a reload and Clear empties it", async ({ page }) => {
-    await node(page, "c1").click({ modifiers: ["Shift"] });
+    await node(page, "c1").click();
     await page.reload();
     await page.waitForSelector("#diagram g.node");
     expect(await selected(page)).toEqual(["c1"]);
@@ -46,26 +46,26 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
   });
 
   test("convert a control action to an actuator and feedback to a sensor", async ({ page }) => {
-    await page.locator('#diagram text[data-sel="ca1"]').click({ modifiers: ["Shift"] });
-    await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click({ modifiers: ["Shift"] });
+    await page.locator('#diagram text[data-sel="ca1"]').click();
     await page.locator("#selBar button", { hasText: "Convert to actuator" }).click();
+    await page.locator('#diagram text.lbl-fb[data-sel="fb1"]').click();
     await page.locator("#selBar button", { hasText: "Convert to sensor" }).click();
     const m = await getEditorJson(page, "#editor");
     expect(m.actuators).toEqual([{ id: "a1", name: "ApplyBrakingForce actuator", target: "p1", actuation: "", converted_from: "ca1" }]);
     expect(m.sensors).toEqual([{ id: "s1", name: "WheelSpeedSensorData sensor", source: "p1", measures: "", converted_from: "fb1" }]);
     expect(m.control_actions.find((c) => c.id === "ca1").target).toBe("a1");
     expect(m.feedback.find((f) => f.id === "fb1").source).toBe("s1");
-    expect(await selected(page)).toEqual(["a1", "s1"]);
+    expect(await selected(page)).toEqual(["s1"]);
     // the loop through actuator and sensor still counts as closed, and both get their own block
     const issues = await page.locator("#issues").innerText();
     expect(issues).not.toContain("ca1");
     expect(issues).not.toContain("error");
     await expect(node(page, "a1")).toHaveClass(/act/);
     await expect(node(page, "s1")).toHaveClass(/sens/);
-    // Convert is disabled for a control action that targets a controller (ca0: Driver → AEB ECU)
+    // Convert is also enabled for a control action that targets a controller (ca0: Driver → AEB ECU), STPA-LINK-4
     await page.locator("#selBar button", { hasText: "Clear" }).click();
-    await page.locator('#diagram text[data-sel="ca0"]').click({ modifiers: ["Shift"] });
-    await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeDisabled();
+    await page.locator('#diagram text[data-sel="ca0"]').click();
+    await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeEnabled();
   });
 
   test("switch an actuator to a controlled process and back; the fields of the old type come back", async ({ page }) => {

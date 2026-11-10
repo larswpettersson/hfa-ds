@@ -34,7 +34,7 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     // OSPA example: P1, P2, P3 share column 2; P4 (all causes) is column 3.
     expect((await layout(page)).cols).toEqual({ P1: 2, P2: 2, P3: 2, P4: 3 });
     await clickBarrier(page, "p4");
-    await keys(page, "ArrowLeft", "Enter");
+    await keys(page, "Alt+ArrowLeft", "Enter");
     const l = await layout(page);
     expect(l.overlaps).toEqual([]);
     expect(l.cols).toEqual({ P1: 3, P2: 3, P3: 3, P4: 2 });
@@ -50,20 +50,20 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     expect(l.cols.P4).toBe(4);
   });
 
-  test("Shift+click selects several barriers; ←/→ move them together; Esc clears", async ({ page }) => {
+  test("Shift+click selects several barriers; Alt+←/→ move them together; Esc clears", async ({ page }) => {
     await clickBarrier(page, "p1", ["Shift"]);
     await clickBarrier(page, "p3", ["Shift"]);
     expect((await page.evaluate(() => BowtieEditor.getSelection())).barrierIds.sort()).toEqual(["p1", "p3"]);
     await expect(page.locator(".barrier.is-multi-selected")).toHaveCount(2);
 
-    await keys(page, "ArrowRight");
+    await keys(page, "Alt+ArrowRight");
     let l = await layout(page);
     expect(l.overlaps).toEqual([]);
     expect(l.cols.P1).toBe(l.cols.P3);
     expect(l.cols.P1).toBeGreaterThan(l.cols.P4); // moved past P4, which they overlap
     expect(l.cols.P2).toBe(2);
 
-    await keys(page, "ArrowLeft");
+    await keys(page, "Alt+ArrowLeft");
     l = await layout(page);
     expect(l.overlaps).toEqual([]);
     expect(l.cols.P1).toBeLessThan(l.cols.P4);
@@ -78,7 +78,7 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     const before = await page.evaluate(() => BowtieEditor.getState());
     await clickBarrier(page, "p1", ["Shift"]);
     await clickBarrier(page, "r1", ["Shift"]);
-    await keys(page, "ArrowRight");
+    await keys(page, "Alt+ArrowRight");
     await expect(page.locator("#statusMessage")).toHaveClass(/show warning/);
     await expect(page.locator("#statusMessage")).toContainText("cannot be moved together");
     const after = await page.evaluate(() => BowtieEditor.getState());
@@ -87,7 +87,7 @@ test.describe("Bowtie: barrier layout and moving several barriers", () => {
     // The selection stays, so the barrier that does not belong can be taken out.
     expect((await page.evaluate(() => BowtieEditor.getSelection())).barrierIds.sort()).toEqual(["p1", "r1"]);
     await clickBarrier(page, "r1", ["Shift"]);
-    await keys(page, "ArrowRight");
+    await keys(page, "Alt+ArrowRight");
     expect((await layout(page)).cols.P1).toBeGreaterThan(2);
   });
 
