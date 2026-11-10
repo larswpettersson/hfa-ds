@@ -364,7 +364,7 @@ En dialog ovanpå en panel ovanpå sidan får sitt djup på andra sätt än med 
 - **Toning bakom modala dialoger.** Allt under dialogen dämpas, till exempel `foreground.base` vid 40–50 %, i stället för att dialogen får en egen yta. Webbläsarens `<dialog>` har redan en `::backdrop` för det. Toningen är ingen bakgrund som text ligger på, så färgreglerna för bakgrunder gäller den inte.
 - **Kant alltid**, enligt ovan.
 
-Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process Block*). Penpot har tokentypen *shadow*, men HFA DS har inga definierade. De införs när de behövs, och då i `tokens.json` och Penpot samtidigt.
+Skuggorna är i dag fasta värden i Penpot-komponenterna (till exempel *Process Block*). Penpot har tokentypen *shadow*, men HFA DS har inga definierade. De första som införs är `shadow.hovered` och `shadow.selected` för indikering och markering (5.3), och då i Penpot och `tokens.json` samtidigt.
 
 #### Gäller inte
 
@@ -568,6 +568,7 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
 - **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** (eller F2 eller dubbelklick). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
+- **Skuggorna är tokens, lika för alla objekt.** `shadow.hovered` (indikeringen) och `shadow.selected` (markeringen: en suddig skugga runt hela objektet, spridning 4 px, oskärpa 2 px, `foreground.base` vid 40 %) definieras en gång i Penpot (HFA DS), exporteras till `tokens.json` och används av alla objekt i alla verktyg, så att indikering och markering ser likadana ut överallt (1.2, punkt 6). Värdet för `shadow.hovered` avgörs när skuggorna definieras.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
 ### 5.4 Tangenterna speglar musen

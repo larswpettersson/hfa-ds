@@ -364,7 +364,7 @@ A dialog on top of a panel on top of the page gets its depth in other ways than 
 - **A scrim behind modal dialogs.** Everything under the dialog is dimmed, for example `foreground.base` at 40–50 %, instead of the dialog getting a surface of its own. The browser's `<dialog>` already has a `::backdrop` for it. The scrim is not a background text sits on, so the colour rules for backgrounds do not apply to it.
 - **Border always**, as above.
 
-The shadows are currently fixed values in the Penpot components (for example *Process Block*). Penpot has the token type *shadow*, but HFA DS has none defined. They are introduced when needed, and then in `tokens.json` and Penpot at the same time.
+The shadows are currently fixed values in the Penpot components (for example *Process Block*). Penpot has the token type *shadow*, but HFA DS has none defined. The first ones to be introduced are `shadow.hovered` and `shadow.selected` for indication and selection (5.3), and then in Penpot and `tokens.json` at the same time.
 
 #### Does not apply
 
@@ -568,6 +568,7 @@ What the mouse hovers over and what the arrow keys point out are the same thing,
 - **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
 - **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
 - **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *text editing mode* (a text cursor in the object's text, in STPA in the name cell in the table, 5.9) is started by **Enter** (or F2 or a double-click). Enter confirms the text, and Esc cancels. So Enter alone does not select, and an arrow does not select.
+- **The shadows are tokens, the same for all objects.** `shadow.hovered` (the indication) and `shadow.selected` (the selection: a blurred shadow all around the object, spread 4 px, blur 2 px, `foreground.base` at 40 %) are defined once in Penpot (HFA DS), exported to `tokens.json` and used by all objects in all tools, so that indication and selection look the same everywhere (1.2, point 6). The value of `shadow.hovered` is decided when the shadows are defined.
 - **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
 
 ### 5.4 The keys mirror the mouse
