@@ -35,9 +35,10 @@ const linksBetween = (m, from, to) => ({
 });
 const empty = (label) => label === undefined || label === "" || (Array.isArray(label) && label.every((l) => !l));
 
-/** Select blocks the way the tool does today: Shift+click. */
+/** Select blocks the way the tool does today: Shift+click (replaced by Ctrl/⌘+Enter when STPA-SEL is built). */
 async function select(page, ...ids) {
   for (const id of ids) await node(page, id).click({ modifiers: ["Shift"] });
+  await page.keyboard.press("Escape"); // a click moves the focus to the block's table cell; Esc leaves it
 }
 
 test.describe("STPA workbench: Add Below", () => {
