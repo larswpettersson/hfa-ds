@@ -11,13 +11,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "roboto-base",
       "type": "fontFamilies",
       "value": [
-        "Source Sans 3",
-        "Source Sans Pro",
-        "system-ui",
-        "-apple-system",
-        "BlinkMacSystemFont",
-        "Segoe UI",
-        "sans-serif"
+        "{font.family.base}"
       ],
       "description": "Primary UI font stack (HFA DS)."
     },
@@ -194,6 +188,255 @@ var HFA_DS_TOKEN_SETS = {
       "type": "color",
       "value": "#FFFFFF",
       "description": "Text/ikoner på brand.inverted."
+    },
+    {
+      "name": "small-radius",
+      "type": "borderRadius",
+      "value": "8",
+      "description": ""
+    },
+    {
+      "name": "font.family.base",
+      "type": "fontFamilies",
+      "value": [
+        "Open Sans",
+        "Arial",
+        "sans-serif"
+      ],
+      "description": ""
+    },
+    {
+      "name": "font.weight.regular",
+      "type": "fontWeights",
+      "value": "400",
+      "description": ""
+    },
+    {
+      "name": "font.weight.bold",
+      "type": "fontWeights",
+      "value": "700",
+      "description": ""
+    },
+    {
+      "name": "font.size.sm",
+      "type": "fontSizes",
+      "value": "14",
+      "description": ""
+    },
+    {
+      "name": "font.size.md",
+      "type": "fontSizes",
+      "value": "16",
+      "description": ""
+    },
+    {
+      "name": "font.size.lg",
+      "type": "fontSizes",
+      "value": "20",
+      "description": ""
+    },
+    {
+      "name": "font.size.xl",
+      "type": "fontSizes",
+      "value": "24",
+      "description": ""
+    },
+    {
+      "name": "font.size.2xl",
+      "type": "fontSizes",
+      "value": "32",
+      "description": ""
+    },
+    {
+      "name": "font.size.xs",
+      "type": "fontSizes",
+      "value": "12",
+      "description": ""
+    },
+    {
+      "name": "font.family.mono",
+      "type": "fontFamilies",
+      "value": [
+        "ui-monospace",
+        "Consolas",
+        "Courier New",
+        "monospace"
+      ],
+      "description": ""
+    },
+    {
+      "name": "typography.caption",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.35",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.body",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.md}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-1",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.2xl}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.25",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-2",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xl}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.25",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-3",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.lg}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.3",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.body-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.md}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.small",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.sm}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.caption-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.35",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.code",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.mono}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "shadow.hovered",
+      "type": "shadow",
+      "value": [
+        {
+          "offsetX": "4",
+          "offsetY": "4",
+          "blur": "4",
+          "spread": "0",
+          "color": "rgba(13, 17, 23, 0.4)",
+          "inset": false
+        }
+      ],
+      "description": "Indikering: hovrad skugga (nere/höger)."
+    },
+    {
+      "name": "shadow.selected",
+      "type": "shadow",
+      "value": [
+        {
+          "offsetX": "0",
+          "offsetY": "0",
+          "blur": "2",
+          "spread": "4",
+          "color": "rgba(13, 17, 23, 0.4)",
+          "inset": false
+        }
+      ],
+      "description": "Markering: suddig skugga runt hela objektet."
     }
   ],
   "mode/dark": [
@@ -255,13 +498,7 @@ var HFA_DS_TOKEN_SETS = {
       "name": "roboto-base",
       "type": "fontFamilies",
       "value": [
-        "Source Sans 3",
-        "Source Sans Pro",
-        "system-ui",
-        "-apple-system",
-        "BlinkMacSystemFont",
-        "Segoe UI",
-        "sans-serif"
+        "{font.family.base}"
       ],
       "description": "Primary UI font stack (HFA DS)."
     },
@@ -390,6 +627,255 @@ var HFA_DS_TOKEN_SETS = {
       "type": "borderWidth",
       "value": 2,
       "description": ""
+    },
+    {
+      "name": "small-radius",
+      "type": "borderRadius",
+      "value": "8",
+      "description": ""
+    },
+    {
+      "name": "font.family.base",
+      "type": "fontFamilies",
+      "value": [
+        "Open Sans",
+        "Arial",
+        "sans-serif"
+      ],
+      "description": ""
+    },
+    {
+      "name": "font.weight.regular",
+      "type": "fontWeights",
+      "value": "400",
+      "description": ""
+    },
+    {
+      "name": "font.weight.bold",
+      "type": "fontWeights",
+      "value": "700",
+      "description": ""
+    },
+    {
+      "name": "font.size.sm",
+      "type": "fontSizes",
+      "value": "14",
+      "description": ""
+    },
+    {
+      "name": "font.size.md",
+      "type": "fontSizes",
+      "value": "16",
+      "description": ""
+    },
+    {
+      "name": "font.size.lg",
+      "type": "fontSizes",
+      "value": "20",
+      "description": ""
+    },
+    {
+      "name": "font.size.xl",
+      "type": "fontSizes",
+      "value": "24",
+      "description": ""
+    },
+    {
+      "name": "font.size.2xl",
+      "type": "fontSizes",
+      "value": "32",
+      "description": ""
+    },
+    {
+      "name": "font.size.xs",
+      "type": "fontSizes",
+      "value": "12",
+      "description": ""
+    },
+    {
+      "name": "font.family.mono",
+      "type": "fontFamilies",
+      "value": [
+        "ui-monospace",
+        "Consolas",
+        "Courier New",
+        "monospace"
+      ],
+      "description": ""
+    },
+    {
+      "name": "typography.caption",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.35",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.body",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.md}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-1",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.2xl}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.25",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-2",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xl}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.25",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.heading-3",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.lg}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.3",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.body-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.md}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.small",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.sm}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.caption-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.base}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.bold}",
+        "letterSpacing": "0",
+        "lineHeight": "1.35",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "typography.code",
+      "type": "typography",
+      "value": {
+        "fontFamily": [
+          "{font.family.mono}"
+        ],
+        "fontSize": "{font.size.xs}",
+        "fontWeight": "{font.weight.regular}",
+        "letterSpacing": "0",
+        "lineHeight": "1.5",
+        "textCase": "none",
+        "textDecoration": "none"
+      },
+      "description": ""
+    },
+    {
+      "name": "shadow.hovered",
+      "type": "shadow",
+      "value": [
+        {
+          "offsetX": "4",
+          "offsetY": "4",
+          "blur": "4",
+          "spread": "0",
+          "color": "rgba(250, 251, 252, 0.4)",
+          "inset": false
+        }
+      ],
+      "description": "Indikering: hovrad skugga (nere/höger)."
+    },
+    {
+      "name": "shadow.selected",
+      "type": "shadow",
+      "value": [
+        {
+          "offsetX": "0",
+          "offsetY": "0",
+          "blur": "2",
+          "spread": "4",
+          "color": "rgba(250, 251, 252, 0.4)",
+          "inset": false
+        }
+      ],
+      "description": "Markering: suddig skugga runt hela objektet."
     }
   ]
 };
