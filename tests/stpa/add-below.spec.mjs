@@ -76,8 +76,10 @@ test.describe("STPA workbench: Add Below", () => {
     await page.keyboard.press("b");
     await page.keyboard.type("ECU");
     await page.keyboard.press("Enter");
+    await expect.poll(async () => byName(await json(page), "ECU")).toBeTruthy(); // the name is committed before the next key
     await page.keyboard.press("Escape");
     await page.keyboard.press("b");
+    await expect.poll(async () => added(await json(page)).length).toBe(2);
     const m = await json(page);
     const ecu = byName(m, "ECU");
     expect(ecu).toBeTruthy();
