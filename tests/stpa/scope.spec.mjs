@@ -62,10 +62,10 @@ test.describe("STPA workbench: selection, scope and conversions", () => {
     expect(issues).not.toContain("error");
     await expect(node(page, "a1")).toHaveClass(/act/);
     await expect(node(page, "s1")).toHaveClass(/sens/);
-    // Convert is disabled for a control action that targets a controller (ca0: Driver → AEB ECU)
+    // Convert is also enabled for a control action that targets a controller (ca0: Driver → AEB ECU), STPA-LINK-4
     await page.locator("#selBar button", { hasText: "Clear" }).click();
     await page.locator('#diagram text[data-sel="ca0"]').click();
-    await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeDisabled();
+    await expect(page.locator("#selBar button", { hasText: "Convert to actuator" })).toBeEnabled();
   });
 
   test("switch an actuator to a controlled process and back; the fields of the old type come back", async ({ page }) => {

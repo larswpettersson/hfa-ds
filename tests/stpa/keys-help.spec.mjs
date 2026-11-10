@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool, setEditor, getEditorJson } from "../lib/page.mjs";
+import { mockClaude } from "../lib/claude.mjs";
 
-// Requirements: STPA-KEYS-1, STPA-KEYS-3, STPA-VIEW-1, 3 and 4 in docs/design-stpa.md.
+// Requirements: STPA-KEYS-1, STPA-KEYS-3, STPA-VIEW-1 to 4 in docs/design-stpa.md.
 const T = tool("stpa-workbench");
 const json = (page) => getEditorJson(page, "#editor");
 const node = (page, id) => page.locator(`#diagram g.node[data-sel="${id}"]`);
@@ -32,6 +33,18 @@ test.describe("STPA workbench: keys, Delete and the help dialog", () => {
   test("STPA-VIEW-1: JSON-editorn och Format finns inte i gränssnittet", async ({ page }) => {
     await expect(page.locator("#editor")).toBeHidden();
     await expect(page.getByRole("button", { name: "Format" })).toHaveCount(0);
+  });
+
+  test("STPA-VIEW-2: AI-panelen listar JSON på begäran", async ({ page }) => {
+    await page.evaluate(() => localStorage.setItem("hfa-ai:providers", JSON.stringify({ provider: "claude", claude_key: "test-key" })));
+    await page.reload();
+    await page.waitForSelector("#diagram g.node");
+    await setEditor(page, "#editor", MODEL);
+    const bodies = await mockClaude(page, "```json\n" + JSON.stringify(MODEL, null, 2) + "\n```");
+    await page.fill(".ai-chat textarea", "Show the JSON");
+    await page.click(".ai-chat button[type=submit]");
+    await expect(page.locator(".ai-msg.assistant").last()).toContainText('"system": "Keys"');
+    expect(bodies[0].system).toContain(JSON.stringify(MODEL, null, 2)); // the request carries the analysis in the same form as it is saved
   });
 
   test("STPA-KEYS-1: knapparna och tangenterna gör samma sak", async ({ page }) => {

@@ -114,9 +114,13 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     await expect(node(page, "a1")).toHaveClass(/proc/);
   });
 
-  test("a view bar opens and closes its view, keeps its state after a reload, and edits stay undoable (STPA-VIEW-5, 6)", async ({ page }) => {
+  test("STPA-VIEW-6: vybarerna har inga knappar för Compress och Expand", async ({ page }) => {
+    await expect(page.locator(".vcomp, .vexp")).toHaveCount(0);
+    await expect(page.locator(".vbar button", { hasText: /^(Compress|Expand)$/ })).toHaveCount(0);
+  });
+
+  test("STPA-VIEW-5: titelraden öppnar och stänger en vy, och valet finns kvar efter omladdning", async ({ page }) => {
     const view = page.locator("#vStructure");
-    await expect(page.locator(".vcomp, .vexp")).toHaveCount(0); // no Compress or Expand buttons (STPA-VIEW-6)
     await view.locator(".vtitle").click();
     await expect(view).toHaveClass(/compressed/);
     expect(await view.locator(".vbody").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(2);
