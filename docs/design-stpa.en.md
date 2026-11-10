@@ -20,7 +20,7 @@ The answers to the eight open questions, in short:
 6. **Several selected:** one shared new block connected to all selected blocks.
 7. **A new diagram** starts with one controller and one controlled process, connected by a control action and a feedback.
 8. **Tables and JSON** stay as they are. The selection is shown in the table and the text is edited there (5.9).
-9. **Selection and editing:** a click or Ctrl/⌘+Enter selects a block (a blurred shadow all around the block). Enter alone goes into editing. Arrows only move the indication (a hovered shadow), and Ctrl/⌘+arrow is not used (5.3, 5.4). Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
+9. **Selection and editing:** a click or Ctrl/⌘+Enter selects a block (a blurred shadow all around the block). Enter alone goes into the text editing mode (a text cursor in the name cell). Arrows only move the indication (a hovered shadow), and Ctrl/⌘+arrow is not used (5.3, 5.4). Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click select several objects of the same kind.
 10. **Links and blocks without text** show their id (principle in 5.10).
 11. **Add Above** is postponed. *Add Beside* and the name field in the table are approved.
 12. **Layout:** three columns with drag bars between them (4.11): the control structure (the diagram) on the left, the tables in the middle and the AI analysis on the right, as in HTA. The title bar (4.10) is at the top. The header row in the panel is removed, since the view bar *CONTROL STRUCTURE* already shows the same heading.
@@ -198,7 +198,7 @@ Feature: Links and conversion
 
 ### STPA-SEL: selecting and deselecting
 
-**A click or Ctrl/⌘+Enter on a block selects it (a blurred shadow all around the block). Enter alone does not select, but goes into editing. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
+**A click or Ctrl/⌘+Enter on a block selects it (a blurred shadow all around the block). Enter alone does not select, but goes into the text editing mode. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
 
 This follows 5.4: Ctrl/⌘+Enter corresponds to a click, and Enter (or F2) edits. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
 
@@ -246,10 +246,10 @@ Feature: Selecting and deselecting
     Then only the control action is selected
 
   @STPA-SEL-7
-  Scenario: Enter alone goes into editing and does not select
+  Scenario: Enter alone goes into the text editing mode and does not select
     Given the indication is on "Driver" and nothing is selected
     When the user presses Enter
-    Then the name cell on the block's row has focus
+    Then the name cell on the block's row has focus and a text cursor
     And nothing is selected
 ```
 

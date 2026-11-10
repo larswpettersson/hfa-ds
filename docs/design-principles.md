@@ -567,7 +567,7 @@ What the mouse hovers over and what the arrow keys point out are the same thing,
 - **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
 - **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
 - **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
-- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *editing* happens in the text field and is started by **Enter** (or F2 or a double-click). So Enter alone does not select, and an arrow does not select.
+- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *text editing mode* (a text cursor in the object's text, in STPA in the name cell in the table, 5.9) is started by **Enter** (or F2 or a double-click). Enter confirms the text, and Esc cancels. So Enter alone does not select, and an arrow does not select.
 - **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
 
 ### 5.4 The keys mirror the mouse
@@ -579,7 +579,7 @@ Every key has a mouse counterpart:
 | Hover | Arrow (5.2) |
 | Click: select, or whatever the tool otherwise does on a click, for example link mode for a barrier | Ctrl/⌘+Enter |
 | Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
-| Double-click: edit | Enter or F2 |
+| Double-click: text editing | Enter or F2 |
 | Drag: move | Alt/Option+arrow (5.6) |
 | The toolbar buttons *Add Above*, *Add Below* and *Add Beside* (5.10) | STPA: **B**, **S** and **A** (*Add Above*, built later). HTA: **C** (child), **S** (sibling), **D** (duplicate) |
 | Delete the selected objects | Delete (5.10) |

@@ -20,7 +20,7 @@ Svaren på de åtta öppna frågorna, i korthet:
 6. **Flera markerade:** ett gemensamt nytt block som kopplas till alla markerade.
 7. **Nytt diagram** börjar med en controller och en controlled process, kopplade med styråtgärd och återkoppling.
 8. **Tabeller och JSON** behålls som de är. Markeringen visas i tabellen och texten redigeras där (5.9).
-9. **Markering och redigering:** klick eller Ctrl/⌘+Enter markerar ett block (en suddig skugga runt hela blocket). Enter ensam går in i redigering. Pilar flyttar bara indikeringen (en hovrad skugga), och Ctrl/⌘+pil används inte (5.3, 5.4). Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
+9. **Markering och redigering:** klick eller Ctrl/⌘+Enter markerar ett block (en suddig skugga runt hela blocket). Enter ensam går in i textredigeringsläget (textmarkör i namncellen). Pilar flyttar bara indikeringen (en hovrad skugga), och Ctrl/⌘+pil används inte (5.3, 5.4). Esc eller klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick väljer flera objekt av samma sort.
 10. **Länkar och block utan text** visar sitt id (princip i 5.10).
 11. **Add Above** skjuts upp. *Add Beside* och namnfältet i tabellen är godkända.
 12. **Layout:** tre kolumner med dragfält emellan (4.11): kontrollstrukturen (diagrammet) till vänster, tabellerna i mitten och AI-analysen till höger, som i HTA. Titelraden (4.10) ligger överst. Rubrikraden i panelen försvinner, eftersom vybaren *CONTROL STRUCTURE* redan visar samma rubrik.
@@ -198,7 +198,7 @@ Feature: Länkar och konvertering
 
 ### STPA-SEL: markera och avmarkera
 
-**Ett klick eller Ctrl/⌘+Enter på ett block markerar det (en suddig skugga runt hela blocket). Enter ensam markerar inte, utan går in i redigering. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
+**Ett klick eller Ctrl/⌘+Enter på ett block markerar det (en suddig skugga runt hela blocket). Enter ensam markerar inte, utan går in i textredigeringsläget. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
 
 Det följer 5.4: Ctrl/⌘+Enter motsvarar klick, och Enter (eller F2) redigerar. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
 
@@ -246,10 +246,10 @@ Feature: Markera och avmarkera
     Then bara styråtgärden är markerad
 
   @STPA-SEL-7
-  Scenario: Enter ensam går in i redigering och markerar inte
+  Scenario: Enter ensam går in i textredigeringsläget och markerar inte
     Given indikeringen står på "Driver" och inget är markerat
     When användaren trycker Enter
-    Then namncellen på blockets rad har fokus
+    Then namncellen på blockets rad har fokus och en textmarkör
     And inget är markerat
 ```
 

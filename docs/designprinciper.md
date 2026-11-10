@@ -567,7 +567,7 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
-- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Redigeringen* sker i textfältet och startas av **Enter** (eller F2 eller dubbelklick). Enter ensam markerar alltså inte, och en pil markerar inte.
+- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** (eller F2 eller dubbelklick). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
 ### 5.4 Tangenterna speglar musen
@@ -579,7 +579,7 @@ Varje tangent har en motsvarighet med musen:
 | Hovra | Pil (5.2) |
 | Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
-| Dubbelklick: redigera | Enter eller F2 |
+| Dubbelklick: textredigering | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
 | Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
 | Ta bort markerade objekt | Delete (5.10) |
