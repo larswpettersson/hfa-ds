@@ -84,4 +84,36 @@ test.describe("Bowtie: AI panel", () => {
     expect(s.right.barriers.map((b) => [b.id, b.col, b.status])).toEqual([["R1", 1, "Unknown"]]);
     await expect(page.locator(".top-event")).toContainText("Scald");
   });
+  test("an image goes to a local or LiteLLM model unless the model is known to be text-only", async ({ page }) => {
+    const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    const bodies = [];
+    await page.route("http://localhost:4000/**", (route) => {
+      const req = route.request();
+      if (req.method() === "POST") bodies.push(req.postDataJSON());
+      const body = req.method() === "POST" ? { choices: [{ message: { content: "Seen." } }] } : { data: [{ id: "gemma-4-31B-it" }] };
+      route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify(body) });
+    });
+    const paste = () => page.evaluate((b64) => {
+      const dt = new DataTransfer();
+      dt.items.add(new File([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], "shot.png", { type: "image/png" }));
+      document.querySelector(".ai-chat textarea").dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }));
+    }, PNG);
+    const useModel = async (model) => {
+      await page.evaluate((m) => localStorage.setItem("hfa-ai:providers", JSON.stringify({ provider: "local", local_endpoint: "http://localhost:4000/v1", local_model: m })), model);
+      await page.reload();
+      await page.waitForSelector(".card");
+      await openPanel(page);
+    };
+
+    await useModel("gemma-4-31B-it");
+    await paste();
+    await expect(page.locator(".ai-attach img")).toBeVisible();
+    await ask(page, "What is this?");
+    expect(bodies[0].messages.at(-1).content[1]).toMatchObject({ type: "image_url" });
+
+    await useModel("llama3.1");
+    await paste();
+    await expect(page.locator(".ai-attach")).toBeHidden();
+    await expect(page.locator(".ai-status")).toContainText("does not accept images");
+  });
 });
