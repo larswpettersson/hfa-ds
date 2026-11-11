@@ -36,6 +36,23 @@ test.describe("STPA workbench: layout", () => {
     await expect(page.locator("#midPanel #vStructure")).toHaveCount(1);
   });
 
+  test("the Diagram bar and the tables bar line up, and both columns fill the height of their cards", async ({ page }) => {
+    const box = async (sel) => page.locator(sel).boundingBox();
+    const d = await box("#vDiagram .vbar"), t = await box("#vStructure .vbar");
+    expect(d.y).toBeCloseTo(t.y, 0);
+    expect(d.height).toBeCloseTo(t.height, 0);
+    expect((await box("#vSafety .vbar")).height).toBeCloseTo(t.height, 0);
+    const bottom = async (sel) => { const b = await box(sel); return b.y + b.height; };
+    const left = await bottom("#leftPanel"), mid = await bottom("#midPanel");
+    expect(left).toBeCloseTo(mid, 0);
+    expect(await bottom("#issues")).toBeGreaterThan(left - 4);   // the status line closes the left card
+    expect(await bottom("#vSafety")).toBeGreaterThan(mid - 4);   // the safety case closes the middle card
+    // Closing one table view gives its height to the other.
+    const before = (await box("#vStructure")).height;
+    await page.locator("#vSafety .vtitle").click();
+    expect((await box("#vStructure")).height).toBeGreaterThan(before + 100);
+  });
+
   test("panels are cards with a 1 px border and radius 8", async ({ page }) => {
     const css = await page.locator("#leftPanel").evaluate((el) => { const c = getComputedStyle(el); return [c.borderTopWidth, c.borderTopLeftRadius]; });
     expect(css).toEqual(["1px", "8px"]);
