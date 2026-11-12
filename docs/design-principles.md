@@ -463,14 +463,14 @@ A **primary button** is a button with a red fill (`brand.primary`) and white tex
 
 ### 4.7 The AI panel: a toggle button, open by default
 
-- **The panel is on the right and is open by default.** An icon button (a window with a panel on the right) shows and hides it. The button is in the same place on the screen in every tool: at the right end of the toolbar when the panel is hidden, and in the panel's header when it is open. It replaces ✕ and the *AI…* button.
+- **The panel is a card on the right, under the title bar, and is open by default.** The title bar spans the full width; the panel starts at the top of the content area and keeps the tool's gutters. An icon button (a window with a panel on the right, *Panel Toggle*) shows and hides it. The button is in the same place on the screen in every tool: at the top right of the content area when the panel is hidden, and last in the panel's header when it is open. It replaces ✕ and the *AI…* button.
 - **The icon has only the states Hovered and Pressed**, no status state. *Pressed* is temporary: it applies while the mouse button is down, until the user releases it and the click is over. Whether the panel is open or hidden is visible from the panel itself.
 - **The button has no …**, since it only shows or hides a panel and does not open a dialog (4.1). The tooltip is for example *Show AI panel* or *Hide AI panel*.
 - **If there is no provider** that is clear in the panel: the provider pill shows *No provider*, a box at the top of the log says to open *Settings…*, *Settings…* is an ordinary button, and the question field and *Send* are disabled.
 - **The I key shows and hides the panel** in all tools, when no text is being edited (5.4). It replaces A, which *Add Above* (5.10) is to use; until *Add Above* is built, A applies.
 - **The provider pill shows the chosen provider** (for example *Local*), not whether the connection responds.
 
-**Current state (2026-11-08):** HTA, Bowtie and STPA (`ai-assist.js`) follow 4.7: the panel is open by default, the icon button replaces *AI…* and ✕, and without a provider they show *No provider*, a warning box, *Settings…* as an ordinary button, and a disabled *Send* (primary once a provider exists) and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. Since 2026-11-08 STPA uses the same panel as the others (ARCHITECTURE.md, section 10), so the toggle and the state without a provider are the same in all three. The quick actions are still in the tools, while the design in Penpot has removed them.
+**Current state (2026-11-12):** HTA, Bowtie and STPA (`ai-assist.js`) follow 4.7 and the design *Example AI-panel* in Penpot: the panel is a card under the full-width title bar, open by default; the icon button is in the panel's header when it is open and floats at the top right of the content area when it is hidden, at the same place on the screen; *Settings…*, *Send* and the toggle are Compact Buttons (4.10) and *Compress*, *Expand*, *Clear* and *Export .md* are Narrow (4.9) on a row of their own under the scope line. Without a provider they show *No provider*, a warning box, *Settings…* as an ordinary button, and a disabled *Send* (primary once a provider exists) and question field. The choice made with the button is remembered. The test `tests/shared/ai-panel-toggle.spec.mjs` checks it. The quick actions are still in the tools, as compact buttons, while the design in Penpot has removed them.
 
 ### 4.8 Auto: step by step or auto
 
@@ -496,7 +496,7 @@ Every tool has a title bar at the top, the same in all tools:
 - **All tools have the same buttons** in the title bar, even when a tool does not use all of them (for example *Undo*). Only the application name differs.
 - **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
 
-**Current state (2026-11-09):** drawn in Penpot (HFA DS), not built. The old toolbars (the component *Toolbar*) are still in HFA DS.
+**Current state (2026-11-12):** the title bar with 28 px buttons is built in HTA, Bowtie and STPA, and the theme switch (the component *Theme*, 44 × 24, `role="switch"` named *Dark theme*) replaces the *Theme* button in all three; the test `tests/shared/theme-toggle.spec.mjs` checks it. The old toolbars (the component *Toolbar*) are still in HFA DS.
 
 ### 4.11 Drag bar between panels
 

@@ -286,7 +286,7 @@ The AI panel is a single file, `ai-assist.js`, used by HTA, Bowtie and STPA Work
 - `title`, `subject` (the topic in the question field's hint), `welcome`, `quickActions` and `exportName`.
 - `getContext` (the analysis sent with every question, headed by `contextLabel`) and `getScope` (the selection).
 - `inspect`, `apply`, `snapshot` and `restore`: which JSON blocks in an answer can be applied, how they are applied and how they are reverted.
-- `toolbar` and `buttonClass`: where the icon button sits when the panel is hidden and how it should look in the tool's toolbar.
+- `content`: the tool's content area under the title bar. The panel starts at its top and the element shrinks while the panel is open; the tool sets `--ai-right` and `--ai-bottom` on `body` to its own gutters, so the panel is a card with the same margins as the other panels. The icon button floats at the top right of this area while the panel is hidden.
 
 A future tool therefore gets the same panel by loading `ai-assist.js` and calling `mount` with its own configuration. The provider settings (keys, models, address) are shared by the tools under `hfa-ai:providers` when they run from the same origin.
 

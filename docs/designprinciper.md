@@ -463,14 +463,14 @@ En **primary-knapp** är en knapp med röd fyllning (`brand.primary`) och vit te
 
 ### 4.7 AI-panelen: en växlingsknapp, öppen som standard
 
-- **Panelen ligger på höger sida och är öppen som standard.** En ikonknapp (ett fönster med en panel till höger) visar och döljer den. Knappen sitter på samma plats på skärmen i alla verktyg: längst till höger i verktygsraden när panelen är dold, och i panelens rubrik när den är öppen. Den ersätter ✕ och knappen *AI…*.
+- **Panelen är ett kort på höger sida, under titelraden, och är öppen som standard.** Titelraden går över hela bredden; panelen börjar i höjd med appytans överkant och behåller verktygets marginaler. En ikonknapp (ett fönster med en panel till höger, *Panel Toggle*) visar och döljer den. Knappen sitter på samma plats på skärmen i alla verktyg: i appytans övre högra hörn när panelen är dold, och sist i panelens rubrik när den är öppen. Den ersätter ✕ och knappen *AI…*.
 - **Ikonen har bara tillstånden Hovered och Pressed**, inget statustillstånd. *Pressed* är tillfälligt: det gäller medan musknappen är nedtryckt, till dess att användaren släpper den och klicket är slut. Om panelen är öppen eller dold syns på panelen själv.
 - **Knappen har ingen …**, eftersom den bara visar eller döljer en panel och inte öppnar en dialog (4.1). Verktygstipset heter till exempel *Show AI panel* eller *Hide AI panel*.
 - **Saknas en leverantör** är det tydligt i panelen: leverantörsfältet visar *No provider*, en ruta överst i loggen säger att man ska öppna *Settings…*, *Settings…* är en vanlig knapp och snabbåtgärder, frågefält och *Send* är inaktiva.
 - **Tangenten I visar och döljer panelen** i alla verktyg, när ingen text redigeras (5.4). Den ersätter A, som *Add Above* (5.10) ska använda; tills *Add Above* är byggt gäller A.
 - **Leverantörsfältet visar den valda leverantören** (till exempel *Local*), inte om kopplingen svarar.
 
-**Nuläge (2026-11-08):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7: panelen är öppen som standard, ikonknappen ersätter *AI…* och ✕, och utan leverantör visas *No provider*, en varningsruta, *Settings…* som vanlig knapp, och inaktiva *Send* (primary först när det finns en leverantör) och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. STPA använder sedan 2026-11-08 samma panel som de andra (arkitektur.md, avsnitt 10), så knappen och läget utan leverantör är lika i alla tre. Snabbåtgärderna finns kvar i verktygen, medan designen i Penpot har tagit bort dem.
+**Nuläge (2026-11-12):** HTA, Bowtie och STPA (`ai-assist.js`) följer 4.7 och designen *Example AI-panel* i Penpot: panelen är ett kort under titelraden som går över hela bredden, öppen som standard; ikonknappen sitter i panelens rubrik när den är öppen och ligger i appytans övre högra hörn när den är dold, på samma plats på skärmen; *Settings…*, *Send* och växlingsknappen är Compact Button (4.10) och *Compress*, *Expand*, *Clear* och *Export .md* är smala knappar (4.9) på en egen rad under scope-raden. Utan leverantör visas *No provider*, en varningsruta, *Settings…* som vanlig knapp, och inaktiva *Send* (primary först när det finns en leverantör) och frågefält. Valet med knappen sparas. Testet `tests/shared/ai-panel-toggle.spec.mjs` kontrollerar det. Snabbåtgärderna finns kvar i verktygen, som kompakta knappar, medan designen i Penpot har tagit bort dem.
 
 ### 4.8 Auto: stegvis analys eller auto
 
@@ -496,7 +496,7 @@ Varje verktyg har en titelrad överst, lika i alla verktyg:
 - **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla (till exempel *Undo*). Det är bara appnamnet som skiljer.
 - **Raden är responsiv i verktygen.** Bredden 1440 px gäller bara komponenten *Title bar* i HFA DS (varianterna `Tool` = STPA, HTA, Bowtie); i verktyget fyller raden bredden och den högra gruppen ligger kvar längst till höger.
 
-**Nuläge (2026-11-09):** ritad i Penpot (HFA DS), inte byggd. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.
+**Nuläge (2026-11-12):** titelraden med 28 px höga knappar är byggd i HTA, Bowtie och STPA, och temaväxlaren (komponenten *Theme*, 44 × 24, `role="switch"` med namnet *Dark theme*) ersätter knappen *Theme* i alla tre; testet `tests/shared/theme-toggle.spec.mjs` kontrollerar det. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.
 
 ### 4.11 Dragfält mellan paneler
 

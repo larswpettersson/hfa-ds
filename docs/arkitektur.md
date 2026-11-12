@@ -286,7 +286,7 @@ AI-panelen finns i en enda fil, `ai-assist.js`, och används av HTA, Bowtie och 
 - `title`, `subject` (ämnet i frågefältets hjälptext), `welcome`, `quickActions` och `exportName`.
 - `getContext` (analysen som skickas med varje fråga, med `contextLabel` som rubrik) och `getScope` (markeringen).
 - `inspect`, `apply`, `snapshot` och `restore`: vilka JSON-block i ett svar som går att tillämpa, hur de tillämpas och hur de ångras.
-- `toolbar` och `buttonClass`: var ikonknappen sitter när panelen är dold och hur knappen ska se ut i verktygets verktygsfält.
+- `content`: verktygets appyta under titelraden. Panelen börjar i höjd med dess överkant och elementet krymper medan panelen är öppen; verktyget sätter `--ai-right` och `--ai-bottom` på `body` till sina egna marginaler, så att panelen blir ett kort med samma marginaler som de andra panelerna. Ikonknappen ligger i appytans övre högra hörn medan panelen är dold.
 
 Ett kommande verktyg får alltså samma panel genom att ladda `ai-assist.js` och anropa `mount` med sin egen konfiguration. Leverantörsinställningarna (nycklar, modeller, adress) delas av verktygen under `hfa-ai:providers` när de körs från samma ursprung.
 

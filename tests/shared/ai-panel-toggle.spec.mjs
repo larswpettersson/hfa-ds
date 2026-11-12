@@ -2,12 +2,14 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 
-// Design principles 4.5 and 4.7: the AI panel is open by default and has an icon toggle with only hover and pressed;
-// without a provider the panel says so, and Send is the only primary button.
+// Design principles 4.5, 4.7, 4.9 and 4.10: the AI panel is a card under the title bar, open by default, with an icon toggle
+// that has only hover and pressed and sits at the same place on the screen whether the panel is open (in its header) or
+// hidden (the top right of the content area); the buttons are compact, the log actions narrow; without a provider the
+// panel says so, and Send is the only primary button. The design is "Example AI-panel" in Penpot.
 const TOOLS = [
-  { id: "hta", ready: ".task", toolbar: ".header .toolbar" },
-  { id: "bowtie", ready: ".card", toolbar: ".toolbar" },
-  { id: "stpa-workbench", ready: "#diagram g.node", toolbar: "header .row" },
+  { id: "hta", ready: ".task", titlebar: ".header", content: ".main-content" },
+  { id: "bowtie", ready: ".card", titlebar: ".titlebar", content: ".bowtie-application" },
+  { id: "stpa-workbench", ready: "#diagram g.node", titlebar: "header", content: "#midPanel" },
 ];
 const PROVIDERS = { provider: "claude", claude_key: "test-key" };
 
@@ -37,13 +39,18 @@ for (const c of TOOLS) {
       await expect(page.locator(".ai-head button", { hasText: "✕" })).toHaveCount(0);
     });
 
-    test("it hides the panel and moves to the right end of the toolbar, and the choice is remembered", async ({ page }) => {
+    test("it hides the panel and floats at the top right of the content area, in the same place as in the panel header; the choice is remembered", async ({ page }) => {
       await load(page, PROVIDERS);
-      await page.click(".ai-toggle");
+      const toggle = page.locator(".ai-toggle");
+      const inHeader = await toggle.boundingBox();
+      await toggle.click();
       await expect(page.locator(".ai-panel")).toBeHidden();
-      await expect(page.locator(`${c.toolbar} > .ai-toggle`)).toHaveCount(1);
-      const last = await page.locator(`${c.toolbar} > *`).last().evaluate((e) => e.classList.contains("ai-toggle"));
-      expect(last).toBe(true);
+      await expect(page.locator(".ai-head .ai-toggle")).toHaveCount(0);
+      await expect(page.locator(`${c.titlebar} .ai-toggle`)).toHaveCount(0);
+      await expect(toggle).toHaveClass(/floating/);
+      const floating = await toggle.boundingBox();
+      expect(Math.abs(floating.x - inHeader.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(floating.y - inHeader.y)).toBeLessThanOrEqual(1);
       await expect(page.locator(".ai-toggle")).toHaveAttribute("aria-label", "Show AI panel");
       await expect(page.locator(".ai-toggle")).toHaveAttribute("aria-expanded", "false");
       await page.reload();
@@ -52,6 +59,31 @@ for (const c of TOOLS) {
       await page.click(".ai-toggle");
       await expect(page.locator(".ai-panel")).toBeVisible();
       await expect(page.locator(".ai-head .ai-toggle")).toHaveCount(1);
+    });
+
+    test("the panel is a card under the title bar, which spans the full width; the content ends before the panel", async ({ page }) => {
+      await load(page, PROVIDERS);
+      const box = (sel) => page.locator(sel).boundingBox();
+      const bar = await box(c.titlebar), panel = await box(".ai-panel"), content = await box(c.content);
+      expect(panel.y).toBeGreaterThanOrEqual(bar.y + bar.height);
+      expect(bar.x + bar.width).toBeGreaterThanOrEqual(panel.x + panel.width - 1);
+      expect(content.x + content.width).toBeLessThanOrEqual(panel.x);
+      expect(panel.x + panel.width).toBeLessThan(page.viewportSize().width); // the host's gutter stays to the right of the card
+      expect(await page.locator(".ai-panel").evaluate((e) => getComputedStyle(e).borderTopWidth)).toBe("1px");
+    });
+
+    test("Settings…, Send and the toggle are compact (28 px); Compress, Expand, Clear and Export .md are narrow (12 px text)", async ({ page }) => {
+      await load(page, PROVIDERS);
+      const panel = page.locator(".ai-panel");
+      for (const b of [panel.locator("button", { hasText: "Settings…" }), panel.locator("button", { hasText: /^Send$/ }), panel.locator(".ai-toggle")]) {
+        expect(Math.round((await b.boundingBox()).height)).toBe(28);
+      }
+      const narrow = panel.locator(".ai-scope .folds button");
+      await expect(narrow).toHaveText(["Compress", "Expand", "Clear", "Export .md"]);
+      for (const b of await narrow.all()) {
+        expect((await b.boundingBox()).height).toBeLessThan(28);
+        expect(await b.evaluate((e) => getComputedStyle(e).fontSize)).toBe("12px");
+      }
     });
 
     test("pressed is only while the mouse button is down, and there is no status look", async ({ page }) => {
