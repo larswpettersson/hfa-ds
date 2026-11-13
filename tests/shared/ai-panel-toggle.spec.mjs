@@ -86,6 +86,31 @@ for (const c of TOOLS) {
       }
     });
 
+    test("while hidden, the content card has a notch in its top-right corner around the toggle, in the colours of the card and the page", async ({ page }) => {
+      await load(page, PROVIDERS);
+      await expect(page.locator(".ai-notch")).toHaveCount(0);
+      await page.click(".ai-toggle");
+      const notch = page.locator(".ai-notch");
+      await expect(notch).toHaveCount(1);
+      const box = (sel) => page.locator(sel).boundingBox();
+      const n = await box(".ai-notch"), content = await box(c.content), toggle = await box(".ai-toggle");
+      expect(Math.abs(n.x + n.width - (content.x + content.width))).toBeLessThanOrEqual(1); // on the card's corner
+      expect(Math.abs(n.y - content.y)).toBeLessThanOrEqual(1);
+      expect(toggle.x).toBeGreaterThan(n.x + 8); // the toggle sits inside the 60 x 48 notch
+      expect(toggle.y + toggle.height).toBeLessThan(n.y + 48);
+      for (const dark of [false, true]) {
+        if (dark) await page.click(".theme-toggle");
+        const colours = await page.evaluate((sel) => {
+          const cs = (e) => getComputedStyle(e), opaque = (col) => col && col !== "transparent" && !/^rgba\(.*,\s*0\)$/.test(col);
+          let behind = document.querySelector(sel).parentElement; while (behind && !opaque(cs(behind).backgroundColor)) behind = behind.parentElement;
+          const svg = document.querySelector(".ai-notch svg");
+          return { page: cs(svg.querySelector(".page")).fill, behind: cs(behind).backgroundColor, line: cs(svg.querySelector(".line")).stroke, card: cs(svg.querySelector(".card")).fill };
+        }, c.content);
+        expect(colours.page).toBe(colours.behind);
+        expect(colours.line).not.toBe(colours.card);
+      }
+    });
+
     test("on a narrow screen the panel lies over the content as the same card, and the toggle keeps its place", async ({ page }) => {
       await page.setViewportSize({ width: 600, height: 900 });
       await load(page, PROVIDERS);
