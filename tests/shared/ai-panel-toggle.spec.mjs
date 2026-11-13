@@ -86,6 +86,23 @@ for (const c of TOOLS) {
       }
     });
 
+    test("on a narrow screen the panel lies over the content as the same card, and the toggle keeps its place", async ({ page }) => {
+      await page.setViewportSize({ width: 600, height: 900 });
+      await load(page, PROVIDERS);
+      const box = (sel) => page.locator(sel).boundingBox();
+      const bar = await box(c.titlebar), panel = await box(".ai-panel"), inHeader = await box(".ai-toggle");
+      expect(panel.y).toBeGreaterThanOrEqual(bar.y + bar.height);
+      expect(panel.x + panel.width).toBeLessThan(600); // the host's gutter stays
+      expect(panel.x).toBeGreaterThan(8);
+      expect(await page.locator(".ai-panel").evaluate((e) => getComputedStyle(e).borderTopRightRadius)).toBe("8px");
+      expect(await page.locator(c.content).evaluate((e) => getComputedStyle(e).marginRight)).toBe("0px"); // over the content, not beside it
+      await page.click(".ai-toggle");
+      await expect(page.locator(".ai-panel")).toBeHidden();
+      const floating = await box(".ai-toggle");
+      expect(Math.abs(floating.x - inHeader.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(floating.y - inHeader.y)).toBeLessThanOrEqual(1);
+    });
+
     test("pressed is only while the mouse button is down, and there is no status look", async ({ page }) => {
       await load(page, PROVIDERS);
       const toggle = page.locator(".ai-toggle");
