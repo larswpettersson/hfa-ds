@@ -74,27 +74,33 @@ test.describe("HTA: panel header rows and title bar", () => {
     await expect(row.locator(".ul")).toHaveCount(0);
   });
 
-  test("HTA-AI-1: titelraden går över appytan när panelen är öppen", async ({ page }) => {
+  test("HTA-AI-1: titelraden går över hela bredden och panelen ligger under den", async ({ page }) => {
     const header = await page.locator(".header").boundingBox();
     const panel = await page.locator(".ai-panel").boundingBox();
-    expect(header.x + header.width).toBeLessThanOrEqual(panel.x + 1);
-    await expect(page.locator(".header").getByRole("button", { name: "Theme" })).toBeVisible();
+    expect(header.x + header.width).toBeGreaterThanOrEqual(panel.x + panel.width - 1);
+    expect(panel.y).toBeGreaterThanOrEqual(header.y + header.height);
+    await expect(page.locator(".header").getByRole("switch", { name: "Dark theme" })).toBeVisible();
     await expect(page.locator(".header .ai-toggle")).toHaveCount(0);
+    await expect(page.locator(".ai-head .ai-toggle")).toHaveCount(1);
   });
 
-  test("HTA-AI-2: titelraden expanderar när panelen stängs", async ({ page }) => {
+  test("HTA-AI-2: när panelen stängs tar appytan hela bredden och panelväxlingen står kvar på samma plats", async ({ page }) => {
+    const before = await page.locator(".ai-head .ai-toggle").boundingBox();
     await page.locator(".ai-head .ai-toggle").click();
     await expect(page.locator(".ai-panel")).toBeHidden();
-    const header = await page.locator(".header").boundingBox();
-    expect(header.x + header.width).toBeGreaterThan(1500);
-    await expect(page.locator(".header .ai-toggle")).toHaveCount(1);
-    await expect(page.locator(".header").getByRole("button", { name: "Theme" })).toBeVisible();
+    const content = await page.locator(".main-content").boundingBox();
+    expect(content.x + content.width).toBeGreaterThan(1500);
+    const after = await page.locator(".ai-toggle").boundingBox();
+    expect(Math.abs(after.x - before.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(1);
+    await expect(page.locator(".header .ai-toggle")).toHaveCount(0);
+    await expect(page.locator(".header").getByRole("switch", { name: "Dark theme" })).toBeVisible();
   });
 
-  test("HTA-AI-3: panelväxlingen i titelraden öppnar panelen igen", async ({ page }) => {
+  test("HTA-AI-3: panelväxlingen öppnar panelen igen", async ({ page }) => {
     await page.locator(".ai-head .ai-toggle").click();
-    await page.locator(".header .ai-toggle").click();
+    await page.locator(".ai-toggle").click();
     await expect(page.locator(".ai-panel")).toBeVisible();
-    await expect(page.locator(".header .ai-toggle")).toHaveCount(0);
+    await expect(page.locator(".ai-head .ai-toggle")).toHaveCount(1);
   });
 });

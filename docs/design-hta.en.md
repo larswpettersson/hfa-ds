@@ -77,30 +77,33 @@ Feature: The TTA panel's header row
 
 ### HTA-AI: the analysis panel and the title bar
 
-**The analysis panel is in full height at the far right, and the title bar spans the app area. When the panel is closed the title bar spans the full width and the panel toggle is shown in it.**
+**The title bar spans the full width, and the analysis panel is a card under it, at the far right. The panel toggle is at the same place on the screen whether the panel is open (last in the panel's header) or closed (the top right of the app area). The theme switch is at the far right of the title bar (design principles 4.7 and 4.10).**
 
 ```gherkin
 Feature: The analysis panel and the title bar
   @HTA-AI-1
-  Scenario: The title bar spans the app area when the panel is open
+  Scenario: The title bar spans the full width and the panel is under it
     Given the analysis panel is open
-    Then the title bar spans the tree and the TTA table but not the analysis panel
-    And the title bar shows Theme but not Hide panel
+    Then the title bar spans the tree, the TTA table and the analysis panel
+    And the analysis panel starts under the title bar
+    And the title bar shows the theme switch but not the panel toggle
+    And the panel toggle is last in the panel's header
 
   @HTA-AI-2
-  Scenario: The title bar expands when the panel is closed
+  Scenario: The app area takes the full width when the panel is closed
     Given the analysis panel is open
     When the user clicks the panel toggle in the panel's header
     Then the analysis panel is hidden
-    And the title bar spans the full width
-    And the title bar shows Theme and Hide panel at the far right
+    And the tree and the TTA table take the full width
+    And the panel toggle stays at the same place on the screen, the top right of the app area
+    And the title bar shows the theme switch but not the panel toggle
 
   @HTA-AI-3
-  Scenario: Hide panel opens the panel again
+  Scenario: The panel toggle opens the panel again
     Given the analysis panel is closed
-    When the user clicks Hide panel in the title bar
+    When the user clicks the panel toggle at the top right of the app area
     Then the analysis panel is open
-    And Hide panel is gone from the title bar
+    And the panel toggle is last in the panel's header
 ```
 
 ### HTA-NAV: indication, selection and arrow navigation

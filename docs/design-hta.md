@@ -77,30 +77,33 @@ Feature: TTA-panelens rubrikrad
 
 ### HTA-AI: analyspanelen och titelraden
 
-**Analyspanelen går i full höjd längst till höger, och titelraden går över appytan. När panelen stängs går titelraden över hela bredden och panelväxlingen visas i den.**
+**Titelraden går över hela bredden, och analyspanelen är ett kort under den, längst till höger. Panelväxlingen sitter på samma plats på skärmen vare sig panelen är öppen (sist i panelens rubrik) eller stängd (i appytans övre högra hörn). Temaväxlaren står längst till höger i titelraden (designprinciper 4.7 och 4.10).**
 
 ```gherkin
 Feature: Analyspanelen och titelraden
   @HTA-AI-1
-  Scenario: Titelraden går över appytan när panelen är öppen
+  Scenario: Titelraden går över hela bredden och panelen ligger under den
     Given analyspanelen är öppen
-    Then titelraden går över trädet och TTA-tabellen men inte över analyspanelen
-    And titelraden visar Theme men inte Hide panel
+    Then titelraden går över trädet, TTA-tabellen och analyspanelen
+    And analyspanelen börjar under titelraden
+    And titelraden visar temaväxlaren men inte panelväxlingen
+    And panelväxlingen sitter sist i panelens rubrik
 
   @HTA-AI-2
-  Scenario: Titelraden expanderar när panelen stängs
+  Scenario: Appytan tar hela bredden när panelen stängs
     Given analyspanelen är öppen
     When användaren klickar panelväxlingen i panelens rubrik
     Then analyspanelen är dold
-    And titelraden går över hela bredden
-    And titelraden visar Theme och Hide panel längst till höger
+    And trädet och TTA-tabellen tar hela bredden
+    And panelväxlingen står kvar på samma plats på skärmen, i appytans övre högra hörn
+    And titelraden visar temaväxlaren men inte panelväxlingen
 
   @HTA-AI-3
-  Scenario: Hide panel öppnar panelen igen
+  Scenario: Panelväxlingen öppnar panelen igen
     Given analyspanelen är stängd
-    When användaren klickar Hide panel i titelraden
+    When användaren klickar panelväxlingen i appytans övre högra hörn
     Then analyspanelen är öppen
-    And Hide panel är borta ur titelraden
+    And panelväxlingen sitter sist i panelens rubrik
 ```
 
 ### HTA-NAV: indikering, markering och pilnavigering
