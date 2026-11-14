@@ -1,6 +1,6 @@
 # Design: Bowtie
 
-**Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda, och sedan 2026-11-14 också barriärbredden och ångra/gör om; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
+**Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda, och sedan 2026-11-14 också barriärbredden och ångra/gör om; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Kraven på projekt, barriärbibliotek och länkar mellan diagram (avsnitt 7) är dokumenterade 2026-11-14 och varken ritade eller byggda. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
 
 De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md), [4.14 ångra och gör om](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
 
@@ -323,3 +323,467 @@ Feature: Ångra och gör om
 2. Granska grafiken.
 3. Skriv testerna i `tests/bowtie/` och bygg i Bowtie, med legenden och rubrikraden först.
 4. Lägg till det gemensamma testet som kontrollerar att varje `@BOWTIE-…`-id här har ett test. Scenarier med `@later` hoppas över.
+
+## 7. Projekt, barriärbibliotek och länkar mellan diagram
+
+**Status:** krav dokumenterade 2026-11-14. Inget är ritat eller byggt. Nästa steg är design i Penpot ([arbetssatt.md](arbetssatt.md)); ingen kod skrivs utifrån det här avsnittet. Alla scenarier har `@later`.
+
+De generella reglerna står i designprinciperna, [kapitel 6](designprinciper.md): projektläge (6.1), stabila id:n (6.2), länkformatet (6.3), navigering (6.4), filformatet (6.5) och AI-panelen (6.6). Här står det som är eget för Bowtie.
+
+**Ordval.** Bowtie har redan ett *länkläge*, där en barriär kopplas till orsaker eller konsekvenser i samma diagram. Länken mellan diagram kallas här **kedjelänk**, så att de två inte blandas ihop.
+
+### 7.1 Beslut
+
+1. **Projekt.** Ett Bowtie-projekt är en mapp med ett diagram per JSON-fil och, om det finns delade barriärer, filen `bibliotek.json` (6.1). Enkelfilsläget finns kvar.
+2. **Stabila id:n.** Diagrammet, varje orsak, varje konsekvens och varje barriär har ett `uid` (6.2). De visade id:na (*C1*, *P1*, *R1*, *K1*) finns kvar i `id` och fungerar som i dag.
+3. **Barriärbibliotek.** `bibliotek.json` innehåller projektets delade barriärer. En barriär i ett diagram med `"ref": "<uid i biblioteket>"` hämtar beskrivning, styrka och status därifrån. Plats, visat id och vilka orsaker eller konsekvenser den skyddar är alltid diagrammets egna. En barriär utan `ref` fungerar som i dag.
+4. **Kedjning.** En konsekvens kan ha `links` som pekar på orsaker i andra diagram (6.3). Bara utgående länkar sparas. En konsekvens med utgående kedjelänk och en orsak med inkommande kedjelänk visar en länkikon. Saknas målet visas länken som bruten.
+5. **Navigering.** Ett klick på länkikonen öppnar måldiagrammet med målelementet markerat. Har elementet flera länkar visas en lista att välja ur. Brödsmulestigen och historiken följer 6.4.
+6. **Ändra en delad barriär.** När texten i en barriär med `ref` ändras varnar verktyget och visar vilka diagram som använder den. Diagrammen i listan går att klicka på, och användaren kommer tillbaka till samma fråga med sin ändrade text kvar. Valen är **ändra överallt** och **gör till ny, egen barriär**. Det andra valet är primary, eftersom det bara ändrar det här diagrammet (4.5).
+7. **Förslag vid ny barriär.** Medan användaren skriver beskrivningen visas diskreta förslag på liknande barriärer, som autokomplettering. Ett valt förslag ger en `ref`; annars blir det en ny, egen barriär. Förslagen får aldrig blockera skrivandet: de tar inte fokus, flyttar inte texten och väljs aldrig av Enter ensam.
+8. **Filformatet** följer 6.5. Fältordningen står i 7.2.
+9. **Analyspanelen** får diagrammet som indata som i dag. Omfånget (aktuellt diagram, aktuellt och direkt länkade, hela projektet), verktyget `get_diagram` och commit-meddelandet följer 6.6. Av biblioteket skickas bara de barriärer som diagrammen i omfånget använder.
+
+### 7.2 Filformat
+
+Nya fält är markerade med ←. Allt annat är som i dag.
+
+Ett diagram, till exempel `solkurva.json` (förkortat):
+
+```json
+{
+  "version": 1,
+  "uid": "5c1d2a70-3e4b-4f6a-8b9c-0d1e2f3a4b5c",              ← nytt
+  "meta": { "…": "…" },
+  "hazard": { "id": "HZ", "label": "…" },
+  "topEvent": { "id": "TE", "label": "…" },
+  "left": {
+    "causes": [
+      { "id": "C1", "uid": "9a8b7c6d-…", "description": "…", "row": 1 }          ← uid
+    ],
+    "barriers": [
+      { "barrierId": "p1", "id": "P1", "uid": "1f2e3d4c-…",                      ← uid
+        "ref": "7d6c5b4a-…",                                                     ← valfritt
+        "col": 2, "protects": ["id-C1"] }
+    ]
+  },
+  "right": {
+    "consequences": [
+      { "id": "K1", "uid": "2b3c4d5e-…", "description": "Urspårning", "row": 1,  ← uid
+        "links": [                                                               ← valfritt
+          { "diagram": "kollision.json", "element": "0b6f4c1e-…" }
+        ] }
+    ]
+  }
+}
+```
+
+`bibliotek.json`:
+
+```json
+{
+  "version": 1,
+  "barriers": [
+    {
+      "uid": "7d6c5b4a-…",
+      "description": "Hastighetsövervakning",
+      "strength": "High",
+      "status": "Implemented"
+    }
+  ]
+}
+```
+
+- **Fältordning.** `uid` står direkt efter `id` (i diagrammet direkt efter `version`), `ref` direkt efter `uid`, och `links` sist i konsekvensen. Övriga fält behåller dagens ordning.
+- **En barriär med `ref`** sparar inte `description`, `strength` och `status` i diagrammet. De finns bara i biblioteket, så att en ändring där ger en diff i en fil.
+- **Nya barriärer i biblioteket läggs sist**, och listan sorteras aldrig om.
+- **En `ref` som inte finns i biblioteket** är en bruten referens: barriären visas med sitt visade id och en markering för bruten referens, och filen sparas oförändrad.
+
+### 7.3 Krav i Gherkin
+
+Samma form som i avsnitt 3. Exempelprojektet i scenarierna är mappen *Bana* med `solkurva.json` (konsekvensen *K1 Urspårning*), `kollision.json` (orsaken *C1 Urspårat tåg*, konsekvensen *K2 Brand*), `brand.json` (orsaken *C1 Kollision*) och `bibliotek.json` med barriären *Hastighetsövervakning*, som används i `solkurva.json` och `kollision.json`. *K1* i Solkurva är länkad till *C1* i Kollision, och *K2* i Kollision till *C1* i Brand.
+
+#### BOWTIE-PROJ: projektläge
+
+**Bowtie kan öppna en hel projektmapp. I Edge och Chrome sparas ändrade filer direkt i mappen; i Safari och Firefox laddas de ned. Enkelfilsläget fungerar som förut.**
+
+```gherkin
+Feature: Projektläge
+  @BOWTIE-PROJ-1 @later
+  Scenario: En mapp öppnas som projekt
+    When användaren öppnar mappen "Bana"
+    Then projektet har diagrammen Solkurva, Kollision och Brand
+    And ett av dem visas, och de andra går att välja i en lista
+
+  @BOWTIE-PROJ-2 @later
+  Scenario: Save skriver bara ändrade filer i mappen (Edge och Chrome)
+    Given projektet "Bana" är öppet med File System Access API
+    When användaren ändrar en orsak i Solkurva och klickar Save
+    Then "solkurva.json" i mappen har ändringen
+    And "kollision.json", "brand.json" och "bibliotek.json" är orörda
+
+  @BOWTIE-PROJ-3 @later
+  Scenario: Utan File System Access API sparas ändrade filer som nedladdning
+    Given webbläsaren saknar showDirectoryPicker
+    When användaren öppnar mappen "Bana" med mappvalet, ändrar Solkurva och klickar Save
+    Then "solkurva.json" laddas ned
+    And hela projektet går att ladda ned som en zip-fil
+
+  @BOWTIE-PROJ-4 @later
+  Scenario: Enkelfilsläget fungerar som förut
+    When användaren öppnar "solkurva.json" med Open…
+    Then diagrammet visas och går att ändra och spara som i dag
+    And kedjelänken på "K1" visas som bruten
+
+  @BOWTIE-PROJ-5 @later
+  Scenario: En trasig fil stoppar inte projektet
+    Given mappen innehåller en fil som inte är giltig JSON
+    When användaren öppnar mappen
+    Then de andra diagrammen öppnas
+    And ett meddelande säger vilken fil som inte gick att läsa
+
+  @BOWTIE-PROJ-6 @later
+  Scenario: Byte av diagram behåller osparade ändringar
+    Given användaren har ändrat Solkurva utan att spara
+    When användaren öppnar Kollision och går tillbaka till Solkurva
+    Then ändringen finns kvar, och ingen fråga om att spara har visats
+    And Solkurva visas som ändrad
+```
+
+#### BOWTIE-UID: stabila id:n
+
+**Diagrammet och varje orsak, konsekvens och barriär har ett uid som aldrig ändras. Gamla filer får uid vid inläsning.**
+
+```gherkin
+Feature: Stabila id:n
+  @BOWTIE-UID-1 @later
+  Scenario: En gammal fil får uid vid inläsning
+    Given en fil utan uid
+    When filen öppnas
+    Then diagrammet och varje orsak, konsekvens och barriär har ett uid som är ett UUID
+    And de visade id:na (C1, P1, R1, K1) är oförändrade
+
+  @BOWTIE-UID-2 @later
+  Scenario: uid följer med när elementet ändras
+    Given orsaken "C2" har ett uid
+    When användaren ändrar texten, flyttar orsaken en rad och sparar
+    Then orsaken har samma uid i filen
+
+  @BOWTIE-UID-3 @later
+  Scenario: En kopia får ett nytt uid
+    When användaren kopierar och klistrar in en barriär
+    Then kopian har ett annat uid än originalet
+```
+
+#### BOWTIE-LIB: delat barriärbibliotek
+
+**En barriär med ref hämtar beskrivning, styrka och status från bibliotek.json. En barriär utan ref fungerar som i dag.**
+
+```gherkin
+Feature: Barriärbiblioteket
+  Background:
+    Given projektet "Bana" är öppet
+
+  @BOWTIE-LIB-1 @later
+  Scenario: En barriär med ref visar bibliotekets text och egenskaper
+    Then barriären med ref i Solkurva visar "Hastighetsövervakning" med bibliotekets styrka och status
+    And den syns som delad
+
+  @BOWTIE-LIB-2 @later
+  Scenario: En barriär utan ref fungerar som i dag
+    When användaren ändrar texten i en barriär utan ref
+    Then ändringen sparas i diagrammets fil och ingen varning visas
+
+  @BOWTIE-LIB-3 @later
+  Scenario: En ref som saknas i biblioteket kraschar inte
+    Given en barriär har en ref som inte finns i "bibliotek.json"
+    When diagrammet visas
+    Then barriären visas med sitt visade id och en markering för bruten referens
+    And resten av diagrammet fungerar
+```
+
+#### BOWTIE-CHAIN: kedjelänkar
+
+**En konsekvens kan länka till en orsak i ett annat diagram. Bara utgående länkar sparas; inkommande räknas fram. Länkade element visar en länkikon, och en länk utan mål visas som bruten.**
+
+```gherkin
+Feature: Kedjelänkar
+  Background:
+    Given projektet "Bana" är öppet
+
+  @BOWTIE-CHAIN-1 @later
+  Scenario: Länkikon på konsekvensen och på orsaken
+    Then "K1" i Solkurva visar en länkikon
+    And "C1" i Kollision visar en länkikon
+
+  @BOWTIE-CHAIN-2 @later
+  Scenario: Bara utgående länkar sparas
+    When projektet sparas
+    Then "K1" i "solkurva.json" har länken i links
+    And "C1" i "kollision.json" har inget fält för inkommande länkar
+
+  @BOWTIE-CHAIN-3 @later
+  Scenario: En länk utan mål visas som bruten
+    Given "kollision.json" saknas i mappen
+    When projektet öppnas
+    Then "K1" i Solkurva visar länken som bruten, med symbol och inte bara färg
+    And ett klick på den säger att målet saknas och byter inte diagram
+    And länken står kvar oförändrad i filen när projektet sparas
+
+  @BOWTIE-CHAIN-4 @later
+  Scenario: Indexet följer ändringarna
+    When användaren tar bort länken på "K1" i Solkurva
+    Then "C1" i Kollision visar ingen länkikon längre
+
+  @BOWTIE-CHAIN-5 @later
+  Scenario: Användaren skapar en kedjelänk
+    Given konsekvensen "K2" i Solkurva är markerad
+    When användaren väljer orsaken "C1" i Brand som mål
+    Then "K2" har en utgående länk till "C1" i Brand
+    And ändringen är ett steg som går att ångra
+```
+
+#### BOWTIE-CRUMB: navigering och brödsmulestig
+
+**Ett klick på en länk öppnar måldiagrammet med målet markerat. Brödsmulestigen visar vägen, varje steg är klickbart, och bakåtknappen går ett steg tillbaka till exakt samma läge.**
+
+```gherkin
+Feature: Navigering mellan diagram
+  Background:
+    Given projektet "Bana" är öppet med Solkurva
+
+  @BOWTIE-CRUMB-1 @later
+  Scenario: Ett klick på länken öppnar målet
+    When användaren klickar på länkikonen på "K1"
+    Then Kollision visas med orsaken "C1" markerad och synlig
+    And brödsmulestigen visar "Solkurva › Kollision"
+
+  @BOWTIE-CRUMB-2 @later
+  Scenario: Stigen växer och varje steg är klickbart
+    Given användaren har gått Solkurva › Kollision › Brand
+    When användaren klickar på "Solkurva" i stigen
+    Then Solkurva visas med "K1" markerad
+
+  @BOWTIE-CRUMB-3 @later
+  Scenario: Tillbaka landar exakt där man var
+    Given "K1" är markerad och diagrammet är rullat åt höger
+    When användaren följer länken och sedan går tillbaka
+    Then Solkurva visas med "K1" markerad och samma rullningsläge
+
+  @BOWTIE-CRUMB-4 @later
+  Scenario: Webbläsarens bakåt- och framåtknapp följer stigen
+    Given användaren har gått Solkurva › Kollision › Brand
+    When användaren trycker på webbläsarens bakåtknapp
+    Then Kollision visas med "K2" markerad
+    When användaren trycker på framåtknappen
+    Then Brand visas med "C1" markerad
+
+  @BOWTIE-CRUMB-5 @later
+  Scenario: Länken följs med tangentbordet
+    Given indikeringen står på "K1"
+    When användaren aktiverar länken med tangentbordet
+    Then Kollision visas med "C1" markerad
+```
+
+#### BOWTIE-SHARED: ändra en delad barriär
+
+**När texten i en delad barriär ändras varnar Bowtie, visar vilka diagram som använder den och låter användaren välja mellan att ändra överallt och att göra en ny, egen barriär.**
+
+```gherkin
+Feature: Ändra en delad barriär
+  Background:
+    Given projektet "Bana" är öppet med Solkurva
+    And användaren har ändrat texten i barriären "Hastighetsövervakning" till "ATC-övervakning"
+
+  @BOWTIE-SHARED-1 @later
+  Scenario: Varningen visar var barriären används
+    Then en dialog säger att barriären är delad
+    And den listar Solkurva och Kollision
+    And valen är att ändra överallt, att göra en ny egen barriär och att avbryta
+
+  @BOWTIE-SHARED-2 @later
+  Scenario: Ändra överallt
+    When användaren väljer att ändra överallt
+    Then barriären heter "ATC-övervakning" i Solkurva och i Kollision
+    And bara "bibliotek.json" är ändrad
+
+  @BOWTIE-SHARED-3 @later
+  Scenario: Gör till ny, egen barriär
+    When användaren väljer att göra en ny egen barriär
+    Then barriären i Solkurva heter "ATC-övervakning" och har ingen ref
+    And barriären i Kollision heter fortfarande "Hastighetsövervakning"
+    And "bibliotek.json" är oförändrad
+
+  @BOWTIE-SHARED-4 @later
+  Scenario: Titta i ett diagram och komma tillbaka
+    When användaren klickar på Kollision i dialogens lista
+    Then Kollision visas med barriären markerad
+    When användaren går tillbaka
+    Then dialogen visas igen med texten "ATC-övervakning" kvar
+
+  @BOWTIE-SHARED-5 @later
+  Scenario: Enter väljer det säkra valet
+    When användaren trycker Enter i dialogen
+    Then barriären blir en ny egen barriär
+    When användaren i stället trycker Esc
+    Then texten är "Hastighetsövervakning" igen
+```
+
+#### BOWTIE-SUGGEST: förslag vid ny barriär
+
+**Medan användaren skriver en ny barriär visas förslag på liknande barriärer. Ett valt förslag blir en ref. Förslagen blockerar aldrig skrivandet.**
+
+```gherkin
+Feature: Förslag vid ny barriär
+  Background:
+    Given projektet "Bana" är öppet med Brand
+    And användaren har lagt till en barriär och skriver i beskrivningen
+
+  @BOWTIE-SUGGEST-1 @later
+  Scenario: Liknande barriärer föreslås
+    When användaren skriver "hast"
+    Then "Hastighetsövervakning" visas som förslag under fältet
+
+  @BOWTIE-SUGGEST-2 @later
+  Scenario: Ett valt förslag blir en ref
+    When användaren väljer förslaget med ↓ och Enter, eller med ett klick
+    Then barriären har en ref till "Hastighetsövervakning" i biblioteket
+
+  @BOWTIE-SUGGEST-3 @later
+  Scenario: Enter ensam sparar det skrivna
+    When användaren skriver "Hastighetsskylt" och trycker Enter utan att välja ett förslag
+    Then barriären heter "Hastighetsskylt" och har ingen ref
+
+  @BOWTIE-SUGGEST-4 @later
+  Scenario: Förslagen stör inte skrivandet
+    When förslagen visas eller byts medan användaren skriver
+    Then fokus och textmarkören är kvar i fältet
+    And varje tangenttryckning hamnar i fältet
+    And fältet och diagrammet flyttar sig inte
+
+  @BOWTIE-SUGGEST-5 @later
+  Scenario: Esc stänger förslagen men inte redigeringen
+    When användaren trycker Esc medan förslagen visas
+    Then förslagen försvinner och texten är kvar i fältet
+```
+
+#### BOWTIE-FILE: filformatet
+
+**Filerna är bakåtkompatibla, skrivs med stabil fältordning och innehåller varken författare eller tidsstämplar.**
+
+```gherkin
+Feature: Filformatet
+  @BOWTIE-FILE-1 @later
+  Scenario: En fil utan de nya fälten öppnas som i dag
+    When en fil utan uid, ref och links öppnas
+    Then diagrammet visas utan fel eller varning
+
+  @BOWTIE-FILE-2 @later
+  Scenario: Att spara utan ändring ger samma fil
+    Given en fil som är sparad med den här versionen
+    When filen öppnas och sparas utan ändring
+    Then den sparade filen är identisk med den öppnade, byte för byte
+
+  @BOWTIE-FILE-3 @later
+  Scenario: En ändring ger en liten diff
+    When användaren ändrar texten i en orsak och sparar
+    Then bara raden med den texten skiljer sig i filen
+
+  @BOWTIE-FILE-4 @later
+  Scenario: Varken författare eller tidsstämplar sparas
+    When projektet sparas
+    Then ingen fil innehåller ett fält för författare, datum eller klockslag
+
+  @BOWTIE-FILE-5 @later
+  Scenario: Tomma valfria fält utelämnas
+    Given en konsekvens utan kedjelänkar och en barriär utan ref
+    When diagrammet sparas
+    Then konsekvensen har inget fält links och barriären inget fält ref
+```
+
+#### BOWTIE-AICTX: analyspanelen i ett projekt
+
+**Användaren väljer hur mycket av projektet som skickas med frågan. En modell med tool use hämtar länkade diagram själv med get_diagram. På begäran ger panelen ett enradigt commit-meddelande.**
+
+```gherkin
+Feature: Analyspanelen i ett projekt
+  Background:
+    Given projektet "Bana" är öppet med Solkurva
+
+  @BOWTIE-AICTX-1 @later
+  Scenario: Bara aktuellt diagram
+    Given omfånget är aktuellt diagram
+    When användaren skickar en fråga
+    Then frågan innehåller Solkurva och de biblioteksbarriärer som Solkurva använder
+    And inget annat diagram
+
+  @BOWTIE-AICTX-2 @later
+  Scenario: Aktuellt diagram och direkt länkade
+    Given omfånget är aktuellt diagram och direkt länkade
+    When användaren skickar en fråga
+    Then frågan innehåller Solkurva och Kollision, men inte Brand
+
+  @BOWTIE-AICTX-3 @later
+  Scenario: Hela projektet
+    Given omfånget är hela projektet
+    When användaren skickar en fråga
+    Then frågan innehåller Solkurva, Kollision och Brand
+    And av biblioteket bara de barriärer som används
+
+  @BOWTIE-AICTX-4 @later
+  Scenario: Modellen hämtar ett länkat diagram
+    Given leverantören har tool use
+    When modellen anropar get_diagram med "kollision.json"
+    Then den får Kollision som JSON ur minnet, med de biblioteksbarriärer som används där
+    And inget nätverksanrop görs för att hämta diagrammet
+
+  @BOWTIE-AICTX-5 @later
+  Scenario: Ett diagram som saknas ger ett felsvar
+    When modellen anropar get_diagram med "saknas.json"
+    Then den får ett felsvar som säger att diagrammet inte finns
+    And samtalet fortsätter
+
+  @BOWTIE-AICTX-6 @later
+  Scenario: Commit-meddelande på begäran
+    Given användaren har lagt till en barriär i Solkurva och ändrat en delad barriär
+    When användaren ber om ett commit-meddelande
+    Then panelen svarar med en rad som sammanfattar ändringarna och går att kopiera
+```
+
+### 7.4 Det som inte ingår
+
+- Ingen översiktsvy med flera diagram. Ett diagram i taget, med länkar emellan.
+- Ingen inbyggd versionshantering; verktyget kör aldrig git.
+- Länkar från HTA och STPA till Bowtie-element. Formatet är förberett (6.3), men inget byggs nu.
+- Länkar från andra element än konsekvenser, och till andra element än orsaker.
+
+### 7.5 Öppna punkter att avgöra i designen
+
+Var och en har ett förslag. Inget av dem är beslutat.
+
+1. **Fältnamnet `uid`.** Uppdraget säger "id", men `id` är redan det visade id:t (*C1*). Förslag: nytt fält `uid`, och `id` orört.
+2. **När sparas tilldelade uid?** En gammal fil som får uid vid inläsning ger en diff i hela filen en gång. Förslag: i projektläge räknas filen som ändrad och skrivs vid nästa Save; i enkelfilsläge räknas tilldelningen inte som en osparad ändring, så att Open… inte frågar i onödan.
+3. **Kopierade filer.** En diagramfil som kopieras i mappen får samma uid som originalet. Förslag: verktyget upptäcker dubbletter vid inläsning, säger vilka filer det gäller och ger kopian nya uid först när användaren godkänner det.
+4. **Omdöpta filer.** En länk pekar på ett filnamn. Förslag: saknas filen men elementets uid finns i ett annat diagram i projektet, räknas länken som hel och filnamnet rättas vid nästa Save.
+5. **Diagrammets namn** i brödsmulestigen och i listor. Förslag: filnamnet utan `.json`. Alternativet är topphändelsens text, som ofta är för lång.
+6. **Vad hämtas från biblioteket?** Uppdraget säger text och egenskaper. Förslag: beskrivning, styrka och status. Frågan är om status (till exempel *Implemented*) hellre ska vara diagrammets egen, eftersom samma barriär kan vara införd på en plats och planerad på en annan.
+7. **Varnar ändrad styrka eller status** på en delad barriär på samma sätt som ändrad text? Förslag: ja, samma dialog.
+8. **Hur hamnar en barriär i biblioteket?** Förslag: förslagen (BOWTIE-SUGGEST) hämtas både från biblioteket och från egna barriärer i projektets andra diagram. Väljs en egen barriär flyttas den till biblioteket, och båda diagrammen får en `ref`. Det ändrar då en fil till, vilket ska synas.
+9. **Hur skapas en kedjelänk?** Uppdraget anger inte det. Förslag: ett kommando på den markerade konsekvensen som öppnar en dialog med projektets diagram och deras orsaker. Namn, tangent och utseende avgörs i Penpot.
+10. **Byta diagram utan länk.** Projektets diagram behöver gå att öppna även när ingen länk leder dit. Förslag: en lista i titelraden. Det är en lista med namn, inte en översiktsvy.
+11. **Flera inkommande länkar** på en orsak. Förslag: ikonen öppnar en lista med källorna, som dialogen i punkt 6 i 7.1.
+12. **Ångra för biblioteket.** *Ändra överallt* ändrar `bibliotek.json`, inte diagrammet. Förslag: det är ett steg i det aktuella diagrammets historik, och att ångra återställer biblioteket.
+13. **Brödsmulestigens plats.** Förslag: i panelens rubrikrad eller direkt under titelraden, och bara synlig i projektläge. Avgörs i Penpot.
+14. **Länkikonen** behöver en komponent i HFA DS med tillstånden hel och bruten, och en markering för delad barriär. Skillnaden ska synas utan färg (penpot-color-a11y).
+15. **Knapparnas namn** (engelska i gränssnittet). Förslag: *Open folder…*, *Change everywhere*, *Make separate barrier*, *Commit message*.
+16. **Zip utan bibliotek.** Verktyget ska vara en fil utan beroenden. Förslag: en egen, okomprimerad zip-skrivare, eller bara nedladdning fil för fil om det räcker.
+17. **Att prova i webbläsarna:** att `showDirectoryPicker` och `history.pushState` fungerar när verktyget öppnas från `file://` i Edge, och mappval och historik i Safari. Arbetsplatsens policy kan stänga av mappåtkomst i Edge; då gäller nedladdningsvägen (6.1).
+18. **Temat i filen.** `meta.theme` sparas i dag i diagramfilen, så ett temabyte ger en diff. Temat är en inställning och inte en del av analysen (4.14). Förslag: sluta spara det i filen.
+19. **Commit-meddelandets jämförelsepunkt och språk.** Verktyget ser inte git, och användaren sparar oftast före commit. Förslag: ändringarna räknas från att projektet öppnades eller från förra commit-meddelandet, och meddelandet skrivs på engelska i imperativ, högst 72 tecken.
+20. **`get_diagram` och leverantörerna.** Panelen behöver översätta verktygsbeskrivningen till Claudes och Geminis format och till OpenAI-formatet för lokal modell och Hugging Face, och veta om den valda modellen har tool use. Förslag: en inställning per leverantör, med omfångsvalet som reserv.
+
+### 7.6 Nästa steg
+
+1. Granska kraven i 7.1–7.5 och [kapitel 6](designprinciper.md) i designprinciperna, och avgör de öppna punkterna.
+2. Rita i Penpot: länkikonen (hel och bruten) och markeringen för delad barriär i HFA DS, brödsmulestigen, diagramlistan, dialogen för delad barriär, förslagslistan och omfångsvalet i analyspanelen.
+3. Därefter tester och bygge enligt [arbetssatt.md](arbetssatt.md) (2.1), ett krav i taget, med `@later` borttaget efter hand.

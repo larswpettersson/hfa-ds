@@ -430,6 +430,7 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 - Namnen ersätter **Import** och **Export** i HTA och Bowtie.
 - Export till *andra* format än analysfilen heter fortfarande **Export**, till exempel **Export CSV** i HTA och **Export .md** för AI-samtalet.
 - Kortkommandona Ctrl/⌘+O och Ctrl/⌘+S följer samma namn, där de införs.
+- Att öppna en hel mapp som projekt beskrivs i 6.1. Open… och Save för en enskild fil finns kvar.
 
 **Nuläge (2026-11-04):**
 
@@ -686,3 +687,98 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).
 
 **Nuläge (2026-11-08):** inte byggt, och *Add Above* skjuts upp. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.
+
+## 6. Projekt och länkar mellan analyser
+
+Kraven är dokumenterade 2026-11-14. Inget är ritat eller byggt. Enligt [arbetssatt.md](arbetssatt.md) ritas de i Penpot innan någon kod skrivs. Bowtie är första verktyget ([design-bowtie.md](design-bowtie.md), avsnitt 7). Det här kapitlet innehåller det som ska vara lika i alla verktyg, så att HTA och STPA senare kan länka till Bowtie-element utan att formatet ändras. Ett exempel på det: en kolumn med barriärer i HTA som pekar på barriärer i Bowtie.
+
+### 6.1 Projektläge: en mapp i stället för en fil
+
+Ett **projekt** är en mapp med analysfiler (JSON). Verktyget läser hela mappen och har alla analyser i minnet, men visar en analys i taget.
+
+- **Edge och Chrome** använder File System Access API (`showDirectoryPicker`). Verktyget läser mappen och sparar ändrade filer direkt i den.
+- **Safari och Firefox** läser mappen med `<input type="file" webkitdirectory>`. Ändrade filer sparas genom nedladdning, en fil i taget eller hela projektet som en zip-fil.
+- **Vägen väljs efter vad webbläsaren kan**, inte efter dess namn. Nekar webbläsaren eller arbetsplatsens policy mappåtkomst används nedladdningsvägen.
+- **Enkelfilsläget finns kvar.** *Open…* och *Save* (4.4) fungerar som i dag, och en fil från ett projekt går att öppna ensam. Länkar som pekar utanför filen visas då som brutna (6.3).
+- **Bara ändrade filer skrivs.** En fil som användaren inte har ändrat skrivs inte om, så att den inte ger en diff i git.
+- **Byte av analys inom projektet frågar inte om osparade ändringar.** Alla analyser finns kvar i minnet med sina ändringar. Verktyget visar vilka filer som är ändrade, och frågan ställs först när projektet stängs eller ersätts.
+- **Filer som verktyget inte känner igen lämnas orörda.** En fil som inte går att läsa hindrar inte att resten av projektet öppnas; verktyget säger vilken fil det gäller.
+- Principen *En fil, inget byggsteg* (1.2, punkt 7) gäller verktyget och är oförändrad: verktyget är fortfarande en HTML-fil utan nätverk. Det är analysen som kan bestå av flera filer.
+
+### 6.2 Stabila id:n
+
+- **Varje analys och varje element som går att länka till har ett globalt unikt id**, ett UUID (version 4) i fältet `uid`.
+- **`uid` är inte det id som visas.** Det visade id:t (till exempel *C1* eller *P2*) finns kvar i `id`, visas i diagrammet och får ändras eller numreras om. `uid` visas aldrig och ändras aldrig, inte heller när elementet flyttas, byter text eller byter visat id.
+- **Gamla filer utan `uid` får dem vid inläsning.** De skrivs till filen nästa gång den sparas.
+- **En kopia är ett nytt element.** Kopiera, duplicera och klistra in ger nya `uid`.
+
+### 6.3 Länkformatet
+
+En länk är en referens från ett element till ett element i en annan analys:
+
+```json
+{ "diagram": "kollision.json", "element": "0b6f4c1e-8a57-4f0e-9a39-2f1d7c5e4b10" }
+```
+
+- **`diagram`** är målfilens namn, relativt projektmappen. **`element`** är målelementets `uid`.
+- **Samma format i alla verktyg**, oavsett vilket verktyg som äger källan och målet.
+- **En länk är bara en referens.** Inget kopieras och inget synkas. Varje verktyg äger sina egna data, och en länk ändrar aldrig målet.
+- **Bara utgående länkar sparas**, i fältet `links` på källelementet. Inkommande länkar räknas fram när projektet läses in och finns bara som ett index i minnet. Indexet räknas om när en länk eller ett element ändras.
+- **En länk vars mål saknas är bruten.** Den visas som bruten, sparas oförändrad och får aldrig stoppa inläsning, visning eller sparande. Den blir hel igen när målet finns.
+- **Länkade element visar en länkikon.** Hel och bruten länk skiljs åt med form eller symbol, inte bara med färg (1.3, kapitel 3).
+
+### 6.4 Navigera mellan analyser
+
+- **Ett klick på en länk öppnar målanalysen med målelementet markerat** och synligt.
+- **En brödsmulestig överst visar vägen**, till exempel *Solkurva › Kollision › Brand*. Varje steg går att klicka på.
+- **Den som går tillbaka hamnar exakt där den var**: samma analys, samma markering och samma rullningsläge.
+- **Stigen är kopplad till webbläsarens historik.** Bakåt- och framåtknappen går ett steg i stigen. Det som gäller för ångra är oförändrat: att navigera är inget steg att ångra (4.14).
+- **Varje analys har sin egen ångra-historik**, som finns kvar så länge projektet är öppet.
+- **Tangentbordet räcker.** Länkikonen nås och aktiveras utan mus (kapitel 5), och stegen i stigen är vanliga länkar eller knappar.
+
+### 6.5 Filformatet
+
+- **Bakåtkompatibelt.** Alla nya fält är valfria. En fil utan dem öppnas som i dag, och en ny fil utan länkar och referenser går att öppna i en äldre version av verktyget.
+- **Små diffar.** Fälten skrivs alltid i samma ordning, med två mellanslags indrag och en avslutande radbrytning. Listor skrivs i modellens ordning och sorteras inte om. Ett valfritt fält utan innehåll utelämnas (ingen tom `links`).
+- **Ingen författare och inga tidsstämplar** sparas i filerna. Det hör till git.
+- **Ingen versionshantering i verktyget.** Git hanteras utanför.
+
+### 6.6 AI-panelen i ett projekt
+
+Panelen är fortfarande frikopplad från verktyget ([arkitektur.md](arkitektur.md), avsnitt 10): den får modellen som indata och läser inga filer själv.
+
+- **Omfånget går att välja.** Användaren väljer hur mycket som skickas med frågan: bara aktuell analys, aktuell analys och de direkt länkade (in- och utgående), eller hela projektet. Delade data som ett bibliotek följer med, men bara de poster som används i det som skickas.
+- **Huvudvägen är ett verktyg som modellen anropar.** Panelen ger modellen verktyget `get_diagram` (*hämta diagram*), beskrivet med JSON Schema i OpenAI:s format för tool calling. Modellen får aktuell analys och hämtar själv länkade analyser när den behöver dem. Det gäller modeller med tool use (Claude, Gemini, Gemma 4). Omfångsvalet är reserv för modeller utan det stödet.
+
+  ```json
+  {
+    "type": "function",
+    "function": {
+      "name": "get_diagram",
+      "description": "Returns one diagram of the open project as JSON, with the library entries it uses. Use it to follow a link.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "diagram": {
+            "type": "string",
+            "description": "File name of the diagram, as in the \"diagram\" field of a link."
+          }
+        },
+        "required": ["diagram"],
+        "additionalProperties": false
+      }
+    }
+  }
+  ```
+
+- **Verktyget läser bara ur minnet.** Det gör inga nätverksanrop och läser inget utanför det öppna projektet. Saknas analysen får modellen ett felsvar som säger det, och samtalet fortsätter.
+- **Verktyget som äger modellen levererar svaret.** Panelen får verktygsbeskrivningen och en funktion som svarar, på samma sätt som `getContext`, och översätter beskrivningen till varje leverantörs format.
+- **Commit-meddelande på begäran.** Panelen kan ge en enradig sammanfattning av ändringarna som ett git-commit-meddelande, som användaren kopierar. Verktyget kör aldrig git.
+
+### 6.7 Det som inte ingår
+
+- Ingen översiktsvy med flera analyser samtidigt. En analys i taget, med länkar emellan.
+- Ingen inbyggd versionshantering.
+- Ingen synkning av data mellan verktyg.
+
+**Nuläge (2026-11-14):** inget är ritat eller byggt. Alla verktyg öppnar och sparar en fil i taget (4.4).
