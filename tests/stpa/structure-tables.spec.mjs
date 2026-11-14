@@ -42,6 +42,27 @@ test.describe("STPA workbench: structure tables, type switches and layout", () =
     expect((await getEditorJson(page, "#editor")).controlled_processes[0].name).toBe("Vehicle Braking Subsystem");
   });
 
+  test("Ctrl+Z undoes; Ctrl+Y and Ctrl+Shift+Z redo (design principles 4.14)", async ({ page }) => {
+    const name = async () => (await getEditorJson(page, "#editor")).controlled_processes[0].name;
+    const press = async (key) => { await page.evaluate(() => document.activeElement?.blur()); await page.keyboard.press(key); };
+    await node(page, "p1").click();
+    await page.keyboard.press("Enter");
+    await expect.poll(() => focusedKey(page)).toBe("p1|name");
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.type("Brakes");
+    await page.keyboard.press("Enter");
+    await expect(node(page, "p1")).toContainText("Brakes");
+    expect(await name()).toBe("Brakes");
+    await press("Control+z");
+    expect(await name()).toBe("Vehicle Braking Subsystem");
+    await press("Control+y");
+    expect(await name()).toBe("Brakes");
+    await press("Control+z");
+    await press("Control+Shift+Z");
+    expect(await name()).toBe("Brakes");
+    await expect(page.locator("#helpDlg")).toContainText("Ctrl+Y", { useInnerText: false });
+  });
+
   test("control actions and feedback take several labels, one per line", async ({ page }) => {
     await page.locator('#diagram text[data-sel="ca1"]').click();
     await page.keyboard.press("Enter");

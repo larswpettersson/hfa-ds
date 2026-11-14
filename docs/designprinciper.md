@@ -552,7 +552,7 @@ Alla verktyg ångrar och gör om på samma sätt:
 | Verktyg | Undo-knapp och Ctrl/⌘+Z | Gör om | Steg |
 |---|---|---|---|
 | HTA | Ja | Ctrl/⌘+Shift+Z och Ctrl+Y | 100 |
-| STPA | Ja | Ctrl/⌘+Shift+Z; Ctrl+Y saknas | 200 |
+| STPA | Ja | Ctrl/⌘+Shift+Z och Ctrl+Y (2026-11-14) | 200 |
 | Bowtie | Ja (2026-11-14) | Ctrl/⌘+Shift+Z och Ctrl+Y | 100 |
 
 Reglerna om textfält, statusmeddelanden och osparade ändringar är byggda och testade i Bowtie (`tests/bowtie/undo.spec.mjs`); de är inte kontrollerade i HTA och STPA.

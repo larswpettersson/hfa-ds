@@ -552,7 +552,7 @@ All tools undo and redo in the same way:
 | Tool | Undo button and Ctrl/⌘+Z | Redo | Steps |
 |---|---|---|---|
 | HTA | Yes | Ctrl/⌘+Shift+Z and Ctrl+Y | 100 |
-| STPA | Yes | Ctrl/⌘+Shift+Z; Ctrl+Y is missing | 200 |
+| STPA | Yes | Ctrl/⌘+Shift+Z and Ctrl+Y (2026-11-14) | 200 |
 | Bowtie | Yes (2026-11-14) | Ctrl/⌘+Shift+Z and Ctrl+Y | 100 |
 
 The rules about text fields, status messages and unsaved changes are built and tested in Bowtie (`tests/bowtie/undo.spec.mjs`); they have not been checked in HTA and STPA.
