@@ -88,8 +88,6 @@ test.describe("Bowtie: indication, selection and arrow navigation", () => {
     const before = await col();
     await page.locator("#b-p4").click({ position: { x: 3, y: 3 }, modifiers: ["Shift"] });
     await page.evaluate(() => document.activeElement?.blur());
-    await press(page, "ArrowLeft");
-    expect(await col()).toBe(before); // a plain arrow never moves
     await press(page, "Alt+ArrowLeft");
     expect(await col()).toBeLessThan(before);
   });

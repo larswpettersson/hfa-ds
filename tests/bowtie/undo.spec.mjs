@@ -13,7 +13,8 @@ const status = (page) => page.locator("#statusMessage");
 /** Leave any field, so that the keys go to the diagram. */
 const keys = async (page, ...ks) => { await page.evaluate(() => document.activeElement?.blur()); for (const k of ks) await page.keyboard.press(k); };
 const editP1 = async (page, text) => {
-  await page.locator("#b-p1 .desc-text").click();
+  await page.locator("#b-p1").click(); // a click selects the barrier, Enter edits its text
+  await page.keyboard.press("Enter");
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.type(text);
 };

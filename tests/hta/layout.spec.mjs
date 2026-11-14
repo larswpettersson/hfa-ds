@@ -59,7 +59,8 @@ test.describe("HTA: panel header rows and title bar", () => {
   });
 
   test("HTA-ADD-5: bokstavstangenterna är avstängda medan man skriver", async ({ page }) => {
-    await page.locator(".task").first().dblclick();
+    await page.locator(".task").first().click();
+    await page.keyboard.press("Enter"); // a click selects, Enter edits the text
     const n = await count(page);
     await page.keyboard.type("Cd");
     expect(await count(page)).toBe(n);

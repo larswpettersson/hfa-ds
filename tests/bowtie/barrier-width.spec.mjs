@@ -20,7 +20,8 @@ const measure = (page, id) => page.evaluate((id) => {
     overflows: desc.scrollWidth > desc.clientWidth + 1 };
 }, id);
 const type = async (page, id, text) => {
-  await page.locator(`#b-${id} .desc-text`).click();
+  await page.locator(`#b-${id}`).click(); // a click selects the barrier, Enter edits its text
+  await page.keyboard.press("Enter");
   await page.keyboard.press("ControlOrMeta+a");
   await page.keyboard.type(text);
 };
