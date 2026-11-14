@@ -15,18 +15,36 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      # A change here often needs a matching change in a tool repo (same branch name in both). For each tool repo, test
+      # against the branch named like this one if it exists there, otherwise against main. The branch name goes through
+      # env, never straight into the script.
+      - name: Pick the branch of each tool repo
+        id: refs
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          TOKEN: ${{ secrets.HFA_REPOS_TOKEN || github.token }}
+        run: |
+          for r in stpa hta bowtie rbd; do
+            if git ls-remote --exit-code --heads "https://x-access-token:${TOKEN}@github.com/larswpettersson/hfa-${r}" "refs/heads/${BRANCH}" >/dev/null 2>&1; then
+              ref="$BRANCH"
+            else
+              ref=main
+            fi
+            echo "${r}=${ref}" >> "$GITHUB_OUTPUT"
+            echo "hfa-${r}: ${ref}"
+          done
       - uses: actions/checkout@v4
         with: { path: ws/hfa-ds }
       # Tools are checked out next to hfa-ds, as in the codespace. HFA_REPOS_TOKEN is needed while the repos are private
       # (a PAT with read access to them); without it the checkout falls back to the default token.
       - uses: actions/checkout@v4
-        with: { repository: larswpettersson/hfa-stpa, path: ws/hfa-stpa, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+        with: { repository: larswpettersson/hfa-stpa, ref: "${{ steps.refs.outputs.stpa }}", path: ws/hfa-stpa, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/checkout@v4
-        with: { repository: larswpettersson/hfa-hta, path: ws/hfa-hta, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+        with: { repository: larswpettersson/hfa-hta, ref: "${{ steps.refs.outputs.hta }}", path: ws/hfa-hta, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/checkout@v4
-        with: { repository: larswpettersson/hfa-bowtie, path: ws/hfa-bowtie, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+        with: { repository: larswpettersson/hfa-bowtie, ref: "${{ steps.refs.outputs.bowtie }}", path: ws/hfa-bowtie, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/checkout@v4
-        with: { repository: larswpettersson/hfa-rbd, path: ws/hfa-rbd, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+        with: { repository: larswpettersson/hfa-rbd, ref: "${{ steps.refs.outputs.rbd }}", path: ws/hfa-rbd, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
