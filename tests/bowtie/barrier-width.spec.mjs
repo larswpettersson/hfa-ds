@@ -72,12 +72,17 @@ test.describe("Bowtie: the width of a barrier", () => {
     await describe(page, "p4", "Lås på lucka");
     await type(page, "p4", "Hastighetsövervakning"); // the field keeps focus
     await expect.poll(async () => { const m = await measure(page, "p4"); return Math.abs(m.width - m.max) < 0.5; }).toBe(true);
-    // Every connector end is at the left edge, the right edge or the middle of a card, a barrier, the hazard or the top event.
-    await expect.poll(() => page.evaluate(() => {
-      const origin = document.querySelector(".bowtie").getBoundingClientRect().x;
-      const edges = [...document.querySelectorAll(".card, .barrier, .hazard, .top-event")].flatMap((e) => { const r = e.getBoundingClientRect(); return [r.left - origin, r.right - origin, (r.left + r.right) / 2 - origin]; });
-      const ends = [...document.querySelectorAll(".bowtie svg line")].flatMap((l) => [Number(l.getAttribute("x1")), Number(l.getAttribute("x2"))]);
-      return ends.filter((x) => !edges.some((e) => Math.abs(e - x) < 1.5)).length;
-    })).toBe(0);
+    // The connectors are already where a full recalculation (as on a window resize) puts them.
+    const lines = () => page.evaluate(() => [...document.querySelectorAll(".bowtie svg line")]
+      .map((l) => ["x1", "y1", "x2", "y2"].map((a) => Math.round(Number(l.getAttribute(a)))).join(",")));
+    await expect.poll(async () => {
+      const shown = await lines();
+      await page.evaluate(() => window.dispatchEvent(new Event("resize")));
+      return JSON.stringify(await lines()) === JSON.stringify(shown);
+    }).toBe(true);
+    const before = await lines();
+    await page.keyboard.press("ControlOrMeta+a");
+    await page.keyboard.type("Lås"); // back to the minimum width: the columns move again
+    await expect.poll(async () => JSON.stringify(await lines()) !== JSON.stringify(before)).toBe(true);
   });
 });
