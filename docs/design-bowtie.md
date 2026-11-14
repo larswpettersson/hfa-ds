@@ -106,7 +106,7 @@ Feature: Add-kommandona
 
 ### BOWTIE-NAV: indikering, markering och pilnavigering
 
-**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste kort, barriär, fara eller topphändelse åt pilens håll på skärmen (5.2). Musen och piltangenterna delar indikeringen (5.3). Pilar markerar inte, Ctrl/⌘+pil används inte, och Alt/Option+pil flyttar det markerade (5.6). Ctrl/⌘+Enter markerar det indikerade och Enter ensam redigerar det.**
+**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste kort, barriär, fara eller topphändelse åt pilens håll på skärmen (5.2). Musen och piltangenterna delar indikeringen (5.3). Pilar markerar inte och Ctrl/⌘+pil används inte. När ett objekt är markerat flyttar en pil det i de riktningar det kan flyttas, och Alt/Option+pil gör samma sak (5.6). Ett klick var som helst på ett objekt markerar det, texten inräknad, och Enter redigerar texten (5.11). Ctrl/⌘+Enter markerar det indikerade och Enter ensam redigerar det.**
 
 ```gherkin
 Feature: Indikering, markering och pilnavigering
@@ -155,17 +155,15 @@ Feature: Indikering, markering och pilnavigering
 
   @BOWTIE-NAV-7
   Scenario: Pilar markerar inte, och Ctrl/⌘+pil används inte
-    Given "C2" är markerad
+    Given indikeringen står på "C2" och inget är markerat
     When användaren trycker ↓
-    Then indikeringen flyttas men "C2" är fortfarande markerad
+    Then indikeringen flyttas och inget är markerat
     When användaren trycker Ctrl/⌘+→
     Then indikeringen är oförändrad
 
   @BOWTIE-NAV-8
   Scenario: Alt/Option+pil flyttar de markerade barriärerna
     Given barriären "P4" är markerad med Shift+klick
-    When användaren trycker ←
-    Then barriären står kvar
     When användaren trycker Alt/Option+←
     Then barriären har flyttat en kolumn åt vänster
 
@@ -187,6 +185,88 @@ Feature: Indikering, markering och pilnavigering
     When användaren trycker Enter
     Then kortets text har en textmarkör
     And "C3" är inte markerad
+ 
+  @BOWTIE-NAV-10
+  Scenario: En vanlig pil flyttar det markerade objektet i de riktningar det kan flyttas
+    Given orsaken "C2" är markerad
+    When användaren trycker ↓
+    Then "C2" har bytt plats med orsaken under
+    When användaren trycker ←
+    Then "C2" har inte flyttats
+    Given barriären "P4" är markerad
+    When användaren trycker ←
+    Then "P4" har flyttat en kolumn åt vänster
+
+  @BOWTIE-SEL-3
+  Scenario: Ett klick på ett korts text markerar kortet
+    Given inget är markerat
+    When användaren klickar på texten i orsaken "C2"
+    Then "C2" är markerad
+    And ingen text har en textmarkör
+
+  @BOWTIE-SEL-4
+  Scenario: Ett klick på texten i topphändelsen eller en barriär markerar den
+    When användaren klickar på topphändelsens text
+    Then topphändelsen är markerad
+    When användaren klickar på texten i barriären "P2"
+    Then "P2" är markerad
+
+  @BOWTIE-SEL-5
+  Scenario: Enter redigerar det markerade objektets text, och ett id går inte att redigera
+    Given användaren har klickat på id:t i orsaken "C2"
+    Then "C2" är markerad och dess id har ingen textmarkör och går inte att redigera
+    When användaren trycker Enter
+    Then texten i "C2" har en textmarkör
+    When användaren skriver en ny text och trycker Enter
+    Then "C2" har den nya texten
+```
+
+### BOWTIE-TEXT: den synliga texten
+
+**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras.**
+
+```gherkin
+Feature: Den synliga texten
+  @BOWTIE-TEXT-1
+  Scenario: En lång text kortas med tre punkter
+    Given användaren har skrivit en text på 150 tecken i topphändelsen
+    When textredigeringsläget avslutas
+    Then topphändelsen visar de första 100 tecknen följda av "..."
+    And den sparade filen innehåller fortfarande alla 150 tecknen
+```
+
+### BOWTIE-LINK: koppla en barriär till orsaker och konsekvenser
+
+**En markerad barriär kopplas till de orsaker (eller konsekvenser) den skyddar. Numren är numren i id:n (C12 är 12, K3 är 3), inte radnumren. 1–9 växlar kopplingen direkt. Ett tal över 9 skrivs med Alt/Option nedtryckt: Alt+1+2, släpp sedan Alt, växlar nummer 12. En rad bredvid Add-knapparna listar id:n på det barriären skyddar.**
+
+```gherkin
+Feature: Koppla med nummer
+  Background:
+    Given Bowtie är öppet med exempeldiagrammet och 9 orsaker till (C5–C13)
+    And barriären "P3" är markerad
+
+  @BOWTIE-LINK-1
+  Scenario: Ett tal över 9 skrivs med Alt nedtryckt
+    When användaren håller Alt/Option, trycker 1 och sedan 2
+    Then raden visar "Alt+1+2"
+    When användaren släpper Alt/Option
+    Then "P3" skyddar "C12"
+    When användaren gör samma sak igen
+    Then "P3" skyddar inte längre "C12"
+
+  @BOWTIE-LINK-2
+  Scenario: Siffrorna 1–9 följer id:t, inte raden
+    Given "C3" har flyttats till första raden
+    When användaren trycker 3
+    Then "P3" skyddar "C3"
+
+  @BOWTIE-LINK-3
+  Scenario: En rad listar id:n på det barriären skyddar
+    Then raden visar "P3 protects causes: C4"
+    When användaren trycker 3
+    Then raden visar "C3, C4"
+    When användaren trycker Esc
+    Then raden är dold
 ```
 
 ### BOWTIE-WIDTH: barriärens bredd

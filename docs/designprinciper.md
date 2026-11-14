@@ -581,7 +581,7 @@ En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen peka
 
 Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
 
-**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3).
+**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3). När ett objekt är markerat flyttar pilarna i stället det objektet, i de riktningar det kan flyttas (5.6).
 
 ### 5.3 En indikering för mus och tangentbord
 
@@ -591,7 +591,7 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
-- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** (eller F2 eller dubbelklick). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
+- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** eller F2, aldrig av musen (5.11). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
 - **Skuggorna är tokens, lika för alla objekt.** `shadow.hovered` (indikeringen) och `shadow.selected` (markeringen: en suddig skugga runt hela objektet, spridning 4 px, oskärpa 2 px, `foreground.base` vid 40 %) definieras en gång i Penpot (HFA DS), exporteras till `tokens.json` och används av alla objekt i alla verktyg, så att indikering och markering ser likadana ut överallt (1.2, punkt 6). `shadow.hovered` är en skarp skugga nere till höger (4 px åt höger och ned, oskärpa 4 px, `foreground.base` vid 40 %). **Att utvärdera i framtiden (alternativ B):** att byta `shadow.hovered` till en ring plus glöd runt hela objektet, för bättre kontrast. Det ändrar utseendet på varje hovrat objekt i alla verktyg, men eftersom skuggan är en token görs bytet på ett ställe.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
@@ -604,14 +604,14 @@ Varje tangent har en motsvarighet med musen:
 | Hovra | Pil (5.2) |
 | Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
-| Dubbelklick: textredigering | Enter eller F2 |
+| (ingen: musen startar aldrig textredigering, ett klick på texten markerar objektet, 5.11) | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
 | Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
 | Ta bort markerade objekt | Delete (5.10) |
 | Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
 | Hjälpknappen | **?** |
 
-Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
+Pil (navigera, eller flytta ett markerat objekt), Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
 
 **Bokstavstangenterna** (A, B, C, D, I, S, ?) gäller bara när ingen text redigeras och inte när Ctrl, ⌘ eller Alt hålls nere. Varje bokstav har en enda betydelse i ett verktyg.
 
@@ -627,7 +627,7 @@ Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma m�
 
 ### 5.6 Flytta markerade objekt
 
-- **Alt/Option+pil flyttar alla markerade objekt ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. Vanliga pilar navigerar (5.2) och flyttar aldrig.
+- **En pil flyttar de markerade objekten ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. **Bara de riktningar objektet kan flyttas i räknas:** ett kort flyttas upp och ned men inte i sidled, en barriär åt vänster och höger men inte uppåt eller nedåt. En pil i någon annan riktning gör ingenting. Alt/Option+pil gör samma sak, så att vanan från ritverktyg fungerar. När inget är markerat navigerar pilarna (5.2) och flyttar ingenting.
 - **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
 - **Varje flytt går att ångra** med Ctrl/⌘+Z (4.14).
 - Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
@@ -686,3 +686,16 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).
 
 **Nuläge (2026-11-08):** inte byggt, och *Add Above* skjuts upp. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.
+
+### 5.11 Ett klick markerar objektet, Enter redigerar texten
+
+Samma i alla verktyg, för varje objekt som har en text: en uppgift i HTA, en orsak, konsekvens, barriär, fara eller topphändelse i Bowtie och ett block i STPA.
+
+- **Ett klick var som helst på ett objekt markerar objektet, texten inräknad.** Musen sätter aldrig en textmarkör i objektets text, och ett klick på texten är ingen väg in i redigering. Ctrl/⌘+Enter på det indikerade objektet gör samma sak som klicket (5.4).
+- **Enter, eller F2, redigerar texten** i det objekt som är markerat eller indikerat. Textmarkören hamnar i objektets text, Enter bekräftar och Esc avbryter (5.3). Shift+Enter ger en ny rad i en text med flera rader.
+- **Id:n går inte att redigera.** Ett id (C1, P2, 1.1) ges av verktyget och visas som vanlig text. Det är inget fält, har ingen textmarkör, och Tab stannar inte där. Ett id ändras bara genom verktygets egna kommandon, till exempel när uppgifter numreras om.
+- **Medan en text redigeras** flyttar ett klick i den textmarkören som vanligt. Ett klick någon annanstans bekräftar redigeringen och markerar det som klickades på.
+- **En text kan kortas på skärmen.** Ett verktyg får visa bara de första 100 tecknen av en lång text med tre punkter (`...`) efter. Hela texten finns kvar och visas medan texten redigeras. Tre punkter används, inte tecknet `…`, så att kortningen ser likadan ut i alla verktyg och i den sparade filen.
+- **Den röda kvadraten i titelraden** (4.10) är primärfärgen som en variabel verktyget måste definiera i båda teman. Testet `tests/shared/brand-mark.spec.mjs` kontrollerar kvadraten och att titelradens kommandon följer efter namnet från vänster i alla verktyg.
+
+**Nuläge (2026-11-14):** byggt i HTA och Bowtie, med testerna `tests/hta/select-edit.spec.mjs` och `tests/bowtie/select-link.spec.mjs`. STPA markerar redan vid klick och redigerar med Enter (`STPA-SEL-1` till `STPA-SEL-7`). Kortningen till 100 tecken är byggd bara i Bowtie.

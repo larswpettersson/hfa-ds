@@ -106,7 +106,7 @@ Feature: The Add commands
 
 ### BOWTIE-NAV: indication, selection and arrow navigation
 
-**The arrow keys move the indication (a hovered shadow) to the nearest card, barrier, hazard or top event in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected objects (5.6). Ctrl/⌘+Enter selects the indicated object and Enter alone edits it.**
+**The arrow keys move the indication (a hovered shadow) to the nearest card, barrier, hazard or top event in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select and Ctrl/⌘+arrow is not used. When an object is selected an arrow moves it in the directions it can move, and Alt/Option+arrow does the same (5.6). A click anywhere on an object selects it, text included, and Enter edits the text (5.11). Ctrl/⌘+Enter selects the indicated object and Enter alone edits it.**
 
 ```gherkin
 Feature: Indication, selection and arrow navigation
@@ -155,17 +155,15 @@ Feature: Indication, selection and arrow navigation
 
   @BOWTIE-NAV-7
   Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
-    Given "C2" is selected
+    Given the indication is on "C2" and nothing is selected
     When the user presses ↓
-    Then the indication moves but "C2" is still selected
+    Then the indication moves and nothing is selected
     When the user presses Ctrl/⌘+→
     Then the indication is unchanged
 
   @BOWTIE-NAV-8
   Scenario: Alt/Option+arrow moves the selected barriers
     Given the barrier "P4" is selected with Shift+click
-    When the user presses ←
-    Then the barrier stays
     When the user presses Alt/Option+←
     Then the barrier has moved one column to the left
 
@@ -187,6 +185,88 @@ Feature: Indication, selection and arrow navigation
     When the user presses Enter
     Then the card's text has a text cursor
     And "C3" is not selected
+ 
+  @BOWTIE-NAV-10
+  Scenario: A plain arrow moves the selected object in the directions it can move
+    Given the cause "C2" is selected
+    When the user presses ↓
+    Then "C2" has swapped places with the cause below
+    When the user presses ←
+    Then "C2" has not moved
+    Given the barrier "P4" is selected
+    When the user presses ←
+    Then "P4" has moved one column to the left
+
+  @BOWTIE-SEL-3
+  Scenario: A click on the text of a card selects the card
+    Given nothing is selected
+    When the user clicks the text of the cause "C2"
+    Then "C2" is selected
+    And no text has a text cursor
+
+  @BOWTIE-SEL-4
+  Scenario: A click on the text of the top event or a barrier selects it
+    When the user clicks the text of the top event
+    Then the top event is selected
+    When the user clicks the text of the barrier "P2"
+    Then "P2" is selected
+
+  @BOWTIE-SEL-5
+  Scenario: Enter edits the text of the selected object, and an id cannot be edited
+    Given the user has clicked the id of the cause "C2"
+    Then "C2" is selected and its id has no text cursor and is not editable
+    When the user presses Enter
+    Then the text of "C2" has a text cursor
+    When the user types a new text and presses Enter
+    Then "C2" has the new text
+```
+
+### BOWTIE-TEXT: the viewable text
+
+**A text is shown with at most 100 characters (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited.**
+
+```gherkin
+Feature: The viewable text
+  @BOWTIE-TEXT-1
+  Scenario: A long text is capped with three dots
+    Given the user has entered a text of 150 characters for the top event
+    When the text editing mode ends
+    Then the top event shows the first 100 characters followed by "..."
+    And the saved diagram still holds all 150 characters
+```
+
+### BOWTIE-LINK: linking a barrier to causes and consequences
+
+**A selected barrier is linked to the causes (or consequences) it protects. The numbers are the numbers in the ids (C12 is 12, K3 is 3), not the row numbers. 1–9 toggle the link at once. A number above 9 is typed with Alt/Option held: Alt+1+2, then release Alt, toggles number 12. A bar next to the Add buttons lists the ids of what the barrier protects.**
+
+```gherkin
+Feature: Linking by number
+  Background:
+    Given Bowtie is open with the example diagram and 9 more causes added (C5–C13)
+    And the barrier "P3" is selected
+
+  @BOWTIE-LINK-1
+  Scenario: A number above 9 is typed with Alt held
+    When the user holds Alt/Option, presses 1 and then 2
+    Then the bar shows "Alt+1+2"
+    When the user releases Alt/Option
+    Then "P3" protects "C12"
+    When the user does the same again
+    Then "P3" no longer protects "C12"
+
+  @BOWTIE-LINK-2
+  Scenario: The digits 1–9 follow the id, not the row
+    Given "C3" has been moved to the first row
+    When the user presses 3
+    Then "P3" protects "C3"
+
+  @BOWTIE-LINK-3
+  Scenario: A bar lists the ids of what the barrier protects
+    Then the bar shows "P3 protects causes: C4"
+    When the user presses 3
+    Then the bar shows "C3, C4"
+    When the user presses Esc
+    Then the bar is hidden
 ```
 
 ### BOWTIE-WIDTH: the width of a barrier

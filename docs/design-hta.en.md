@@ -108,7 +108,7 @@ Feature: The analysis panel and the title bar
 
 ### HTA-NAV: indication, selection and arrow navigation
 
-**The arrow keys move the indication (a hovered shadow) to the nearest task in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected task (5.6). Ctrl/⌘+Enter selects the indicated task and Enter alone edits it.**
+**The arrow keys move the indication (a hovered shadow) to the nearest task in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select and Ctrl/⌘+arrow is not used. When a task is selected an arrow moves it in the directions it can move, and Alt/Option+arrow does the same (5.6). A click anywhere on a task selects it, text included, and Enter edits the text (5.11). Ctrl/⌘+Enter selects the indicated task and Enter alone edits it.**
 
 ```gherkin
 Feature: Indication, selection and arrow navigation
@@ -159,9 +159,9 @@ Feature: Indication, selection and arrow navigation
 
   @HTA-NAV-7
   Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
-    Given "1" is selected
+    Given the indication is on "1" and nothing is selected
     When the user presses ↓
-    Then the indication moves but "1" is still selected
+    Then the indication moves and nothing is selected
     When the user presses Ctrl/⌘+→
     Then the indication is unchanged
 
@@ -183,6 +183,26 @@ Feature: Indication, selection and arrow navigation
     When the user presses Enter
     Then the task's text has a text cursor
     And nothing is selected
+ 
+  @HTA-NAV-9
+  Scenario: A plain arrow moves the selected task
+    Given "1.1" is selected
+    When the user presses →
+    Then "1.1" has swapped places with "1.2"
+
+  @HTA-SEL-3
+  Scenario: A click on the text of a task selects the task
+    Given nothing is selected
+    When the user clicks the text of "1.1"
+    Then "1.1" is selected
+    And no text has a text cursor
+
+  @HTA-SEL-4
+  Scenario: Enter edits the text of the selected task, and an id cannot be edited
+    Given the user has clicked the id of "1.1"
+    Then "1.1" is selected and its id is not editable
+    When the user presses Enter
+    Then the text of "1.1" has a text cursor
 ```
 
 ## 4. Not included

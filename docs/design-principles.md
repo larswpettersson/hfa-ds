@@ -581,7 +581,7 @@ An arrow moves the indication (5.3) to the nearest object in the direction the a
 
 Examples: → from a task in HTA goes to the nearest box to the right on the same level, even if it belongs to another branch. → from a barrier in Bowtie goes to whatever is nearest to the right, another barrier or the top event depending on where the barrier is.
 
-**Ctrl/⌘+arrow is not used for navigation.** Only plain arrows move the indication, and they never select anything (5.3).
+**Ctrl/⌘+arrow is not used for navigation.** Only plain arrows move the indication, and they never select anything (5.3). When an object is selected the arrows move that object instead, in the directions it can move (5.6).
 
 ### 5.3 One indication for mouse and keyboard
 
@@ -591,7 +591,7 @@ What the mouse hovers over and what the arrow keys point out are the same thing,
 - **When the mouse passes over an object the indication moves there**, and the keyboard's indication disappears.
 - **The next arrow continues from the object the mouse was last over.** If the mouse leaves the objects for empty space the indication goes out, but the starting point is kept.
 - **Only real mouse movement counts.** When a key press scrolls the diagram and another object ends up under a still mouse pointer, that object must not take the indication.
-- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *text editing mode* (a text cursor in the object's text, in STPA in the name cell in the table, 5.9) is started by **Enter** (or F2 or a double-click). Enter confirms the text, and Esc cancels. So Enter alone does not select, and an arrow does not select.
+- **Three modes, three keys and three looks.** The *indication* gives the object the hovered shadow (State = Hovered), and it is set by the mouse or by a plain arrow. The *selection* gives the object a blurred shadow all around it (State = Selected), and it is set by a click or by **Ctrl/⌘+Enter**. The *text editing mode* (a text cursor in the object's text, in STPA in the name cell in the table, 5.9) is started by **Enter** or F2, never by the mouse (5.11). Enter confirms the text, and Esc cancels. So Enter alone does not select, and an arrow does not select.
 - **The shadows are tokens, the same for all objects.** `shadow.hovered` (the indication) and `shadow.selected` (the selection: a blurred shadow all around the object, spread 4 px, blur 2 px, `foreground.base` at 40 %) are defined once in Penpot (HFA DS), exported to `tokens.json` and used by all objects in all tools, so that indication and selection look the same everywhere (1.2, point 6). `shadow.hovered` is a sharp shadow down and to the right (4 px right and down, blur 4 px, `foreground.base` at 40 %). **To be evaluated in the future (alternative B):** changing `shadow.hovered` to a ring plus glow around the whole object, for better contrast. That changes the look of every hovered object in all tools, but since the shadow is a token the change is made in one place.
 - **Indication, selection and editing are separate.** The indication shows where you are, the selection what commands apply to, and editing happens in the text field. The mouse never clears the selection, only the indication.
 
@@ -604,14 +604,14 @@ Every key has a mouse counterpart:
 | Hover | Arrow (5.2) |
 | Click: select, or whatever the tool otherwise does on a click, for example link mode for a barrier | Ctrl/⌘+Enter |
 | Shift+click or Ctrl/⌘+click: add to or take out of the selection | Shift+Ctrl/⌘+Enter |
-| Double-click: text editing | Enter or F2 |
+| (none: the mouse never starts text editing, a click on the text selects the object, 5.11) | Enter or F2 |
 | Drag: move | Alt/Option+arrow (5.6) |
 | The toolbar buttons *Add Above*, *Add Below* and *Add Beside* (5.10) | STPA: **B**, **S** and **A** (*Add Above*, built later). HTA: **C** (child), **S** (sibling), **D** (duplicate) |
 | Delete the selected objects | Delete (5.10) |
 | The button that shows and hides the AI panel (4.7) | **I** (until *Add Above* is built: **A**) |
 | The help button | **?** |
 
-Arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists. Ctrl/⌘+arrow is not used.
+Arrow (navigate, or move a selected object), Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the same pattern as in text editors and lists. Ctrl/⌘+arrow is not used.
 
 **The letter keys** (A, B, C, D, I, S, ?) work only when no text is being edited and not when Ctrl, ⌘ or Alt is held. Each letter has one meaning in a tool.
 
@@ -627,7 +627,7 @@ Arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the
 
 ### 5.6 Moving selected objects
 
-- **Alt/Option+arrow moves all selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. Plain arrows navigate (5.2) and never move.
+- **An arrow moves the selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. **Only the directions the object can move in count:** a card moves up and down but not sideways, a barrier left and right but not up and down. An arrow in any other direction does nothing. Alt/Option+arrow does the same, so the habit from drawing tools works. With nothing selected the arrows navigate (5.2) and move nothing.
 - **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
 - **Every move can be undone** with Ctrl/⌘+Z (4.14).
 - Alt+←/→ means back and forward in the browser on Windows and Linux; the tool must stop that when the keys are used in the diagram.
@@ -686,3 +686,16 @@ The user must be able to build and change the structure of the analysis directly
 - **Diagram and tables are two ways into the same model.** The selection is shared and the text is edited in the table (5.9).
 
 **Current state (2026-11-08):** not built, and *Add Above* is postponed. STPA is the first tool (see [design-stpa.en.md](design-stpa.en.md)). HTA has *C*, *S* and *D* today, with the tool's own words *Child*, *Sibling* and *Duplicate*; aligning the words in all tools is a separate decision.
+
+### 5.11 A click selects the object, Enter edits its text
+
+The same in every tool, for every object that has a text: a task in HTA, a cause, consequence, barrier, hazard or top event in Bowtie, and a block in STPA.
+
+- **A click anywhere on an object selects the object, the text included.** The mouse never puts a text cursor in an object's text, and a click on the text is not a way into editing it. Ctrl/⌘+Enter on the indicated object does the same as the click (5.4).
+- **Enter, or F2, edits the text** of the object that is selected or indicated. The text cursor goes to the object's text, Enter confirms and Esc cancels (5.3). Shift+Enter gives a new line in a text that has several lines.
+- **Ids cannot be edited.** An id (C1, P2, 1.1) is given by the tool and is shown as plain text. It is not a field, it has no text cursor, and Tab does not stop at it. A change of id happens only through the tool's own commands, for example when tasks are renumbered.
+- **While a text is being edited**, a click inside it moves the text cursor as usual. A click anywhere else confirms the edit and selects what was clicked.
+- **A text can be capped on screen.** A tool may show only the first 100 characters of a long text with three dots (`...`) after it. The full text is kept, and is shown while the text is edited. Three dots are used, not the single character `…`, so that the cap looks the same in every tool and in the saved diagram.
+- **The red square in the title bar** (4.10) is the primary colour as a variable the tool must define in both themes. The test `tests/shared/brand-mark.spec.mjs` checks the square and that the title-bar commands follow the name from the left in every tool.
+
+**Current state (2026-11-14):** built in HTA and Bowtie, with the tests `tests/hta/select-edit.spec.mjs` and `tests/bowtie/select-link.spec.mjs`. STPA already selects on a click and edits with Enter (`STPA-SEL-1` to `STPA-SEL-7`). The 100-character cap is built in Bowtie only.

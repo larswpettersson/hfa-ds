@@ -108,7 +108,7 @@ Feature: Analyspanelen och titelraden
 
 ### HTA-NAV: indikering, markering och pilnavigering
 
-**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste uppgift åt pilens håll på skärmen (5.2). Musen och piltangenterna delar indikeringen (5.3). Pilar markerar inte, Ctrl/⌘+pil används inte, och Alt/Option+pil flyttar den markerade uppgiften (5.6). Ctrl/⌘+Enter markerar den indikerade uppgiften och Enter ensam redigerar den.**
+**Piltangenterna flyttar indikeringen (en hovrad skugga) till närmaste uppgift åt pilens håll på skärmen (5.2). Musen och piltangenterna delar indikeringen (5.3). Pilar markerar inte och Ctrl/⌘+pil används inte. När en uppgift är markerad flyttar en pil den i de riktningar den kan flyttas, och Alt/Option+pil gör samma sak (5.6). Ett klick var som helst på en uppgift markerar den, texten inräknad, och Enter redigerar texten (5.11). Ctrl/⌘+Enter markerar den indikerade uppgiften och Enter ensam redigerar den.**
 
 ```gherkin
 Feature: Indikering, markering och pilnavigering
@@ -159,9 +159,9 @@ Feature: Indikering, markering och pilnavigering
 
   @HTA-NAV-7
   Scenario: Pilar markerar inte, och Ctrl/⌘+pil används inte
-    Given "1" är markerad
+    Given indikeringen står på "1" och inget är markerat
     When användaren trycker ↓
-    Then indikeringen flyttas men "1" är fortfarande markerad
+    Then indikeringen flyttas och inget är markerat
     When användaren trycker Ctrl/⌘+→
     Then indikeringen är oförändrad
 
@@ -183,6 +183,26 @@ Feature: Indikering, markering och pilnavigering
     When användaren trycker Enter
     Then uppgiftens text har en textmarkör
     And inget är markerat
+ 
+  @HTA-NAV-9
+  Scenario: En vanlig pil flyttar den markerade uppgiften
+    Given "1.1" är markerad
+    When användaren trycker →
+    Then "1.1" har bytt plats med "1.2"
+
+  @HTA-SEL-3
+  Scenario: Ett klick på en uppgifts text markerar uppgiften
+    Given inget är markerat
+    When användaren klickar på texten i "1.1"
+    Then "1.1" är markerad
+    And ingen text har en textmarkör
+
+  @HTA-SEL-4
+  Scenario: Enter redigerar den markerade uppgiftens text, och ett id går inte att redigera
+    Given användaren har klickat på id:t i "1.1"
+    Then "1.1" är markerad och dess id går inte att redigera
+    When användaren trycker Enter
+    Then texten i "1.1" har en textmarkör
 ```
 
 ## 4. Det som inte ingår

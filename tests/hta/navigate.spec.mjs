@@ -75,10 +75,9 @@ test.describe("HTA: indication, selection and arrow navigation", () => {
   });
 
   test("HTA-NAV-7: pilar markerar inte, och Ctrl/⌘+pil används inte", async ({ page }) => {
-    await pick(page, "1");
-    expect(await selected(page)).toEqual(["1"]);
+    await hover(page, "1");
     await page.keyboard.press("ArrowDown");
-    expect(await selected(page)).toEqual(["1"]);
+    expect(await selected(page)).toEqual([]); // an arrow moves the indication and selects nothing
     const was = await indicated(page);
     await page.keyboard.press("ControlOrMeta+ArrowRight");
     expect(await indicated(page)).toEqual(was);

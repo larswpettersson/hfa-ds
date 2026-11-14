@@ -200,7 +200,7 @@ Feature: Links and conversion
 
 **A click or Ctrl/⌘+Enter on a block selects it (a blurred shadow all around the block). Enter alone does not select, but goes into the text editing mode. Esc or a click outside removes the selection. Shift+click and Ctrl/⌘+click add or remove objects of the same kind (the rule in 5.5): the blocks are one kind, the control actions one and the feedback one.**
 
-This follows 5.4: Ctrl/⌘+Enter corresponds to a click, and Enter (or F2) edits. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
+This follows 5.4 and 5.11: a click anywhere on a block selects it, Ctrl/⌘+Enter corresponds to a click, and Enter (or F2) edits. The first Esc in the name cell leaves the table and keeps the selection (5.9). Esc in the diagram removes the selection (5.5).
 
 ```gherkin
 Feature: Selecting and deselecting

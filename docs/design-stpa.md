@@ -200,7 +200,7 @@ Feature: Länkar och konvertering
 
 **Ett klick eller Ctrl/⌘+Enter på ett block markerar det (en suddig skugga runt hela blocket). Enter ensam markerar inte, utan går in i textredigeringsläget. Esc eller ett klick utanför tar bort markeringen. Shift+klick och Ctrl/⌘+klick lägger till eller tar bort objekt av samma sort (regeln i 5.5): blocken är en sort, styråtgärderna en och återkopplingarna en.**
 
-Det följer 5.4: Ctrl/⌘+Enter motsvarar klick, och Enter (eller F2) redigerar. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
+Det följer 5.4 och 5.11: ett klick var som helst på ett block markerar det, Ctrl/⌘+Enter motsvarar klick, och Enter (eller F2) redigerar. Första Esc i namncellen lämnar tabellen och behåller markeringen (5.9). Esc i diagrammet tar bort markeringen (5.5).
 
 ```gherkin
 Feature: Markera och avmarkera
