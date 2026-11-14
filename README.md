@@ -1,4 +1,4 @@
-# Human Factors Analysis Design System (HFA DS) — design token
+# Human Factors Analysis Design System (HFA DS)
 
 Canonical git home for **HFA DS design tokens** and Penpot sync tooling.
 
@@ -9,7 +9,7 @@ Canonical git home for **HFA DS design tokens** and Penpot sync tooling.
 | App Penpot files | Bowtie, HTA, STPA, RBD — import copies of token sets |
 | App code | Clone [hfa-ds](https://github.com/larswpettersson/hfa-ds) separately; no `tokens.json` in app repos |
 
-Penpot token sets are **file-local**. This repo does not live-link Penpot files; scripts push `tokens.json` into each Penpot file via MCP.
+This repo does not live-link Penpot files; scripts shall push Penpot design-tokens via MCP to `tokens.json` into each tool.
 
 ## The HFA tools
 
