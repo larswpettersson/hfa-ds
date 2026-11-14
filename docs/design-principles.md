@@ -493,7 +493,7 @@ Every tool has a title bar at the top, the same in all tools:
 - **General commands for the whole application** follow the name: *New*, *Open…*, *Save…*, *Undo*, *Settings…* and *?* (help). They are **Compact Button**, a lower variant of Action Button (28 px) with the states *Default*, *Hovered* and *Pressed*.
 - **Theme and the panel toggle** (*Hide panel*, 4.7) are at the far right. Theme is a toggle button with a sun in light mode and a crescent moon in dark mode. New general buttons go in the right group.
 - **Tool-specific commands** do not belong in the title bar. The Add commands in STPA, HTA and Bowtie are in a row above the diagram (5.10).
-- **All tools have the same buttons** in the title bar, even when a tool does not use all of them (for example *Undo*). Only the application name differs.
+- **All tools have the same buttons** in the title bar, even when a tool does not use all of them. *Undo* works in all tools (4.14). Only the application name differs.
 - **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
 
 **Current state (2026-11-12):** the title bar with 28 px buttons is built in HTA, Bowtie and STPA, and the theme switch (the component *Theme*, 44 × 24, `role="switch"` named *Dark theme*) replaces the *Theme* button in all three; the test `tests/shared/theme-toggle.spec.mjs` checks it. The old toolbars (the component *Toolbar*) are still in HFA DS.
@@ -532,6 +532,30 @@ All tools build their panels in the same way:
 - **The key is shown on the button as an underlined letter in the text**, for example Add <u>B</u>elow, not only in the tooltip (5.10).
 
 **Current state (2026-11-10):** drawn in Penpot for HTA, Bowtie and STPA, not built. In STPA *Add Below*, *Add Beside* and *Add Above* are on the same row as the view bar's title *▾ CONTROL STRUCTURE*, and *Convert to actuator*, *Convert to sensor* and *Delete* are in a row below.
+
+### 4.14 Undo and redo
+
+All tools undo and redo in the same way:
+
+- **Undo in the title bar and Ctrl/⌘+Z undo** the last change (4.10). **Ctrl/⌘+Shift+Z redoes**, and Ctrl+Y does the same. There is no button of its own for redo.
+- **Every change is a step.** What the user does as one action is one step, even when it changes several things: an addition with its links, a deletion with what belongs to it (5.10), a move of several selected objects (5.6) or a mode that is applied (for example the link mode in Bowtie).
+- **At least 100 steps** are kept. A new change after an undo drops the steps that could be redone.
+- **What replaces the whole analysis can be undone** when it happens inside the tool: *New* (4.3) and a proposal from the AI support (1.3). **Open… starts a new history**, since another file has been opened.
+- **In a text field Ctrl/⌘+Z is the field's own undo** and leaves the analysis alone. When the text is applied the change is a step.
+- **A short status message** says *Undo* or *Redo*, and *Nothing to undo* or *Nothing to redo* when there is no step. The *Undo* button is always enabled.
+- **The theme is not a step**, since it is a setting and not part of the analysis.
+- **Undoing back to the opened or saved analysis** leaves no unsaved changes (4.4).
+- **The tool does not ask before a change that can be undone** (4.2); the message says that Ctrl/⌘+Z undoes it instead.
+
+**Current state (2026-11-14):**
+
+| Tool | Undo button and Ctrl/⌘+Z | Redo | Steps |
+|---|---|---|---|
+| HTA | Yes | Ctrl/⌘+Shift+Z and Ctrl+Y | 100 |
+| STPA | Yes | Ctrl/⌘+Shift+Z; Ctrl+Y is missing | 200 |
+| Bowtie | Yes (2026-11-14) | Ctrl/⌘+Shift+Z and Ctrl+Y | 100 |
+
+The rules about text fields, status messages and unsaved changes are built and tested in Bowtie (`tests/bowtie/undo.spec.mjs`); they have not been checked in HTA and STPA.
 
 ## 5. Navigating, selecting and moving objects
 
@@ -605,7 +629,7 @@ Arrow, Shift+arrow (extend the selection) and Alt/Option+arrow (move) follow the
 
 - **Alt/Option+arrow moves all selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. Plain arrows navigate (5.2) and never move.
 - **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
-- **Every move can be undone** with Ctrl/⌘+Z where the tool has undo.
+- **Every move can be undone** with Ctrl/⌘+Z (4.14).
 - Alt+←/→ means back and forward in the browser on Windows and Linux; the tool must stop that when the keys are used in the diagram.
 
 ### 5.7 Objects never overlap

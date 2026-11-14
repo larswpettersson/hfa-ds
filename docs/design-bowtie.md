@@ -2,7 +2,7 @@
 
 **Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda, och sedan 2026-11-14 också barriärbredden och ångra/gör om; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
 
-De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
+De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md), [4.14 ångra och gör om](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
 
 ## 1. Mål
 
@@ -17,7 +17,7 @@ Bowtie ska ha **samma struktur som HTA och STPA**, så att den som kan ett verkt
 5. **Legenden** ligger i en egen kolumn bredvid panelen, `sunken` med kant, och är vikbar med ▾ (4.12). Den höjer sig inte längre när musen passerar, och den täcker aldrig diagrammet.
 6. **Typografi.** Alla texter är bundna till typografitokens (Open Sans).
 7. **Barriärens bredd följer texten.** En barriär är så bred som det längsta ordet i beskrivningen, mellan **6 tecken** (medelordlängden i svensk facktext, 5,7, avrundad uppåt) och **12 tecken**. Ord som är längre än 12 tecken avstavas. Kanten och texten har 4 px emellan i sidled och 8 px i höjdled. Bakgrunden står under tabellen nedan.
-8. **Ångra och gör om** fungerar som i HTA och STPA: knappen *Undo* i titelraden och Ctrl/⌘+Z ångrar, Ctrl/⌘+Shift+Z och Ctrl+Y gör om. Det finns ingen egen knapp för gör om.
+8. **Ångra och gör om** följer den generella regeln i designprinciperna ([4.14](designprinciper.md)). Det som är eget för Bowtie: länkläget för en barriär är ett steg, som sparas när länkarna verkställs eller avbryts.
 
 **Barriärens bredd i siffror.** Ett tecken räknas som 0,543 em, uppmätt på långa svenska sammansättningar i Open Sans (7,6 px vid 14 px text). Bredden är antalet tecken gånger teckenbredden plus sidopaddingen (2 × 4 px).
 
@@ -232,7 +232,7 @@ Feature: Barriärens bredd
 
 ### BOWTIE-UNDO: ångra och gör om
 
-**Varje ändring är ett steg som kan ångras med knappen Undo eller Ctrl/⌘+Z och göras om med Ctrl/⌘+Shift+Z eller Ctrl+Y, upp till 100 steg. New och ett AI-förslag kan ångras, Open… startar en ny historik, och i ett textfält är Ctrl/⌘+Z fältets egen ångra.**
+**Bowtie ångrar och gör om enligt den generella regeln (4.14): varje ändring är ett steg som kan ångras med knappen Undo eller Ctrl/⌘+Z och göras om med Ctrl/⌘+Shift+Z eller Ctrl+Y, upp till 100 steg. Att länka en barriär är ett steg.**
 
 ```gherkin
 Feature: Ångra och gör om
@@ -303,8 +303,6 @@ Feature: Ångra och gör om
 
 - Dragfält mellan zonerna i diagrammet.
 - Hjälpdialogens innehåll utöver det som redan finns (*Help – Keyboard shortcuts*).
-- En egen knapp för gör om (som i HTA och STPA).
-- Temat i ångra-historiken: ljust eller mörkt tema är en inställning och inget steg.
 
 ## 5. Öppna punkter att avgöra vid bygget
 

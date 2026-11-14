@@ -2,7 +2,7 @@
 
 **Status:** decided (2026-11-10). The title bar, the panel with the Add commands, the legend and the arrow navigation are built, and since 2026-11-14 also the barrier width and undo/redo; the rest waits. The look is drawn in Penpot (the Bowtie file); tests and the build wait until the graphics have been reviewed. Swedish version: [design-bowtie.md](design-bowtie.md).
 
-The general rules are in the design principles ([4.10 the title bar](design-principles.md), [4.11 drag bar](design-principles.md), [4.12 views and legend](design-principles.md), [4.13 panels](design-principles.md) and [5.10](design-principles.md)). This document describes what applies to Bowtie. The same pattern as [design-stpa.en.md](design-stpa.en.md): general rules in the design principles, the tool's own requirements here.
+The general rules are in the design principles ([4.10 the title bar](design-principles.md), [4.11 drag bar](design-principles.md), [4.12 views and legend](design-principles.md), [4.13 panels](design-principles.md), [4.14 undo and redo](design-principles.md) and [5.10](design-principles.md)). This document describes what applies to Bowtie. The same pattern as [design-stpa.en.md](design-stpa.en.md): general rules in the design principles, the tool's own requirements here.
 
 ## 1. Goal
 
@@ -17,7 +17,7 @@ Bowtie must have **the same structure as HTA and STPA**, so that someone who kno
 5. **The legend** is in a column of its own beside the panel, `sunken` with a border, and can be folded with ▾ (4.12). It no longer rises when the mouse passes, and it never covers the diagram.
 6. **Typography.** All texts are bound to typography tokens (Open Sans).
 7. **The width of a barrier follows its text.** A barrier is as wide as the longest word in its description, between **6 characters** (the mean word length in Swedish technical text, 5.7, rounded up) and **12 characters**. Words longer than 12 characters are hyphenated. There are 4 px between the border and the text sideways and 8 px vertically. The background is below the table.
-8. **Undo and redo** work as in HTA and STPA: the *Undo* button in the title bar and Ctrl/⌘+Z undo, Ctrl/⌘+Shift+Z and Ctrl+Y redo. There is no button of its own for redo.
+8. **Undo and redo** follow the general rule in the design principles ([4.14](design-principles.md)). What is specific to Bowtie: the link mode for a barrier is one step, which is kept when the links are applied or cancelled.
 
 **The width of a barrier in numbers.** A character counts as 0.543 em, measured on long Swedish compounds in Open Sans (7.6 px at 14 px text). The width is the number of characters times the character width plus the side padding (2 × 4 px).
 
@@ -232,7 +232,7 @@ Feature: The width of a barrier
 
 ### BOWTIE-UNDO: undo and redo
 
-**Every change is a step that can be undone with the Undo button or Ctrl/⌘+Z and redone with Ctrl/⌘+Shift+Z or Ctrl+Y, up to 100 steps. New and an AI proposal can be undone, Open… starts a new history, and in a text field Ctrl/⌘+Z is the field's own undo.**
+**Bowtie undoes and redoes by the general rule (4.14): every change is a step that can be undone with the Undo button or Ctrl/⌘+Z and redone with Ctrl/⌘+Shift+Z or Ctrl+Y, up to 100 steps. Linking a barrier is one step.**
 
 ```gherkin
 Feature: Undo and redo
@@ -303,8 +303,6 @@ Feature: Undo and redo
 
 - Drag bars between the zones of the diagram.
 - The content of the help dialog beyond what is already there (*Help – Keyboard shortcuts*).
-- A button of its own for redo (as in HTA and STPA).
-- The theme in the undo history: light or dark theme is a setting and not a step.
 
 ## 5. Open points to settle during the build
 
