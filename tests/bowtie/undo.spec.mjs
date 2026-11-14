@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
 import { openTool } from "../lib/page.mjs";
 
-// Undo and redo, as in HTA and STPA: the Undo button, Ctrl/⌘+Z, Ctrl/⌘+Shift+Z and Ctrl+Y.
+// Undo and redo, as in HTA and STPA: the Undo button, Ctrl/⌘+Z, Ctrl/⌘+Shift+Z and Ctrl+Y (docs/design-bowtie.md, BOWTIE-UNDO).
 const T = tool("bowtie");
 
 const summary = (page) => page.evaluate(() => {
@@ -27,7 +27,7 @@ test.describe("Bowtie: undo and redo", () => {
   });
   test.afterEach(() => expect(errors).toEqual([]));
 
-  test("the Undo button is enabled and says its key; with nothing to undo it says so", async ({ page }) => {
+  test("BOWTIE-UNDO-1: the Undo button is enabled and says its key; with nothing to undo it says so", async ({ page }) => {
     const btn = page.locator('[data-action="undo"]');
     await expect(btn).toBeEnabled();
     await expect(btn).toHaveAttribute("title", "Undo the last change (Ctrl/⌘+Z)");
@@ -35,7 +35,7 @@ test.describe("Bowtie: undo and redo", () => {
     await expect(status(page)).toHaveText("Nothing to undo");
   });
 
-  test("Ctrl+Z undoes one change at a time; Ctrl+Shift+Z and Ctrl+Y redo them", async ({ page }) => {
+  test("BOWTIE-UNDO-2: Ctrl+Z undoes one change at a time; Ctrl+Shift+Z and Ctrl+Y redo them", async ({ page }) => {
     const start = await summary(page);
     await page.click('[data-action="addCause"]');
     await editP1(page, "Edited barrier");
@@ -57,7 +57,7 @@ test.describe("Bowtie: undo and redo", () => {
     await expect(status(page)).toHaveText("Nothing to redo");
   });
 
-  test("undoing back to the opened diagram leaves no unsaved changes", async ({ page }) => {
+  test("BOWTIE-UNDO-3: undoing back to the opened diagram leaves no unsaved changes", async ({ page }) => {
     await page.click('[data-action="addCause"]');
     expect(await page.evaluate(() => BowtieEditor.hasUnsavedChanges())).toBe(true);
     await keys(page);
@@ -65,7 +65,7 @@ test.describe("Bowtie: undo and redo", () => {
     expect(await page.evaluate(() => BowtieEditor.hasUnsavedChanges())).toBe(false);
   });
 
-  test("a new change after an undo drops the redo steps", async ({ page }) => {
+  test("BOWTIE-UNDO-4: a new change after an undo drops the redo steps", async ({ page }) => {
     await page.click('[data-action="addCause"]');
     await keys(page, "Control+z");
     await page.click('[data-action="addConsequence"]');
@@ -73,7 +73,7 @@ test.describe("Bowtie: undo and redo", () => {
     await expect(status(page)).toHaveText("Nothing to redo");
   });
 
-  test("in a text field Ctrl+Z is the field's own undo and leaves the diagram alone", async ({ page }) => {
+  test("BOWTIE-UNDO-5: in a text field Ctrl+Z is the field's own undo and leaves the diagram alone", async ({ page }) => {
     const start = await summary(page);
     await page.click('[data-action="addCause"]');
     await editP1(page, "Typing");
@@ -81,7 +81,7 @@ test.describe("Bowtie: undo and redo", () => {
     expect((await summary(page)).causes).toBe(start.causes + 1);
   });
 
-  test("linking a barrier is one step", async ({ page }) => {
+  test("BOWTIE-UNDO-6: linking a barrier is one step", async ({ page }) => {
     const start = await summary(page);
     await page.locator("#b-p2").click({ position: { x: 3, y: 3 } }); // link mode
     await keys(page, "1", "2", "Enter");
@@ -92,7 +92,7 @@ test.describe("Bowtie: undo and redo", () => {
     expect((await summary(page)).p2).not.toBe(start.p2);
   });
 
-  test("Ctrl+Z undoes New", async ({ page }) => {
+  test("BOWTIE-UNDO-7: Ctrl+Z undoes New", async ({ page }) => {
     const before = await page.evaluate(() => BowtieEditor.getState().hazard.label);
     await page.click('[data-action="newDiagram"]');
     const dlg = page.locator("dialog.confirm-dialog");
