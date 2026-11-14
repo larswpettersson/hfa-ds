@@ -1,8 +1,8 @@
 # Design: Bowtie
 
-**Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
+**Status:** beslutat (2026-11-10). Titelraden, panelen med Add-kommandona, legenden och pilnavigeringen är byggda, och sedan 2026-11-14 också barriärbredden och ångra/gör om; resten väntar. Utseendet är ritat i Penpot (Bowtie-filen); tester och bygge väntar tills grafiken är granskad. Engelsk version: [design-bowtie.en.md](design-bowtie.en.md).
 
-De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
+De generella reglerna står i designprinciperna ([4.10 titelraden](designprinciper.md), [4.11 dragfält](designprinciper.md), [4.12 vyer och legend](designprinciper.md), [4.13 paneler](designprinciper.md), [4.14 ångra och gör om](designprinciper.md) och [5.10](designprinciper.md)). Det här dokumentet beskriver det som gäller för Bowtie. Samma mönster som [design-stpa.md](design-stpa.md): generella regler i designprinciperna, verktygets egna krav här.
 
 ## 1. Mål
 
@@ -16,6 +16,20 @@ Bowtie ska ha **samma struktur som HTA och STPA**, så att den som kan ett verkt
 4. **Titelrad och analyspanel.** Titelraden (4.10, *Tool* = *Bowtie*) går över appytan. Analyspanelen (420 px, titeln *Bowtie analysis*) går i full höjd längst till höger med ett dragfält emellan (4.11). När panelen är stängd går titelraden över hela bredden och har *Hide panel* längst till höger.
 5. **Legenden** ligger i en egen kolumn bredvid panelen, `sunken` med kant, och är vikbar med ▾ (4.12). Den höjer sig inte längre när musen passerar, och den täcker aldrig diagrammet.
 6. **Typografi.** Alla texter är bundna till typografitokens (Open Sans).
+7. **Barriärens bredd följer texten.** En barriär är så bred som det längsta ordet i beskrivningen, mellan **6 tecken** (medelordlängden i svensk facktext, 5,7, avrundad uppåt) och **12 tecken**. Ord som är längre än 12 tecken avstavas. Kanten och texten har 4 px emellan i sidled och 8 px i höjdled. Bakgrunden står under tabellen nedan.
+8. **Ångra och gör om** följer den generella regeln i designprinciperna ([4.14](designprinciper.md)). Det som är eget för Bowtie: länkläget för en barriär är ett steg, som sparas när länkarna verkställs eller avbryts.
+
+**Barriärens bredd i siffror.** Ett tecken räknas som 0,543 em, uppmätt på långa svenska sammansättningar i Open Sans (7,6 px vid 14 px text). Bredden är antalet tecken gånger teckenbredden plus sidopaddingen (2 × 4 px).
+
+| | Tecken | Penpot (14 px text) | Koden (16 px text) |
+|---|---|---|---|
+| Minsta bredd | 6 | 54 px | 60 px |
+| Största bredd | 12 | 100 px | 112 px |
+
+- **Varför 6 och 12.** I svensk facktext är medelordlängden 5,4–6,0 tecken, 90 % av löporden är högst 11 tecken och 95 % högst 13 (Sigurd m.fl. 2004; Björnsson 1968). Barriärtexter består mest av facktermer och har fler långa ord än löptext, så en del ord avstavas.
+- **En kolumn är så bred som sin bredaste barriär.** En barriär med korta ord i samma kolumn som en med långa ord blir lika bred som den.
+- **I koden** är barriärkolumnerna `min-content`, och barriären har `min-width` och `max-width`. En osynlig kopia av hela beskrivningen utan avstavning ger bredden, så att den synliga texten kan avstavas (`hyphens: auto`) utan att barriären krymper till minsta bredd.
+- **I Penpot** har main component *Barrier* (HFA DS, nio varianter) horisontell storlek *Fill* med min 54 och max 100. Penpot kan inte låta bredden följa längsta ordet, se öppna punkter.
 
 Dragfält mellan zonerna i diagrammet (orsaker, topphändelse, konsekvenser) finns inte, eftersom zonerna inte är paneler.
 
@@ -175,6 +189,116 @@ Feature: Indikering, markering och pilnavigering
     And "C3" är inte markerad
 ```
 
+### BOWTIE-WIDTH: barriärens bredd
+
+**En barriär är så bred som det längsta ordet i sin beskrivning, minst 6 och högst 12 tecken bred. En kolumn är så bred som sin bredaste barriär, och ord som är längre än största bredden bryts.**
+
+```gherkin
+Feature: Barriärens bredd
+  Background:
+    Given Bowtie är öppen med exempeldiagrammet
+    And barriären "P4" står ensam i sin kolumn
+
+  @BOWTIE-WIDTH-1
+  Scenario: Bredden följer det längsta ordet
+    When beskrivningen av "P4" är "Backventil på ledning"
+    Then "P4" är så bred som ordet "Backventil" plus sidopadding och kant
+    And bredden ligger mellan minsta och största bredd
+
+  @BOWTIE-WIDTH-2
+  Scenario: Korta ord ger minsta bredden
+    When beskrivningen av "P4" är "Lås på lucka"
+    Then "P4" har minsta bredden (6 tecken)
+
+  @BOWTIE-WIDTH-3
+  Scenario: Ett ord som är längre än största bredden bryts
+    When beskrivningen av "P4" är "Skydd vid extremvädersförhållanden"
+    Then "P4" har största bredden (12 tecken)
+    And texten sticker inte ut utanför barriären i sidled
+
+  @BOWTIE-WIDTH-4
+  Scenario: En kolumn är så bred som sin bredaste barriär
+    Given "P1", "P2" och "P3" står i samma kolumn
+    When beskrivningen av "P2" är "Vakt vid port" och "P1" har ett ord som är längre än 12 tecken
+    Then "P1", "P2" och "P3" är lika breda
+
+  @BOWTIE-WIDTH-5
+  Scenario: Bredden och kopplingslinjerna följer med medan man skriver
+    Given beskrivningen av "P4" är "Lås på lucka"
+    When användaren skriver "Hastighetsövervakning" i beskrivningen utan att lämna fältet
+    Then "P4" har största bredden
+    And kopplingslinjerna slutar fortfarande vid kortens och barriärernas kanter
+```
+
+### BOWTIE-UNDO: ångra och gör om
+
+**Bowtie ångrar och gör om enligt den generella regeln (4.14): varje ändring är ett steg som kan ångras med knappen Undo eller Ctrl/⌘+Z och göras om med Ctrl/⌘+Shift+Z eller Ctrl+Y, upp till 100 steg. Att länka en barriär är ett steg.**
+
+```gherkin
+Feature: Ångra och gör om
+  Background:
+    Given Bowtie är öppen med exempeldiagrammet
+
+  @BOWTIE-UNDO-1
+  Scenario: Knappen Undo är aktiv och säger till när det inte finns något att ångra
+    Then knappen Undo är aktiv och verktygstipset är "Undo the last change (Ctrl/⌘+Z)"
+    When användaren klickar Undo
+    Then statusmeddelandet är "Nothing to undo"
+
+  @BOWTIE-UNDO-2
+  Scenario: Ctrl/⌘+Z ångrar en ändring i taget, Ctrl/⌘+Shift+Z och Ctrl+Y gör om
+    Given användaren har lagt till en orsak och ändrat beskrivningen av "P1"
+    When användaren trycker Ctrl/⌘+Z
+    Then beskrivningen av "P1" är som förut och den nya orsaken finns kvar
+    When användaren trycker Ctrl/⌘+Z igen
+    Then den nya orsaken är borta
+    When användaren trycker Ctrl/⌘+Shift+Z och sedan Ctrl+Y
+    Then båda ändringarna är tillbaka
+    When användaren trycker Ctrl+Y igen
+    Then statusmeddelandet är "Nothing to redo"
+
+  @BOWTIE-UNDO-3
+  Scenario: Att ångra tillbaka till det öppnade diagrammet lämnar inga osparade ändringar
+    Given användaren har lagt till en orsak
+    When användaren klickar Undo
+    Then diagrammet har inga osparade ändringar
+
+  @BOWTIE-UNDO-4
+  Scenario: En ny ändring efter en ångring tar bort stegen att göra om
+    Given användaren har lagt till en orsak och ångrat det
+    When användaren lägger till en konsekvens och trycker Ctrl/⌘+Shift+Z
+    Then statusmeddelandet är "Nothing to redo"
+
+  @BOWTIE-UNDO-5
+  Scenario: I ett textfält är Ctrl/⌘+Z fältets egen ångra
+    Given användaren har lagt till en orsak och skriver i beskrivningen av "P1"
+    When användaren trycker Ctrl/⌘+Z i fältet
+    Then den nya orsaken finns kvar
+
+  @BOWTIE-UNDO-6
+  Scenario: Att länka en barriär är ett steg
+    Given användaren har ändrat vilka orsaker "P2" skyddar i länkläget och verkställt med Enter
+    When användaren trycker Ctrl/⌘+Z
+    Then "P2" skyddar samma orsaker som förut
+    When användaren trycker Ctrl/⌘+Shift+Z
+    Then ändringen är tillbaka
+
+  @BOWTIE-UNDO-7
+  Scenario: Ctrl/⌘+Z ångrar New
+    When användaren klickar New
+    Then frågan säger "Ctrl/⌘+Z undoes it"
+    When användaren svarar New och sedan trycker Ctrl/⌘+Z
+    Then det tidigare diagrammet är tillbaka
+
+  @BOWTIE-UNDO-8 @later
+  Scenario: Ett AI-förslag kan ångras, och Open… startar en ny historik
+    Given användaren har tillämpat ett förslag från analyspanelen
+    When användaren trycker Ctrl/⌘+Z
+    Then diagrammet är som före förslaget
+    When användaren öppnar en fil och trycker Ctrl/⌘+Z
+    Then statusmeddelandet är "Nothing to undo"
+```
+
 ## 4. Det som inte ingår
 
 - Dragfält mellan zonerna i diagrammet.
@@ -188,6 +312,10 @@ Feature: Indikering, markering och pilnavigering
 - **Skärmens bredd.** Det öppna läget är 2014 px bred, eftersom diagrammet (1294 px) och legenden behåller sin storlek. Det är bredare än STPA och HTA. Det avgörs vid granskningen.
 - **Hover-höjningen** tas bort ur Bowtie-koden vid bygget.
 - **Pilnavigering** är byggd (BOWTIE-NAV och BOWTIE-SEL ovan): pilarna följer skärmen och gäller bara riktningen (ett objekt långt åt sidan räknas inte), och att flytta har gått från pilarna till Alt/Option+pil, också i länkläget för barriärer. Länkläget i övrigt är oförändrat.
+
+- **Barriärens bredd i Penpot.** Penpot har ingen storleksregel som följer längsta ordet i en radbruten text, och min/max gäller bara när storleken är *Fill*. I Bowtie-filen är barriärkolumnerna därför fasta, och bredden räknas om med ett skript när en text ändras. Ett önskemål om innehållsstyrd storlek med min/max är formulerat för Penpots utvecklare.
+- **Textstorlek i barriären.** Penpot har 14 px beskrivning och 12 px id, koden har 16 px för båda. Gränserna är satta i tecken och ger därför olika pixelvärden (se tabellen i avsnitt 2). Vilken storlek som ska gälla avgörs vid granskningen.
+- **Barriärtokens.** Teckenbredden 0,543 em och gränserna 6 och 12 tecken finns bara i Bowtie-koden och i Penpot-komponenten, inte i `tokens.json`.
 
 ## 6. Nästa steg
 

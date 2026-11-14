@@ -437,7 +437,7 @@ Analysfilen hanteras på samma sätt i alla verktyg, som i de flesta program (Wi
 |---|---|---|
 | STPA | Saknas; bara *Load preset…* och *New chat* (rensar bara samtalet) | **Open…** och **Save** |
 | HTA | **New** (2026-11-04) | **Open…** och **Save**; Open… frågar om osparade ändringar |
-| Bowtie | **New** (2026-11-04); kan inte ångras, eftersom Bowtie saknar ångra | **Open…** och **Save**; Open… frågar om osparade ändringar |
+| Bowtie | **New** (2026-11-04) | **Open…** och **Save**; Open… frågar om osparade ändringar |
 | Penpot (HFA DS) | **New** (komponenten Action Button) | **Open…** och **Save** (komponenten Action Button) |
 
 Införs i verktygen efter hand.
@@ -493,7 +493,7 @@ Varje verktyg har en titelrad överst, lika i alla verktyg:
 - **Generella kommandon för hela applikationen** ligger efter namnet: *New*, *Open…*, *Save…*, *Undo*, *Settings…* och *?* (hjälp). De är **Compact Button**, en lägre variant av Action Button (28 px) med tillstånden *Default*, *Hovered* och *Pressed*.
 - **Theme och panelväxlingen** (*Hide panel*, 4.7) ligger längst till höger. Theme är en växlingsknapp med sol i ljust läge och halvmåne i mörkt. Nya generella knappar läggs i den högra gruppen.
 - **Verktygsspecifika kommandon** hör inte hemma i titelraden. Add-kommandona i STPA, HTA och Bowtie ligger i en rad över diagrammet (5.10).
-- **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla (till exempel *Undo*). Det är bara appnamnet som skiljer.
+- **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla. *Undo* fungerar i alla verktyg (4.14). Det är bara appnamnet som skiljer.
 - **Raden är responsiv i verktygen.** Bredden 1440 px gäller bara komponenten *Title bar* i HFA DS (varianterna `Tool` = STPA, HTA, Bowtie); i verktyget fyller raden bredden och den högra gruppen ligger kvar längst till höger.
 
 **Nuläge (2026-11-12):** titelraden med 28 px höga knappar är byggd i HTA, Bowtie och STPA, och temaväxlaren (komponenten *Theme*, 44 × 24, `role="switch"` med namnet *Dark theme*) ersätter knappen *Theme* i alla tre; testet `tests/shared/theme-toggle.spec.mjs` kontrollerar det. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.
@@ -532,6 +532,30 @@ Alla verktyg har sina paneler uppbyggda på samma sätt:
 - **Tangenten visas på knappen som en understruken bokstav i texten**, till exempel Add <u>B</u>elow, inte bara i verktygstipset (5.10).
 
 **Nuläge (2026-11-10):** ritad i Penpot för HTA, Bowtie och STPA, inte byggd. I STPA ligger *Add Below*, *Add Beside* och *Add Above* på samma rad som vybarens titel *▾ CONTROL STRUCTURE*, och *Convert to actuator*, *Convert to sensor* och *Delete* i en rad under.
+
+### 4.14 Ångra och gör om
+
+Alla verktyg ångrar och gör om på samma sätt:
+
+- **Undo i titelraden och Ctrl/⌘+Z ångrar** den senaste ändringen (4.10). **Ctrl/⌘+Shift+Z gör om**, och Ctrl+Y gör samma sak. Det finns ingen egen knapp för gör om.
+- **Varje ändring är ett steg.** Det som användaren gör som en handling är ett steg, även när det ändrar flera saker: ett tillägg med sina länkar, en borttagning med det som hör till (5.10), en flytt av flera markerade objekt (5.6) eller ett läge som verkställs (till exempel länkläget i Bowtie).
+- **Minst 100 steg** sparas. En ny ändring efter en ångring tar bort stegen som kunde göras om.
+- **Det som ersätter hela analysen går att ångra** när det sker inne i verktyget: *New* (4.3) och ett förslag från AI-stödet (1.3). **Open… startar en ny historik**, eftersom en annan fil har öppnats.
+- **I ett textfält är Ctrl/⌘+Z fältets egen ångra** och rör inte analysen. När texten är verkställd är ändringen ett steg.
+- **Ett kort statusmeddelande** säger *Undo* eller *Redo*, och *Nothing to undo* eller *Nothing to redo* när det inte finns något steg. Knappen *Undo* är alltid aktiv.
+- **Temat är inget steg**, eftersom det är en inställning och inte en del av analysen.
+- **Att ångra tillbaka till den öppnade eller sparade analysen** lämnar inga osparade ändringar (4.4).
+- **Verktyget frågar inte före en ändring som kan ångras** (4.2); meddelandet säger i stället att Ctrl/⌘+Z ångrar.
+
+**Nuläge (2026-11-14):**
+
+| Verktyg | Undo-knapp och Ctrl/⌘+Z | Gör om | Steg |
+|---|---|---|---|
+| HTA | Ja | Ctrl/⌘+Shift+Z och Ctrl+Y | 100 |
+| STPA | Ja | Ctrl/⌘+Shift+Z och Ctrl+Y (2026-11-14) | 200 |
+| Bowtie | Ja (2026-11-14) | Ctrl/⌘+Shift+Z och Ctrl+Y | 100 |
+
+Reglerna om textfält, statusmeddelanden och osparade ändringar är byggda och testade i Bowtie (`tests/bowtie/undo.spec.mjs`); de är inte kontrollerade i HTA och STPA.
 
 ## 5. Navigera, markera och flytta objekt
 
@@ -605,7 +629,7 @@ Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma m�
 
 - **Alt/Option+pil flyttar alla markerade objekt ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. Vanliga pilar navigerar (5.2) och flyttar aldrig.
 - **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
-- **Varje flytt går att ångra** med Ctrl/⌘+Z där verktyget har ångra.
+- **Varje flytt går att ångra** med Ctrl/⌘+Z (4.14).
 - Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
 
 ### 5.7 Objekt överlappar aldrig
