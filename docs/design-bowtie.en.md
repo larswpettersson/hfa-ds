@@ -223,7 +223,7 @@ Feature: Indication, selection and arrow navigation
 
 ### BOWTIE-TEXT: the viewable text
 
-**A text is shown with at most 100 characters (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited.**
+**A text is shown with at most 100 characters (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited, and in a tooltip while the object is hovered or indicated with the arrow keys (5.11). Enter removes the tooltip.**
 
 ```gherkin
 Feature: The viewable text
@@ -233,6 +233,23 @@ Feature: The viewable text
     When the text editing mode ends
     Then the top event shows the first 100 characters followed by "..."
     And the saved diagram still holds all 150 characters
+
+  @BOWTIE-TEXT-2
+  Scenario: Hovering an object with a capped text shows the full text
+    Given the cause "C1" has a text of 159 characters
+    When the mouse is over "C1"
+    Then a tooltip next to "C1" shows all 159 characters
+    When the mouse leaves "C1"
+    Then the tooltip is gone
+
+  @BOWTIE-TEXT-3
+  Scenario: An arrow shows the tooltip too, and Enter removes it
+    Given the cause "C2" has a short text and is indicated
+    Then there is no tooltip
+    When the user presses ↑ and the indication reaches "C1"
+    Then the tooltip with the full text of "C1" is shown
+    When the user presses Enter
+    Then the tooltip is gone and the text of "C1" has a text cursor
 ```
 
 ### BOWTIE-LINK: linking a barrier to causes and consequences

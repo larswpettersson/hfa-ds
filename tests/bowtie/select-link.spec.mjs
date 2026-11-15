@@ -115,3 +115,45 @@ test.describe("Bowtie: select, edit, move and link", () => {
     await expect(bar).toBeHidden();
   });
 });
+
+test.describe("Bowtie: tooltip for a capped text", () => {
+  let errors;
+  test.beforeEach(async ({ page }) => {
+    test.skip(!toolExists(T), `${T.file} not found in the workspace`);
+    await page.setViewportSize({ width: 2100, height: 1000 });
+    ({ errors } = await openTool(page, T));
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+    await page.waitForSelector("#b-p4");
+    await page.mouse.move(2, 2);
+    const long = "Ord ".repeat(40).trim(); // 159 characters
+    await page.evaluate((t) => {
+      const st = BowtieEditor.getState();
+      st.topEvent.description = t;
+      st.left.causes[0].description = t;
+      BowtieEditor.replaceState(st);
+    }, long);
+  });
+  test.afterEach(() => expect(errors).toEqual([]));
+
+  const cap = (page) => page.locator(".cap-tip");
+
+  test("BOWTIE-TEXT-2: hovering an object with a capped text shows the full text", async ({ page }) => {
+    await page.locator("#c-C1").hover();
+    await expect(cap(page)).toBeVisible();
+    expect((await cap(page).textContent()).length).toBeGreaterThan(100);
+    await page.mouse.move(2, 2);
+    await expect(cap(page)).toBeHidden();
+  });
+
+  test("BOWTIE-TEXT-3: an arrow that reaches such an object shows it too, and Enter removes it", async ({ page }) => {
+    await page.locator("#c-C2").hover();
+    await expect(cap(page)).toBeHidden(); // C2's text is short
+    await page.keyboard.press("ArrowUp");
+    await expect(page.locator("#c-C1")).toHaveClass(/is-keyboard-hover/);
+    await expect(cap(page)).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(cap(page)).toBeHidden();
+    expect(await page.evaluate(() => document.activeElement?.dataset.role)).toBe("description");
+  });
+});

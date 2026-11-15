@@ -223,7 +223,7 @@ Feature: Indikering, markering och pilnavigering
 
 ### BOWTIE-TEXT: den synliga texten
 
-**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras.**
+**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras, och i ett verktygstips medan objektet hovras eller indikeras med piltangenterna (5.11). Enter tar bort verktygstipset.**
 
 ```gherkin
 Feature: Den synliga texten
@@ -233,6 +233,23 @@ Feature: Den synliga texten
     When textredigeringsläget avslutas
     Then topphändelsen visar de första 100 tecknen följda av "..."
     And den sparade filen innehåller fortfarande alla 150 tecknen
+
+  @BOWTIE-TEXT-2
+  Scenario: Att hovra ett objekt med kortad text visar hela texten
+    Given orsaken "C1" har en text på 159 tecken
+    When musen är över "C1"
+    Then ett verktygstips intill "C1" visar alla 159 tecknen
+    When musen lämnar "C1"
+    Then verktygstipset är borta
+
+  @BOWTIE-TEXT-3
+  Scenario: En pil visar verktygstipset också, och Enter tar bort det
+    Given orsaken "C2" har en kort text och är indikerad
+    Then finns inget verktygstips
+    When användaren trycker ↑ och indikeringen når "C1"
+    Then visas verktygstipset med hela texten i "C1"
+    When användaren trycker Enter
+    Then är verktygstipset borta och texten i "C1" har en textmarkör
 ```
 
 ### BOWTIE-LINK: koppla en barriär till orsaker och konsekvenser
