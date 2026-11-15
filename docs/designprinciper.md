@@ -693,6 +693,14 @@ Samma i alla verktyg, för varje objekt som har en text: en uppgift i HTA, en or
 
 - **Ett klick var som helst på ett objekt markerar objektet, texten inräknad.** Musen sätter aldrig en textmarkör i objektets text, och ett klick på texten är ingen väg in i redigering. Ctrl/⌘+Enter på det indikerade objektet gör samma sak som klicket (5.4).
 - **Enter, eller F2, redigerar texten** i det objekt som är markerat eller indikerat. Textmarkören hamnar i objektets text, Enter bekräftar och Esc avbryter (5.3). Shift+Enter ger en ny rad i en text med flera rader.
+- **Vad som händer i textredigeringsläget:**
+  - **Objektet ser inte längre markerat eller indikerat ut.** Markeringsskuggan och den hovrade skuggan tas bort, så att bara textmarkören visar var man är (5.3: indikering, markering och redigering är skilda).
+  - **Hela texten visas**, också när den annars kortas på skärmen, så att inget redigeras i blindo.
+  - **Tangenterna tillhör texten.** Pilarna flyttar textmarkören och flyttar inget objekt, och Ctrl/⌘+Z är fältets egen ångra (4.14). Bokstavstangenterna och verktygets övriga kommandon är avstängda (5.4). I ett verktyg där bredd eller radbrytning beror på texten, som barriärens bredd i Bowtie, följer de med medan man skriver.
+  - **Enter bekräftar.** Texten sparas, visas kortad igen, och objektet blir **markerat**, så att nästa pil flyttar det (5.6). Ctrl/⌘+Enter bekräftar på samma sätt; i Bowtie går en barriär in i länkläget.
+  - **Esc avbryter.** Texten går tillbaka till vad den var, och objektet får **indikeringen** men blir inte markerat.
+  - **Ett klick någon annanstans bekräftar** redigeringen och markerar det som klickades på (samma som Enter följt av klicket).
+  - **En bekräftad redigering är ett ångra-steg** (4.14).
 - **Id:n går inte att redigera.** Ett id (C1, P2, 1.1) ges av verktyget och visas som vanlig text. Det är inget fält, har ingen textmarkör, och Tab stannar inte där. Ett id ändras bara genom verktygets egna kommandon, till exempel när uppgifter numreras om.
 - **Medan en text redigeras** flyttar ett klick i den textmarkören som vanligt. Ett klick någon annanstans bekräftar redigeringen och markerar det som klickades på.
 - **En text kan kortas på skärmen.** Ett verktyg får visa bara de första 100 tecknen av en lång text med tre punkter (`...`) efter. Hela texten finns kvar och visas medan texten redigeras. Tre punkter används, inte tecknet `…`, så att kortningen ser likadan ut i alla verktyg och i den sparade filen.

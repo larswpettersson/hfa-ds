@@ -693,6 +693,14 @@ The same in every tool, for every object that has a text: a task in HTA, a cause
 
 - **A click anywhere on an object selects the object, the text included.** The mouse never puts a text cursor in an object's text, and a click on the text is not a way into editing it. Ctrl/⌘+Enter on the indicated object does the same as the click (5.4).
 - **Enter, or F2, edits the text** of the object that is selected or indicated. The text cursor goes to the object's text, Enter confirms and Esc cancels (5.3). Shift+Enter gives a new line in a text that has several lines.
+- **What happens in the text editing mode:**
+  - **The object stops looking selected or indicated.** The selection shadow and the hovered shadow are removed, so that only the text cursor shows where you are (5.3: indication, selection and editing are separate).
+  - **The full text is shown**, also when it is capped on screen, so that nothing is edited blind.
+  - **The keys belong to the text.** Arrows move the text cursor and move no object, and Ctrl/⌘+Z is the field's own undo (4.14). The letter keys and the other commands of the tool are off (5.4). A tool whose width or lines depend on the text, such as the width of a barrier in Bowtie, follows while the user types.
+  - **Enter confirms.** The text is stored, shown capped again, and the object is **selected**, so that the next arrow moves it (5.6). Ctrl/⌘+Enter confirms the same way; in Bowtie a barrier goes into link mode.
+  - **Esc cancels.** The text goes back to what it was, and the object gets the **indication** but is not selected.
+  - **A click elsewhere confirms** the edit and selects what was clicked (the same as Enter followed by the click).
+  - **One confirmed edit is one undo step** (4.14).
 - **Ids cannot be edited.** An id (C1, P2, 1.1) is given by the tool and is shown as plain text. It is not a field, it has no text cursor, and Tab does not stop at it. A change of id happens only through the tool's own commands, for example when tasks are renumbered.
 - **While a text is being edited**, a click inside it moves the text cursor as usual. A click anywhere else confirms the edit and selects what was clicked.
 - **A text can be capped on screen.** A tool may show only the first 100 characters of a long text with three dots (`...`) after it. The full text is kept, and is shown while the text is edited. Three dots are used, not the single character `…`, so that the cap looks the same in every tool and in the saved diagram.
