@@ -231,6 +231,15 @@ Feature: Indikering, markering och pilnavigering
     Then är uppgifterna oförändrade och texten i "1.3" är som förut
     When användaren trycker Enter
     Then är texten i "1.3" fortfarande som förut
+
+  @HTA-TAB-1 @later
+  Scenario: Tab från en redigerad text fortsätter längs hela TTA-raden
+    Given användaren redigerar texten i uppgiften "1.1"
+    When användaren trycker Tab
+    Then bekräftas redigeringen och fokus går till första cellen i TTA-raden för "1.1"
+    When användaren trycker Tab igen
+    Then går fokus till nästa cell i raden, och så vidare till sista kolumnen och sedan till radens ✕-knapp
+    And Shift+Tab går tillbaka på samma sätt
 ```
 
 ## 4. Det som inte ingår
@@ -242,6 +251,7 @@ Feature: Indikering, markering och pilnavigering
 ## 5. Öppna punkter att avgöra vid bygget
 
 - **Pilnavigering** är byggd (HTA-NAV och HTA-SEL ovan): pilarna följer skärmen, och en markerad uppgift flyttas med pilarna, i de riktningar den kan flyttas; Alt/Option+pil gör samma sak (5.6). Markering av flera uppgifter finns inte i HTA (en sort, en i taget), så Shift+Ctrl/⌘+Enter gör inget än.
+- **Tab in i TTA-tabellen (en senare release, `HTA-TAB-1`).** Tab från en redigerad uppgiftstext bekräftar redigeringen och går in i TTA-tabellen, vilket är avsett beteende, men Tab besöker sedan bara de två första kolumnerna i raden. Den ska fortsätta längs hela raden, genom varje synlig kolumn till ✕-knappen. Inte undersökt än; en trolig orsak är att varje cells blur bekräftar redigeringen och ritar om tabellkroppen, vilket ersätter den cell som skulle få fokus. Rättelsen är att behålla fokus genom omritningen (till exempel genom att bara rita om när ett värde har ändrats, eller genom att flytta tillbaka fokus till cellen med samma rad och kolumn efter omritningen). Hittades när första versionen provades för hand (2026-11-15).
 - **Ångra** är byggt i HTA som i de andra verktygen (4.14); medan en uppgifts text redigeras är Ctrl/⌘+Z textfältets egen ångra (`HTA-EDIT-2`).
 - **TTA-tabellens bredd.** I det öppna läget är *TTA Panel* 746 px bred, men de sex kolumnerna är tillsammans cirka 880 px. Tabellen skrollar i sidled eller kolumnerna krymper. Det avgörs vid granskningen.
 - **Tangenten för panelväxlingen.** I dag är den **A**, och planen är att den flyttas till **I** när *Add Above* byggs (4.7). Den delade panelen avgör det vid bygget.

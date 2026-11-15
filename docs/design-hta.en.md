@@ -231,6 +231,15 @@ Feature: Indication, selection and arrow navigation
     Then the tasks are unchanged and the text of "1.3" is the same as before
     When the user presses Enter
     Then the text of "1.3" is still the same
+
+  @HTA-TAB-1 @later
+  Scenario: Tab from an edited text continues along the whole TTA row
+    Given the user is editing the text of the task "1.1"
+    When the user presses Tab
+    Then the edit is confirmed and focus goes to the first cell of the TTA row of "1.1"
+    When the user presses Tab again
+    Then focus goes to the next cell in the row, and so on to the last column and then to the row's ✕ button
+    And Shift+Tab goes back the same way
 ```
 
 ## 4. Not included
@@ -242,6 +251,7 @@ Feature: Indication, selection and arrow navigation
 ## 5. Open points to settle during the build
 
 - **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and a selected task moves with the arrows, in the directions it can move; Alt/Option+arrow does the same (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
+- **Tab into the TTA table (a later release, `HTA-TAB-1`).** Tab from an edited task text confirms the edit and moves into the TTA table, which is the intended behaviour, but Tab then only visits the first two columns of the row. It must continue along the whole row, through every visible column to the ✕ button. Not yet investigated; a likely cause is that each cell's blur confirms the edit and redraws the table body, which replaces the cell that was about to get focus. The fix is to keep focus through the redraw (for example by redrawing only when a value changed, or by restoring focus to the cell with the same row and column after the redraw). Found when the first version was tried by hand (2026-11-15).
 - **Undo** is built in HTA as in the other tools (4.14); while a task's text is edited, Ctrl/⌘+Z is the text field's own undo (`HTA-EDIT-2`).
 - **The width of the TTA table.** In the open state *TTA Panel* is 746 px wide, but the six columns together are about 880 px. The table scrolls sideways or the columns shrink. This is decided at the review.
 - **The key for the panel toggle.** Today it is **A**, and the plan is that it moves to **I** when *Add Above* is built (4.7). The shared panel decides this during the build.
