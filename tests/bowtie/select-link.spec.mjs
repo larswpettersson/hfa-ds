@@ -72,6 +72,7 @@ test.describe("Bowtie: select, edit, move and link", () => {
     await press(page, "Enter");
     const shown = await page.locator(".top-event .desc-text").textContent();
     expect(shown).toBe("x".repeat(100) + "...");
+    expect(await page.evaluate(() => BowtieEditor.getState().topEvent.label)).toBe(long); // the saved diagram keeps all of it
   });
 
   const manyCauses = async (page) => {
@@ -98,9 +99,19 @@ test.describe("Bowtie: select, edit, move and link", () => {
 
   test("BOWTIE-LINK-2: the digits 1–9 link the cause whose id ends in that number, not the row", async ({ page }) => {
     await manyCauses(page);
-    await page.evaluate(() => { const s = BowtieEditor.getState(); const c = s.left.causes.find((c) => c.id === "C3"); c.row = 1; s.left.causes.filter((x) => x !== c).sort((a, b) => a.row - b.row).forEach((x, i) => { x.row = i + 2; }); });
+    // Move C3 to the first row through the app (replaceState), and check that the row and the id now differ.
+    await page.evaluate(() => {
+      const st = BowtieEditor.getState();
+      const c3 = st.left.causes.find((c) => c.id === "C3");
+      st.left.causes = [c3, ...st.left.causes.filter((c) => c !== c3)];
+      BowtieEditor.replaceState(st);
+    });
+    const order = await page.evaluate(() => BowtieEditor.getState().left.causes.map((c) => c.id));
+    expect(order.indexOf("C3")).toBe(0); // row 1 is C3, so "the 3rd row" would be C2
+    await page.locator("#b-p3").click({ position: { x: 3, y: 3 } });
     await page.keyboard.press("Digit3");
     expect(await protects(page, "P3")).toContain("id-C3");
+    expect(await protects(page, "P3")).not.toContain("id-C2");
   });
 
   test("BOWTIE-LINK-3: a bar lists the ids of what the selected barrier protects", async ({ page }) => {
@@ -129,7 +140,7 @@ test.describe("Bowtie: tooltip for a capped text", () => {
     const long = "Ord ".repeat(40).trim(); // 159 characters
     await page.evaluate((t) => {
       const st = BowtieEditor.getState();
-      st.topEvent.description = t;
+      st.topEvent.label = t;
       st.left.causes[0].description = t;
       BowtieEditor.replaceState(st);
     }, long);
@@ -141,7 +152,7 @@ test.describe("Bowtie: tooltip for a capped text", () => {
   test("BOWTIE-TEXT-2: hovering an object with a capped text shows the full text", async ({ page }) => {
     await page.locator("#c-C1").hover();
     await expect(cap(page)).toBeVisible();
-    expect((await cap(page).textContent()).length).toBeGreaterThan(100);
+    expect(await cap(page).textContent()).toBe("Ord ".repeat(40).trim()); // the whole text, not a cut one
     await page.mouse.move(2, 2);
     await expect(cap(page)).toBeHidden();
   });

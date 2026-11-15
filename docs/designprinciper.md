@@ -627,7 +627,9 @@ Pil (navigera, eller flytta ett markerat objekt), Shift+pil (utöka markeringen)
 
 ### 5.6 Flytta markerade objekt
 
-- **En pil flyttar de markerade objekten ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. **Bara de riktningar objektet kan flyttas i räknas:** ett kort flyttas upp och ned men inte i sidled, en barriär åt vänster och höger men inte uppåt eller nedåt. En pil i någon annan riktning gör ingenting. Alt/Option+pil gör samma sak, så att vanan från ritverktyg fungerar. När inget är markerat navigerar pilarna (5.2) och flyttar ingenting.
+- **En pil flyttar det markerade objektet ett steg**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. **Bara de riktningar objektet kan flyttas i räknas:** ett kort flyttas upp och ned men inte i sidled, en barriär åt vänster och höger men inte uppåt eller nedåt. En pil i någon annan riktning gör ingenting. Alt/Option+pil gör samma sak, så att vanan från ritverktyg fungerar. När inget är markerat navigerar pilarna (5.2) och flyttar ingenting.
+- **Vad som flyttas:** ett kort, en uppgift, eller en **grupp barriärer** markerade med Shift+klick, som flyttas tillsammans. **Flera markerade kort flyttas inte som en grupp** (Shift+↑/↓ utökar markeringen, 5.5, och en flytt med flera kort markerade gör ingenting). Att flytta en grupp kort är inte byggt och inte utlovat.
+- **Undantag, per verktyg och läge.** (1) I Bowties länkläge (en barriär är markerad) bläddrar ↑/↓ bland de orsaker eller konsekvenser barriären kan skydda, och ←/→ flyttar barriären. (2) I STPA flyttar pilarna bara indikeringen, eftersom block ännu inte går att flytta med tangenterna; regeln gäller där när blockflytt byggs.
 - **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
 - **Varje flytt går att ångra** med Ctrl/⌘+Z (4.14).
 - Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
@@ -699,13 +701,59 @@ Samma i alla verktyg, för varje objekt som har en text: en uppgift i HTA, en or
   - **Tangenterna tillhör texten.** Pilarna flyttar textmarkören och flyttar inget objekt, och Ctrl/⌘+Z är fältets egen ångra (4.14). Bokstavstangenterna och verktygets övriga kommandon är avstängda (5.4). I ett verktyg där bredd eller radbrytning beror på texten, som barriärens bredd i Bowtie, följer de med medan man skriver.
   - **Enter bekräftar.** Texten sparas, visas kortad igen, och objektet blir **markerat**, så att nästa pil flyttar det (5.6). Ctrl/⌘+Enter bekräftar på samma sätt; i Bowtie går en barriär in i länkläget.
   - **Esc avbryter.** Texten går tillbaka till vad den var, och objektet får **indikeringen** men blir inte markerat.
-  - **Ett klick någon annanstans bekräftar** redigeringen och markerar det som klickades på (samma som Enter följt av klicket).
+  - **Ett klick någon annanstans bekräftar** redigeringen och markerar det som klickades på (samma som Enter följt av klicket). Det gäller också när klicket är på ett annat objekts id eller text: redigeringen bekräftas först, sedan markeras det objektet, även om verktyget ritar om däremellan. **Tab bekräftar också redigeringen** och går vidare, så att ingen ändring går förlorad i tysthet.
+  - **Orsaken till en blur hör till just den blurren.** Efter Enter, Esc eller Tab behandlas nästa, orelaterade blur som ett klick någon annanstans (bekräfta), aldrig som en upprepning av den tidigare orsaken. Ett verktyg får inte spara "det här var Enter" till nästa gång.
   - **En bekräftad redigering är ett ångra-steg** (4.14).
-- **Id:n går inte att redigera.** Ett id (C1, P2, 1.1) ges av verktyget och visas som vanlig text. Det är inget fält, har ingen textmarkör, och Tab stannar inte där. Ett id ändras bara genom verktygets egna kommandon, till exempel när uppgifter numreras om.
+- **Id:n går inte att redigera.** Ett id (C1, P2, 1.1) ges av verktyget och visas som vanlig text. Det är inget fält och har ingen textmarkör. Ett id ändras bara genom verktygets egna kommandon, till exempel när uppgifter numreras om.
 - **Medan en text redigeras** flyttar ett klick i den textmarkören som vanligt. Ett klick någon annanstans bekräftar redigeringen och markerar det som klickades på.
-- **En text kan kortas på skärmen.** Ett verktyg får visa bara de första 100 tecknen av en lång text med tre punkter (`...`) efter. Hela texten finns kvar och visas medan texten redigeras. Tre punkter används, inte tecknet `…`, så att kortningen ser likadan ut i alla verktyg och i den sparade filen.
+- **En text kan kortas på skärmen.** Ett verktyg får visa bara de första 100 tecknen av en lång text med tre punkter (`...`) efter, vilket blir 103 tecken på skärmen. Hela texten finns kvar och visas medan texten redigeras. Tre punkter används, inte tecknet `…`, så att kortningen ser likadan ut i alla verktyg och i den sparade filen.
+- **Den längsta texten är 300 tecken.** Skrivandet stoppas vid 300 och en inklistrad text kortas så att den passar, med en varning. **Från 240 tecken** rekommenderar en varning att man hänvisar till ett annat dokument för detaljerna i stället för att skriva mer i diagrammet. Gränsen gör att varje text går att läsa i ett verktygstips utan att rulla; längre texter som redan finns i en fil behålls som de är, och verktygstipset visar de första 300 tecknen.
+- **Ett klick tar tangenterna från andra fält.** Ett klick på ett objekt flyttar tangentbordsfokus ut ur varje fält utanför diagrammet, till exempel frågefältet i AI-panelen. Utkastet ligger kvar, men Enter efter klicket betyder då "redigera objektet" och inte "skicka frågan". F2 fungerar likadant.
 - **Hovrat (indikerat) läge.** När musen är över ett objekt, eller en pil har pekat ut det, får objektet den hovrade skuggan (5.3) och inget annat: markeringen och texten är oförändrade, ingen textmarkör visas och ingen text expanderas. När musen lämnar objektet, eller vid nästa pil, flyttas indikeringen vidare. Det är likadant för ett objekt med kortad text.
-- **En kortad text i hovrat läge visar ett verktygstips med hela texten.** Texten på objektet slutar fortfarande med `...`. Medan objektet är indikerat, av musen eller av piltangenterna, visar ett verktygstips intill det hela texten. Det försvinner när indikeringen flyttas vidare, och **när man trycker Enter**: textredigeringsläget visar själv hela texten (ovan), och verktygstipset kommer inte tillbaka förrän indikeringen har flyttats. En text som inte är kortad får inget verktygstips.
+- **Verktygstips: W3C-mönstret.** Ett verktygstips är ett `role="tooltip"`-element som objektet pekar på med `aria-describedby` medan det visas (WAI-ARIA Authoring Practices, *Tooltip pattern*). Det visas när musen är över objektet (också i Bowties länkläge, där musen inte sätter någon indikering) och när objektet indikeras med piltangenterna eller har fokus. **Esc tar bort det, och det gör Enter också** (textredigeringsläget visar själv hela texten); det håller sig borta tills pekaren eller indikeringen har flyttats. Det **placeras inte om vid scroll eller ändrad fönsterstorlek; det försvinner**, vilket är vad standardmönstret gör och vad som håller koden liten. Ett verktygstips är aldrig längre än den längsta texten (300 tecken), så det behöver ingen rullning.
+- **Vad ett verktygstips visar:** texten i elementets `data-tip`-attribut, som vilket element som helst i vilket verktyg som helst kan använda (en knapps förklaring, en förkortning), eller annars hela texten i ett objekt vars text är kortad med `...`. En text som inte är kortad får inget verktygstips.
 - **Den röda kvadraten i titelraden** (4.10) är primärfärgen som en variabel verktyget måste definiera i båda teman. Testet `tests/shared/brand-mark.spec.mjs` kontrollerar kvadraten och att titelradens kommandon följer efter namnet från vänster i alla verktyg.
 
-**Nuläge (2026-11-15):** byggt i HTA och Bowtie, med testerna `tests/hta/select-edit.spec.mjs` och `tests/bowtie/select-link.spec.mjs`. STPA markerar redan vid klick och redigerar med Enter (`STPA-SEL-1` till `STPA-SEL-7`). Kortningen till 100 tecken och dess verktygstips är byggda bara i Bowtie.
+**Nuläge (2026-11-15):** byggt i HTA och Bowtie, med testerna `tests/hta/select-edit.spec.mjs`, `tests/bowtie/select-link.spec.mjs` och `tests/bowtie/edit-focus.spec.mjs`. Efter den första granskningen rättades följande i båda verktygen: tangenterna blev kvar i AI-fältet efter ett klick på ett objekt, orsaken till en tidigare Enter läckte över till nästa blur, och Tab kastade redigeringen. I HTA ersatte dessutom Ctrl+Z under redigering en annan uppgifts text, och ett klick på en annan uppgifts id under redigering markerade den inte. STPA markerar redan vid klick och redigerar med Enter (`STPA-SEL-1` till `STPA-SEL-7`) och har egen cellredigering (5.9). Kortningen till 100 tecken, gränsen på 300 tecken och verktygstipset är byggda bara i Bowtie; `data-tip` är kroken för de andra verktygen.
+
+### 5.12 Kortkommandon och webbläsaren
+
+En tangentkombination i ett verktyg konkurrerar med webbläsaren och operativsystemet. Det här avsnittet bokför vad som framkom när Alt+siffror byggdes (Bowties länkläge, `BOWTIE-KEYS-1` till `BOWTIE-KEYS-7`) och vad varje verktyg måste göra när det lägger till en kombination.
+
+**Beslutet.** Ett tal över 9 skrivs med Alt/Option nedtryckt: Alt+1+2, släpp sedan Alt, växlar nummer 12. Siffrorna ensamma (1–9) är redan tagna av länkläget. Ctrl/⌘+siffra är hur webbläsare byter flik på alla plattformar och används aldrig av ett verktyg.
+
+**Regler för ett verktyg som lägger till en kombination**
+1. **Läs `event.code`** (`Digit1`, `Numpad1`), inte `event.key`. På macOS ger Option+1 `key` "¡" med `code` `Digit1`, och tangentbordslayouterna skiljer sig åt.
+2. **Bara utan Ctrl, ⌘ och Shift.** AltGr är Ctrl+Alt i Windows och Linux och skriver tecken på många layouter. Alt+Shift byter inmatningsspråk i Windows. Ctrl/⌘+siffra tillhör webbläsaren.
+3. **Bara när verktyget behöver tangenten.** Utanför länkläget anropar sidan inte `preventDefault`, så webbläsarens eget beteende rörs inte.
+4. **Anropa `preventDefault` på keydown**, så att en webbläsargenväg på samma tangent inte också körs, och **på släppet av Alt** efter en kombination, eftersom ett ensamt Alt-släpp kan ge fokus åt webbläsarens menyrad (Firefox i Windows och Linux).
+5. **Rensa en halvskriven kombination** när fönstret tappar fokus eller läget avslutas.
+6. **Visa den.** Raden i länkläget visar `Alt+1+2 → 12` medan den skrivs (5.11).
+
+**Vad som testas** (`tests/bowtie/alt-digits.cross.spec.mjs`, körs i tre webbläsare med konventionen `*.cross.spec.mjs` i `playwright.config.mjs`)
+
+| Fall | Chromium (Chrome, Edge) | WebKit (Safari) | Firefox |
+|---|---|---|---|
+| Alt+1+2 med riktiga tangenttryck länkar nummer 12 (`KEYS-1`) | ja | ja | ja |
+| macOS Option: andra tecken i `key`, samma `code` (`KEYS-2`) | ja | ja | ja |
+| Sifferblocket (`KEYS-3`) | ja | ja | ja |
+| Sidan tar Alt+siffra och släppet av Alt i länkläget (`KEYS-4`) | ja | ja | ja |
+| Ctrl/⌘+siffra, Ctrl+Alt+siffra (AltGr), Alt+Shift+siffra och Ctrl+Shift+siffra lämnas ifred (`KEYS-5`) | ja | ja | ja |
+| Utanför länkläget tas inget (`KEYS-6`) | ja | ja | ja |
+| Alt+pil flyttar barriären och tas från webbläsarens bakåt/framåt (`KEYS-7`) | ja | ja | ja |
+
+Edge är Chromium med ett annat gränssnitt; testerna körs i Chromium och Edge körs inte separat. Operativsystemet simuleras av de händelser det skickar, inte av själva systemet.
+
+**Vad testerna inte kan visa.** Playwright skickar tangenthändelser till sidan; det trycker inte tangenter i webbläsarfönstret, så en genväg som webbläsaren eller systemet tar **innan** sidan ser den prövas inte. Följande står i tillverkarnas genvägslistor, från minnet och **inte verifierat här**:
+
+| Webbläsare | Windows | macOS | Linux |
+|---|---|---|---|
+| Chrome, Edge | Ctrl+1–8 byter flik; ingen Alt+siffra känd | ⌘+1–8 byter flik; Option+siffra skriver ett tecken | Ctrl+1–8, och enligt uppgift Alt+1–8 i Chrome, byter flik |
+| Firefox | Ctrl+1–9 byter flik; ett ensamt Alt ger menyraden fokus | ⌘+1–9 byter flik | Alt+1–9 byter flik |
+| Safari | – | ⌘+1–9 byter flik; Option+siffra skriver ett tecken | – |
+
+Sidans eget `preventDefault` på keydown stoppar genvägar som webbläsaren inte reserverar, och de reserverade är få (ny flik, nytt fönster och stäng flik) och är inte siffror. Någon krock väntas därför inte, men det är inte bevisat.
+
+**Kontrollera för hand före en release** (varje webbläsare på varje operativsystem den finns för): markera en barriär, håll Alt/Option, tryck 1 och 2, släpp. Väntat: länken till nummer 12 växlar, och ingen flik byts, ingen menyrad får fokus och inget tecken som ¡ eller ™ skrivs. Om en kombination är tagen någonstans är reserven att skriva numret i ett litet fält i länkraden; det är inte byggt.
+
+**CI körs bara på Linux.** Att köra `*.cross.spec.mjs` på Windows- och macOS-runners skulle pröva den riktiga WebKit på macOS och Windowsbyggena av Chromium och Firefox, men fortfarande med syntetiska tangenthändelser, så det ersätter inte kontrollen för hand.

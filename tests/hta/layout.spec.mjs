@@ -64,6 +64,7 @@ test.describe("HTA: panel header rows and title bar", () => {
     const n = await count(page);
     await page.keyboard.type("Cd");
     expect(await count(page)).toBe(n);
+    expect(await page.evaluate(() => document.activeElement?.textContent)).toContain("Cd"); // the letters went into the text
   });
 
   test("HTA-TTA-1: TTA-panelens rubrikrad har titeln och kommandona på samma rad, utan understrykning", async ({ page }) => {

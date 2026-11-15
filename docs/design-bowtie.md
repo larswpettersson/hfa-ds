@@ -223,7 +223,7 @@ Feature: Indikering, markering och pilnavigering
 
 ### BOWTIE-TEXT: den synliga texten
 
-**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras, och i ett verktygstips medan objektet hovras eller indikeras med piltangenterna (5.11). Enter tar bort verktygstipset.**
+**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras, och i ett verktygstips medan objektet hovras eller indikeras med piltangenterna (5.11). Enter och Esc tar bort verktygstipset. Den längsta texten är 300 tecken, med en varning från 240.**
 
 ```gherkin
 Feature: Den synliga texten
@@ -250,6 +250,36 @@ Feature: Den synliga texten
     Then visas verktygstipset med hela texten i "C1"
     When användaren trycker Enter
     Then är verktygstipset borta och texten i "C1" har en textmarkör
+
+  @BOWTIE-TEXT-4
+  Scenario: Den längsta texten är 300 tecken
+    Given orsaken "C1" är i textredigeringsläget
+    When användaren klistrar in 400 tecken
+    Then sätts bara 300 tecken in
+    And en varning säger att den längsta texten är 300 tecken och rekommenderar att man hänvisar till ett annat dokument
+
+  @BOWTIE-TEXT-5
+  Scenario: Från 240 tecken rekommenderar en varning ett annat dokument
+    Given texten i "C1" har 239 tecken i textredigeringsläget
+    Then finns ingen varning
+    When användaren skriver ett tecken till
+    Then säger en varning "240 of 300 characters" och rekommenderar att man hänvisar till ett annat dokument för detaljerna
+
+  @BOWTIE-TEXT-6
+  Scenario: Verktygstipset är ett ARIA-verktygstips, också i länkläget, och Esc tar bort det
+    Given "C1" har en kortad text och barriären "P3" är markerad
+    When musen är över "C1"
+    Then visar ett verktygstips med rollen "tooltip" hela texten, och "C1" pekar på det med aria-describedby
+    When användaren trycker Esc
+    Then är verktygstipset borta och "C1" pekar inte längre på det
+
+  @BOWTIE-TEXT-7
+  Scenario: Varje element med data-tip får ett verktygstips
+    Given en knapp har attributet data-tip "Ångra senaste ändringen"
+    When musen är över knappen
+    Then visar ett verktygstips "Ångra senaste ändringen"
+    When musen lämnar knappen
+    Then är verktygstipset borta
 ```
 
 ### BOWTIE-LINK: koppla en barriär till orsaker och konsekvenser
@@ -284,6 +314,82 @@ Feature: Koppla med nummer
     Then raden visar "C3, C4"
     When användaren trycker Esc
     Then raden är dold
+```
+
+### BOWTIE-EDIT: fokus och övergångarna vid redigering
+
+**Ett klick på ett objekt flyttar tangenterna till diagrammet, en redigering går aldrig förlorad när man går vidare, och Tab bekräftar (5.11).**
+
+```gherkin
+Feature: Fokus och övergångarna vid redigering
+  @BOWTIE-FOCUS-1
+  Scenario: Enter efter ett klick redigerar objektet och skickar inte AI-frågan
+    Given frågefältet i AI-panelen har utkastet "ett utkast" och fokus
+    When användaren klickar på texten i orsaken "C1" och trycker Enter
+    Then har texten i "C1" en textmarkör
+    And utkastet ligger kvar i frågefältet och inget har skickats
+
+  @BOWTIE-EDIT-1
+  Scenario: En redigering efter en Enter-bekräftad redigering behålls när användaren klickar på ett annat objekt
+    Given användaren har redigerat "C1" och bekräftat med Enter
+    When användaren redigerar "C2" och sedan klickar på texten i "C3"
+    Then behålls båda redigeringarna och "C3" är markerad
+
+  @BOWTIE-EDIT-2
+  Scenario: Tab bekräftar redigeringen
+    Given användaren redigerar texten i "C1"
+    When användaren trycker Tab
+    Then behålls den nya texten i "C1"
+```
+
+### BOWTIE-KEYS: Alt+siffror i alla webbläsare
+
+**Alt/Option+siffror är vägen till ett nummer över 9 (BOWTIE-LINK). Det måste fungera i Chrome, Edge, Safari och Firefox på Windows, macOS och Linux och får inte ta webbläsarens egna genvägar (5.12). Testerna körs i Chromium, WebKit och Firefox med operativsystemet simulerat av sina händelser; de riktiga genvägarna kontrolleras för hand (5.12).**
+
+```gherkin
+Feature: Alt+siffror och webbläsaren
+  Background:
+    Given Bowtie är öppet med 13 orsaker och barriären "P3" är markerad
+
+  @BOWTIE-KEYS-1
+  Scenario: Alt+1+2 länkar nummer 12
+    When användaren håller Alt, trycker 1 och 2 och släpper Alt
+    Then skyddar "P3" "C12"
+
+  @BOWTIE-KEYS-2
+  Scenario: macOS Option ger andra tecken, och koden avgör
+    When tangenterna kommer som Option+1 ("¡") och Option+2 ("™") med koderna Digit1 och Digit2
+    Then skyddar "P3" "C12"
+
+  @BOWTIE-KEYS-3
+  Scenario: Sifferblocket fungerar också
+    When användaren håller Alt och trycker 1 och 2 på sifferblocket
+    Then skyddar "P3" "C12"
+
+  @BOWTIE-KEYS-4
+  Scenario: Sidan tar tangenterna så att webbläsarens genväg inte körs
+    When användaren trycker Alt+1
+    Then har sidan anropat preventDefault
+    When användaren släpper Alt efter kombinationen
+    Then har sidan anropat preventDefault, så att menyraden inte får fokus
+
+  @BOWTIE-KEYS-5
+  Scenario: Webbläsarens egna genvägar lämnas ifred
+    When användaren trycker Ctrl+1, ⌘+1, Ctrl+Alt+1 (AltGr), Alt+Shift+1 eller Ctrl+Shift+1
+    Then har sidan inte anropat preventDefault
+    And ingen länk har ändrats
+
+  @BOWTIE-KEYS-6
+  Scenario: Utanför länkläget tas inget
+    Given ingen barriär är markerad
+    When användaren trycker Alt+1 och släpper Alt
+    Then har sidan inte anropat preventDefault
+
+  @BOWTIE-KEYS-7
+  Scenario: Alt+pil flyttar barriären och tas från webbläsarens bakåt och framåt
+    When användaren trycker Alt+←
+    Then har sidan anropat preventDefault
+    And barriären har flyttat en kolumn åt vänster eller står kvar vid kanten
 ```
 
 ### BOWTIE-WIDTH: barriärens bredd
@@ -408,7 +514,7 @@ Feature: Ångra och gör om
 - **Tangentens utseende** är beslutat: en understruken bokstav i knappens text (5.10). *Compact Button* har ett valfritt element, *Key*, för det. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* och *Add Consequence* får understruket **C**, **B**, **R** och **Q**.
 - **Skärmens bredd.** Det öppna läget är 2014 px bred, eftersom diagrammet (1294 px) och legenden behåller sin storlek. Det är bredare än STPA och HTA. Det avgörs vid granskningen.
 - **Hover-höjningen** tas bort ur Bowtie-koden vid bygget.
-- **Pilnavigering** är byggd (BOWTIE-NAV och BOWTIE-SEL ovan): pilarna följer skärmen och gäller bara riktningen (ett objekt långt åt sidan räknas inte), och att flytta har gått från pilarna till Alt/Option+pil, också i länkläget för barriärer. Länkläget i övrigt är oförändrat.
+- **Pilnavigering** är byggd (BOWTIE-NAV och BOWTIE-SEL ovan): pilarna följer skärmen och gäller bara riktningen (ett objekt långt åt sidan räknas inte), och ett markerat kort flyttas upp och ned och en markerad barriär åt vänster och höger med pilarna (Alt/Option+pil gör samma sak), också i länkläget för barriärer, där ↑/↓ fortfarande bläddrar bland länkmålen. Flera markerade kort flyttas inte som en grupp (5.6).
 
 - **Barriärens bredd i Penpot.** Penpot har ingen storleksregel som följer längsta ordet i en radbruten text, och min/max gäller bara när storleken är *Fill*. I Bowtie-filen är barriärkolumnerna därför fasta, och bredden räknas om med ett skript när en text ändras. Ett önskemål om innehållsstyrd storlek med min/max är formulerat för Penpots utvecklare.
 - **Textstorlek i barriären.** Penpot har 14 px beskrivning och 12 px id, koden har 16 px för båda. Gränserna är satta i tecken och ger därför olika pixelvärden (se tabellen i avsnitt 2). Vilken storlek som ska gälla avgörs vid granskningen.

@@ -203,6 +203,34 @@ Feature: Indication, selection and arrow navigation
     Then "1.1" is selected and its id is not editable
     When the user presses Enter
     Then the text of "1.1" has a text cursor
+
+  @HTA-SEL-5
+  Scenario: A click on another task's id while a text is edited confirms the edit and selects that task
+    Given the user is editing the text of "1.1"
+    When the user clicks the id of "1.2"
+    Then the new text of "1.1" is kept and "1.2" is selected
+
+  @HTA-FOCUS-1
+  Scenario: Enter after a click edits the task and does not send the AI question
+    Given the question field of the AI panel has the draft "ett utkast" and focus
+    When the user clicks the text of "1.1" and presses Enter
+    Then the text of "1.1" has a text cursor
+    And the draft is still in the question field and nothing has been sent
+
+  @HTA-EDIT-1
+  Scenario: An edit after an Enter-confirmed edit is kept when the user clicks another task
+    Given the user has edited "1.1" and confirmed with Enter
+    When the user edits "1.2" and then clicks "1"
+    Then both edits are kept
+
+  @HTA-EDIT-2
+  Scenario: Ctrl/⌘+Z while a text is edited is the field's own undo
+    Given "1.1" has been duplicated, so that the copy is "1.2" and the old "1.2" is "1.3"
+    And the user is editing the text of "1.2"
+    When the user presses Ctrl/⌘+Z
+    Then the tasks are unchanged and the text of "1.3" is the same as before
+    When the user presses Enter
+    Then the text of "1.3" is still the same
 ```
 
 ## 4. Not included
@@ -213,8 +241,8 @@ Feature: Indication, selection and arrow navigation
 
 ## 5. Open points to settle during the build
 
-- **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and moving the selected task has moved from the arrows to Alt/Option+arrow (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
-- **Undo.** *Title bar* has *Undo* in all tools, but HTA has no undo today. Either undo is built in HTA, or the button is shown inactive until it exists.
+- **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and a selected task moves with the arrows, in the directions it can move; Alt/Option+arrow does the same (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
+- **Undo** is built in HTA as in the other tools (4.14); while a task's text is edited, Ctrl/⌘+Z is the text field's own undo (`HTA-EDIT-2`).
 - **The width of the TTA table.** In the open state *TTA Panel* is 746 px wide, but the six columns together are about 880 px. The table scrolls sideways or the columns shrink. This is decided at the review.
 - **The key for the panel toggle.** Today it is **A**, and the plan is that it moves to **I** when *Add Above* is built (4.7). The shared panel decides this during the build.
 - **The tree's placement.** The tree and the connector lines are moved 40 px down to make room for the commands. It is a drawing with free shapes, and in the build the layout places the tree.

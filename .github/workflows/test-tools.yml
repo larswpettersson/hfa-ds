@@ -59,9 +59,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('ws/hfa-ds/package-lock.json') }}
-      - name: Install Chromium
+      - name: Install browsers
         working-directory: ws/hfa-ds
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit firefox
       - name: Run tests
         working-directory: ws/hfa-ds
         run: npm test

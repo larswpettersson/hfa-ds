@@ -627,7 +627,9 @@ Arrow (navigate, or move a selected object), Shift+arrow (extend the selection) 
 
 ### 5.6 Moving selected objects
 
-- **An arrow moves the selected objects one step together**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. **Only the directions the object can move in count:** a card moves up and down but not sideways, a barrier left and right but not up and down. An arrow in any other direction does nothing. Alt/Option+arrow does the same, so the habit from drawing tools works. With nothing selected the arrows navigate (5.2) and move nothing.
+- **An arrow moves the selected object one step**, in the direction the arrow points and following the model's structure: column for barriers, row for cards, place among siblings or level for tasks, level or order within the level for blocks. **Only the directions the object can move in count:** a card moves up and down but not sideways, a barrier left and right but not up and down. An arrow in any other direction does nothing. Alt/Option+arrow does the same, so the habit from drawing tools works. With nothing selected the arrows navigate (5.2) and move nothing.
+- **What is moved:** one card, one task, or a **group of barriers** selected with Shift+click, which move together. **Several selected cards are not moved as a group** (Shift+↑/↓ extends the selection, 5.5, and a move with several cards selected does nothing). Moving a group of cards is not built and is not promised.
+- **Exceptions, by tool and mode.** (1) In Bowtie's link mode (a barrier is selected) ↑/↓ browse the causes or consequences the barrier can protect, and ←/→ move the barrier. (2) In STPA the arrows only move the indication, because blocks cannot be moved with the keys yet; the rule applies there when block moving is built.
 - **They keep their order among themselves**, and nothing moves if one of them is already at the edge.
 - **Every move can be undone** with Ctrl/⌘+Z (4.14).
 - Alt+←/→ means back and forward in the browser on Windows and Linux; the tool must stop that when the keys are used in the diagram.
@@ -699,13 +701,59 @@ The same in every tool, for every object that has a text: a task in HTA, a cause
   - **The keys belong to the text.** Arrows move the text cursor and move no object, and Ctrl/⌘+Z is the field's own undo (4.14). The letter keys and the other commands of the tool are off (5.4). A tool whose width or lines depend on the text, such as the width of a barrier in Bowtie, follows while the user types.
   - **Enter confirms.** The text is stored, shown capped again, and the object is **selected**, so that the next arrow moves it (5.6). Ctrl/⌘+Enter confirms the same way; in Bowtie a barrier goes into link mode.
   - **Esc cancels.** The text goes back to what it was, and the object gets the **indication** but is not selected.
-  - **A click elsewhere confirms** the edit and selects what was clicked (the same as Enter followed by the click).
+  - **A click elsewhere confirms** the edit and selects what was clicked (the same as Enter followed by the click). This also holds when the click is on another object's id or text: the edit is confirmed first, then that object is selected, even if the tool redraws in between. **Tab confirms the edit too** and moves on, so that no change is lost silently.
+  - **The reason for a blur belongs to that blur.** After Enter, Esc or Tab the next, unrelated blur is treated as a click elsewhere (confirm), never as a repeat of the earlier reason. A tool must not keep "this was Enter" until the next time.
   - **One confirmed edit is one undo step** (4.14).
-- **Ids cannot be edited.** An id (C1, P2, 1.1) is given by the tool and is shown as plain text. It is not a field, it has no text cursor, and Tab does not stop at it. A change of id happens only through the tool's own commands, for example when tasks are renumbered.
+- **Ids cannot be edited.** An id (C1, P2, 1.1) is given by the tool and is shown as plain text. It is not a field and has no text cursor. A change of id happens only through the tool's own commands, for example when tasks are renumbered.
 - **While a text is being edited**, a click inside it moves the text cursor as usual. A click anywhere else confirms the edit and selects what was clicked.
-- **A text can be capped on screen.** A tool may show only the first 100 characters of a long text with three dots (`...`) after it. The full text is kept, and is shown while the text is edited. Three dots are used, not the single character `…`, so that the cap looks the same in every tool and in the saved diagram.
+- **A text can be capped on screen.** A tool may show only the first 100 characters of a long text with three dots (`...`) after it, which makes 103 characters on screen. The full text is kept, and is shown while the text is edited. Three dots are used, not the single character `…`, so that the cap looks the same in every tool and in the saved diagram.
+- **The longest text is 300 characters.** Typing is stopped at 300, and a paste is cut to fit, with a warning. **From 240 characters** a warning recommends referring to another document for the details instead of writing more in the diagram. The limit keeps every text readable in a tooltip without scrolling; longer texts already in a file are kept as they are, and the tooltip shows the first 300 characters.
+- **A click takes the keys from other fields.** A click on an object moves keyboard focus out of any field outside the diagram, such as the question field of the AI panel. Its draft stays, but Enter after the click then means "edit this object" and not "send the question". F2 works the same way.
 - **Hovered (indicated) mode.** When the mouse is over an object, or an arrow has pointed at it, the object gets the hovered shadow (5.3) and nothing else: the selection and the text stay as they are, no text cursor appears, and no text is expanded. The mouse leaving the object, or the next arrow, moves the indication on. This is the same for an object with a capped text.
-- **A capped text in hovered mode shows a tooltip with the full text.** The text on the object still ends with `...`. While the object is indicated, by the mouse or by the arrow keys alike, a tooltip next to it shows the whole text. It goes away when the indication moves on, and **when Enter is pressed**: the text editing mode shows the full text itself (above), and the tooltip does not come back until the indication has moved. A text that is not capped gets no tooltip.
+- **Tooltip: the W3C pattern.** A tooltip is a `role="tooltip"` element that the object points at with `aria-describedby` while it is shown (WAI-ARIA Authoring Practices, *Tooltip pattern*). It shows when the mouse is over the object (also in Bowtie's link mode, where the mouse sets no indication) and when the object is indicated with the arrow keys or focused. **Esc dismisses it, and so does Enter** (the text editing mode shows the full text itself); it stays away until the pointer or indication has moved on. It is **not repositioned on scroll or resize; it goes away**, which is what the standard pattern does, and is what keeps the code small. A tooltip is never longer than the longest text (300 characters), so it needs no scrolling.
+- **What a tooltip shows:** the text in the element's `data-tip` attribute, which any element in any tool can use (a button's explanation, an abbreviation), or else the full text of an object whose text is capped with `...`. A text that is not capped gets no tooltip.
 - **The red square in the title bar** (4.10) is the primary colour as a variable the tool must define in both themes. The test `tests/shared/brand-mark.spec.mjs` checks the square and that the title-bar commands follow the name from the left in every tool.
 
-**Current state (2026-11-15):** built in HTA and Bowtie, with the tests `tests/hta/select-edit.spec.mjs` and `tests/bowtie/select-link.spec.mjs`. STPA already selects on a click and edits with Enter (`STPA-SEL-1` to `STPA-SEL-7`). The 100-character cap and its tooltip are built in Bowtie only.
+**Current state (2026-11-15):** built in HTA and Bowtie, with the tests `tests/hta/select-edit.spec.mjs`, `tests/bowtie/select-link.spec.mjs` and `tests/bowtie/edit-focus.spec.mjs`. After the first review the following were fixed in both tools: the keys stayed in the AI field after a click on an object, the reason of an earlier Enter leaked into the next blur, Tab discarded the edit, and in HTA Ctrl+Z during editing replaced another task's text and a click on another task's id while editing did not select it. STPA already selects on a click and edits with Enter (`STPA-SEL-1` to `STPA-SEL-7`) and has its own cell editing (5.9). The 100-character cap, the 300-character limit and the tooltip are built in Bowtie only; `data-tip` is the hook for the other tools.
+
+### 5.12 Key combinations and the browser
+
+A key combination in a tool competes with the browser and the operating system. This section records what was found when Alt+digits was built (Bowtie link mode, `BOWTIE-KEYS-1` to `BOWTIE-KEYS-7`) and what any tool must do when it adds a combination.
+
+**The decision.** A number above 9 is typed with Alt/Option held: Alt+1+2, then release Alt, toggles number 12. The digits alone (1–9) are already taken by the link mode. Ctrl/⌘+digit is how browsers switch tabs on every platform and is never used by a tool.
+
+**Rules for a tool that adds a combination**
+1. **Read `event.code`** (`Digit1`, `Numpad1`), not `event.key`. On macOS Option+1 sends `key` "¡" with `code` `Digit1`, and layouts differ.
+2. **Only without Ctrl, ⌘ and Shift.** AltGr is Ctrl+Alt on Windows and Linux, and types characters on many layouts. Alt+Shift switches the input language on Windows. Ctrl/⌘+digit is the browser's.
+3. **Only when the tool needs the key.** Outside the link mode the page does not call `preventDefault`, so the browser's own behaviour is untouched.
+4. **Call `preventDefault` on the keydown**, so that a browser shortcut on the same key does not also run, and **on the release of Alt** after a combination, because a lone Alt release can focus the browser's menu bar (Firefox on Windows and Linux).
+5. **Clear a half-typed combination** when the window loses focus or the mode ends.
+6. **Show it.** The bar in the link mode shows `Alt+1+2 → 12` while it is typed (5.11).
+
+**What is tested** (`tests/bowtie/alt-digits.cross.spec.mjs`, run in three browsers with the `*.cross.spec.mjs` convention in `playwright.config.mjs`)
+
+| Case | Chromium (Chrome, Edge) | WebKit (Safari) | Firefox |
+|---|---|---|---|
+| Alt+1+2 with real key presses links number 12 (`KEYS-1`) | yes | yes | yes |
+| macOS Option: other characters in `key`, same `code` (`KEYS-2`) | yes | yes | yes |
+| Number pad (`KEYS-3`) | yes | yes | yes |
+| The page takes Alt+digit and the release of Alt in link mode (`KEYS-4`) | yes | yes | yes |
+| Ctrl/⌘+digit, Ctrl+Alt+digit (AltGr), Alt+Shift+digit and Ctrl+Shift+digit are left alone (`KEYS-5`) | yes | yes | yes |
+| Outside link mode nothing is taken (`KEYS-6`) | yes | yes | yes |
+| Alt+arrow moves the barrier and is taken from the browser's back/forward (`KEYS-7`) | yes | yes | yes |
+
+Edge is Chromium with another interface; the tests run in Chromium and Edge is not run separately. The operating system is simulated by the events it sends, not by the system itself.
+
+**What the tests cannot show.** Playwright sends key events to the page; it does not press keys in the browser window, so a shortcut that the browser or the system takes **before** the page sees it is not exercised. These are reported in the vendors' shortcut lists, from memory and **not verified here**:
+
+| Browser | Windows | macOS | Linux |
+|---|---|---|---|
+| Chrome, Edge | Ctrl+1–8 switch tabs; no Alt+digit known | ⌘+1–8 switch tabs; Option+digit types a character | Ctrl+1–8, and reportedly Alt+1–8 in Chrome, switch tabs |
+| Firefox | Ctrl+1–9 switch tabs; a lone Alt focuses the menu bar | ⌘+1–9 switch tabs | Alt+1–9 switch tabs |
+| Safari | – | ⌘+1–9 switch tabs; Option+digit types a character | – |
+
+The page's own `preventDefault` on the keydown stops shortcuts that the browser does not reserve, and the reserved ones are few (new tab, new window and close tab) and are not digits. So no conflict is expected, but it is not proven.
+
+**To check by hand before a release** (each browser on each operating system it exists for): select a barrier, hold Alt/Option, press 1 and 2, release. Expected: the link to number 12 toggles, and no tab switches, no menu bar gets focus, and no character such as ¡ or ™ is typed. If a combination is taken somewhere, the fallback is to type the number in a small field in the link bar; it is not built.
+
+**CI runs on Linux only.** Running the `*.cross.spec.mjs` specs on Windows and macOS runners would exercise the real WebKit on macOS and the Windows builds of Chromium and Firefox, but still with synthetic key events, so it does not replace the check by hand.

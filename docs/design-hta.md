@@ -203,6 +203,34 @@ Feature: Indikering, markering och pilnavigering
     Then "1.1" är markerad och dess id går inte att redigera
     When användaren trycker Enter
     Then texten i "1.1" har en textmarkör
+
+  @HTA-SEL-5
+  Scenario: Ett klick på en annan uppgifts id medan en text redigeras bekräftar redigeringen och markerar den uppgiften
+    Given användaren redigerar texten i "1.1"
+    When användaren klickar på id:t i "1.2"
+    Then behålls den nya texten i "1.1" och "1.2" är markerad
+
+  @HTA-FOCUS-1
+  Scenario: Enter efter ett klick redigerar uppgiften och skickar inte AI-frågan
+    Given frågefältet i AI-panelen har utkastet "ett utkast" och fokus
+    When användaren klickar på texten i "1.1" och trycker Enter
+    Then har texten i "1.1" en textmarkör
+    And utkastet ligger kvar i frågefältet och inget har skickats
+
+  @HTA-EDIT-1
+  Scenario: En redigering efter en Enter-bekräftad redigering behålls när användaren klickar på en annan uppgift
+    Given användaren har redigerat "1.1" och bekräftat med Enter
+    When användaren redigerar "1.2" och sedan klickar på "1"
+    Then behålls båda redigeringarna
+
+  @HTA-EDIT-2
+  Scenario: Ctrl/⌘+Z medan en text redigeras är fältets egen ångra
+    Given "1.1" har duplicerats, så att kopian är "1.2" och den gamla "1.2" är "1.3"
+    And användaren redigerar texten i "1.2"
+    When användaren trycker Ctrl/⌘+Z
+    Then är uppgifterna oförändrade och texten i "1.3" är som förut
+    When användaren trycker Enter
+    Then är texten i "1.3" fortfarande som förut
 ```
 
 ## 4. Det som inte ingår
@@ -213,8 +241,8 @@ Feature: Indikering, markering och pilnavigering
 
 ## 5. Öppna punkter att avgöra vid bygget
 
-- **Pilnavigering** är byggd (HTA-NAV och HTA-SEL ovan): pilarna följer skärmen, och att flytta den markerade uppgiften har flyttats från pilarna till Alt/Option+pil (5.6). Markering av flera uppgifter finns inte i HTA (en sort, en i taget), så Shift+Ctrl/⌘+Enter gör inget än.
-- **Undo.** *Title bar* har *Undo* i alla verktyg, men HTA saknar ångra i dag. Antingen byggs ångra i HTA, eller så visas knappen inaktiv tills den finns.
+- **Pilnavigering** är byggd (HTA-NAV och HTA-SEL ovan): pilarna följer skärmen, och en markerad uppgift flyttas med pilarna, i de riktningar den kan flyttas; Alt/Option+pil gör samma sak (5.6). Markering av flera uppgifter finns inte i HTA (en sort, en i taget), så Shift+Ctrl/⌘+Enter gör inget än.
+- **Ångra** är byggt i HTA som i de andra verktygen (4.14); medan en uppgifts text redigeras är Ctrl/⌘+Z textfältets egen ångra (`HTA-EDIT-2`).
 - **TTA-tabellens bredd.** I det öppna läget är *TTA Panel* 746 px bred, men de sex kolumnerna är tillsammans cirka 880 px. Tabellen skrollar i sidled eller kolumnerna krymper. Det avgörs vid granskningen.
 - **Tangenten för panelväxlingen.** I dag är den **A**, och planen är att den flyttas till **I** när *Add Above* byggs (4.7). Den delade panelen avgör det vid bygget.
 - **Trädets placering.** Trädet och kopplingslinjerna är flyttade 40 px nedåt för att ge plats åt kommandona. Det är en ritning med fria former, och vid bygget placeras trädet av layouten.
