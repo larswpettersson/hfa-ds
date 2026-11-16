@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { tool, toolExists } from "../lib/tools.mjs";
+import fs from "node:fs";
+import path from "node:path";
 import { openTool } from "../lib/page.mjs";
+import { WORKSPACE } from "../lib/tools.mjs";
 
-// Requirements: HTA-SEL-3 to 5, HTA-FOCUS-1, HTA-EDIT-1, 2 and HTA-NAV-9 in docs/design-hta.md (5.11, 5.6 of the design principles).
+// Requirements: HTA-SEL-3 to 5, HTA-FOCUS-1, HTA-EDIT-1, 2, HTA-FILE-1, 2 and HTA-NAV-9 in docs/design-hta.md (5.11, 5.6 of the design principles).
 // A click anywhere on a task, its text included, selects the task; Enter edits the text; plain arrows move the selected task.
 const T = tool("hta");
 const task = (page, id) => page.locator(`.task[data-task-id="${id}"]`);
@@ -75,6 +78,9 @@ test.describe("HTA: select by click, edit with Enter", () => {
     await task(page, "1.2").locator(".task-id").click();
     expect(await title(page, "1.1")).toBe("Ändrad");
     await expect(task(page, "1.2")).toHaveClass(/selected/);
+    await task(page, "1").locator(".task-id").click(); // a next click, at once, is not swallowed
+    await expect(task(page, "1")).toHaveClass(/selected/);
+    await expect(task(page, "1.2")).not.toHaveClass(/selected/);
   });
 
   test("HTA-EDIT-2: Ctrl+Z while a text is edited is the field's own undo and leaves the tasks alone", async ({ page }) => {
@@ -86,5 +92,23 @@ test.describe("HTA: select by click, edit with Enter", () => {
     expect(await title(page, "1.3")).toBe(before);
     await press(page, "Enter");
     expect(await title(page, "1.3")).toBe(before); // "Typing" did not end up on another task
+  });
+
+  test("HTA-FILE-1: Save writes the format note first", async ({ page }) => {
+    const [download] = await Promise.all([page.waitForEvent("download"), page.click('[data-action="exportState"]')]);
+    const saved = JSON.parse(fs.readFileSync(await download.path(), "utf8"));
+    expect(Object.keys(saved)[0]).toBe("$comment");
+    expect(saved.$comment).toEqual(await page.evaluate(() => HTAEditor.formatNote));
+  });
+
+  test("HTA-FILE-2: the data files carry the same format note as the tool", async ({ page }) => {
+    const note = await page.evaluate(() => HTAEditor.formatNote);
+    expect(note?.length).toBeGreaterThan(2);
+    for (const dir of ["data", "fixtures"]) {
+      const d = path.join(WORKSPACE, "hfa-hta", dir);
+      for (const f of fs.readdirSync(d).filter((f) => f.endsWith(".json"))) {
+        expect(JSON.parse(fs.readFileSync(path.join(d, f), "utf8")).$comment, `${dir}/${f}: run node scripts/build/format-notes.mjs`).toEqual(note);
+      }
+    }
   });
 });

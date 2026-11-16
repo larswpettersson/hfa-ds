@@ -280,6 +280,28 @@ Feature: Den synliga texten
     Then visar ett verktygstips "Ångra senaste ändringen"
     When musen lämnar knappen
     Then är verktygstipset borta
+
+  @BOWTIE-TEXT-8
+  Scenario: En text med många korta rader får plats: verktygstipsets höjd är begränsad och det rullar
+    Given "C1" har en text på exakt 300 tecken på 150 rader
+    When musen är över "C1"
+    Then är verktygstipset högst 40 % av fönstret högt, inom fönstret, och rullar för att visa resten
+
+  @BOWTIE-TEXT-9
+  Scenario: En text över 300 tecken från en fil visas hel i verktygstipset
+    Given "C1" har en text på 353 tecken från en fil, som slutar med "END"
+    When musen är över "C1"
+    Then visar verktygstipset hela texten, "END" inräknat
+
+  @BOWTIE-TEXT-10
+  Scenario: Pekaren kan vila på verktygstipset, fokus som lämnar döljer det, och andra beskrivningar behålls
+    Given knappen Undo har data-tip "Ångra" och aria-describedby "other"
+    When musen är över knappen och sedan flyttas in på verktygstipset
+    Then ligger verktygstipset kvar, och knappens aria-describedby är "other hfaTooltip"
+    When musen lämnar verktygstipset
+    Then är verktygstipset borta och aria-describedby är "other" igen
+    When knappen får fokus med tangentbordet och användaren trycker Tab
+    Then är verktygstipset borta
 ```
 
 ### BOWTIE-LINK: koppla en barriär till orsaker och konsekvenser
@@ -390,6 +412,28 @@ Feature: Alt+siffror och webbläsaren
     When användaren trycker Alt+←
     Then har sidan anropat preventDefault
     And barriären har flyttat en kolumn åt vänster eller står kvar vid kanten
+```
+
+### BOWTIE-FILE: filen beskriver sitt format
+
+**En sparad fil börjar med en "$comment" som anger formatet och dess begränsningar (designprincip 4.15). Datafilerna i repot har samma kommentar, och en fil med en text över gränsen öppnas med en varning.**
+
+```gherkin
+Feature: Filen beskriver sitt format
+  @BOWTIE-FILE-1
+  Scenario: Save skriver formatkommentaren först
+    When användaren trycker Save
+    Then är filens första nyckel "$comment", lika med verktygets formatkommentar, som säger att en text är högst 300 tecken
+
+  @BOWTIE-FILE-2
+  Scenario: Datafilerna har samma kommentar
+    Then har varje JSON-fil i hfa-bowtie/data och hfa-bowtie/fixtures verktygets formatkommentar som "$comment"
+
+  @BOWTIE-FILE-3
+  Scenario: En fil med en text över 300 tecken öppnas med en varning och texten behålls
+    When användaren öppnar en fil där "C1" har en text på 320 tecken
+    Then säger en varning att den längsta texten är 300 tecken
+    And efter "Öppna ändå" har "C1" alla 320 tecknen
 ```
 
 ### BOWTIE-WIDTH: barriärens bredd

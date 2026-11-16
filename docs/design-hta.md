@@ -209,6 +209,8 @@ Feature: Indikering, markering och pilnavigering
     Given användaren redigerar texten i "1.1"
     When användaren klickar på id:t i "1.2"
     Then behålls den nya texten i "1.1" och "1.2" är markerad
+    When användaren genast klickar på "1"
+    Then är "1" markerad och inte "1.2" (nästa klick sväljs inte)
 
   @HTA-FOCUS-1
   Scenario: Enter efter ett klick redigerar uppgiften och skickar inte AI-frågan
@@ -240,6 +242,15 @@ Feature: Indikering, markering och pilnavigering
     When användaren trycker Tab igen
     Then går fokus till nästa cell i raden, och så vidare till sista kolumnen och sedan till radens ✕-knapp
     And Shift+Tab går tillbaka på samma sätt
+
+  @HTA-FILE-1
+  Scenario: Save skriver formatkommentaren först (designprincip 4.15)
+    When användaren trycker Save
+    Then är filens första nyckel "$comment", lika med verktygets formatkommentar
+
+  @HTA-FILE-2
+  Scenario: Datafilerna har samma kommentar
+    Then har varje JSON-fil i hfa-hta/data och hfa-hta/fixtures verktygets formatkommentar som "$comment"
 ```
 
 ## 4. Det som inte ingår

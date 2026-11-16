@@ -280,6 +280,28 @@ Feature: The viewable text
     Then a tooltip shows "Ångra senaste ändringen"
     When the mouse leaves the button
     Then the tooltip is gone
+
+  @BOWTIE-TEXT-8
+  Scenario: A text of many short lines fits: the tooltip's height is capped and it scrolls
+    Given "C1" has a text of exactly 300 characters in 150 lines
+    When the mouse is over "C1"
+    Then the tooltip is at most 40 % of the window high, inside the window, and scrolls to show the rest
+
+  @BOWTIE-TEXT-9
+  Scenario: A text over 300 characters from a file is shown whole in the tooltip
+    Given "C1" has a text of 353 characters from a file, ending with "END"
+    When the mouse is over "C1"
+    Then the tooltip shows the whole text, "END" included
+
+  @BOWTIE-TEXT-10
+  Scenario: The pointer can rest on the tooltip, focus leaving hides it, and other descriptions are kept
+    Given the Undo button has data-tip "Ångra" and aria-describedby "other"
+    When the mouse is over the button and then moves onto the tooltip
+    Then the tooltip stays, and the button's aria-describedby is "other hfaTooltip"
+    When the mouse leaves the tooltip
+    Then the tooltip is gone and aria-describedby is "other" again
+    When the button gets focus with the keyboard and the user presses Tab
+    Then the tooltip is gone
 ```
 
 ### BOWTIE-LINK: linking a barrier to causes and consequences
@@ -390,6 +412,28 @@ Feature: Alt+digits and the browser
     When the user presses Alt+←
     Then the page has called preventDefault
     And the barrier has moved one column to the left or stays at the edge
+```
+
+### BOWTIE-FILE: the file describes its format
+
+**A saved file starts with a "$comment" that states the format and its limits (design principles 4.15). The data files in the repository carry the same note, and a file with a text over the limit is opened with a warning.**
+
+```gherkin
+Feature: The file describes its format
+  @BOWTIE-FILE-1
+  Scenario: Save writes the format note first
+    When the user presses Save
+    Then the file's first key is "$comment", equal to the tool's format note, which says that a text is at most 300 characters
+
+  @BOWTIE-FILE-2
+  Scenario: The data files carry the same note
+    Then every JSON file in hfa-bowtie/data and hfa-bowtie/fixtures has the tool's format note as "$comment"
+
+  @BOWTIE-FILE-3
+  Scenario: Opening a file with a text over 300 characters warns and keeps the text
+    When the user opens a file where "C1" has a text of 320 characters
+    Then a warning says that the longest text is 300 characters
+    And after "Open anyway" "C1" has all 320 characters
 ```
 
 ### BOWTIE-WIDTH: the width of a barrier

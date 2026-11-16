@@ -209,6 +209,8 @@ Feature: Indication, selection and arrow navigation
     Given the user is editing the text of "1.1"
     When the user clicks the id of "1.2"
     Then the new text of "1.1" is kept and "1.2" is selected
+    When the user at once clicks "1"
+    Then "1" is selected and "1.2" is not (the next click is not swallowed)
 
   @HTA-FOCUS-1
   Scenario: Enter after a click edits the task and does not send the AI question
@@ -240,6 +242,15 @@ Feature: Indication, selection and arrow navigation
     When the user presses Tab again
     Then focus goes to the next cell in the row, and so on to the last column and then to the row's ✕ button
     And Shift+Tab goes back the same way
+
+  @HTA-FILE-1
+  Scenario: Save writes the format note first (design principles 4.15)
+    When the user presses Save
+    Then the file's first key is "$comment", equal to the tool's format note
+
+  @HTA-FILE-2
+  Scenario: The data files carry the same note
+    Then every JSON file in hfa-hta/data and hfa-hta/fixtures has the tool's format note as "$comment"
 ```
 
 ## 4. Not included
