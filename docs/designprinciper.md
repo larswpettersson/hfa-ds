@@ -557,6 +557,18 @@ Alla verktyg ångrar och gör om på samma sätt:
 
 Reglerna om textfält, statusmeddelanden och osparade ändringar är byggda och testade i Bowtie (`tests/bowtie/undo.spec.mjs`); de är inte kontrollerade i HTA och STPA.
 
+### 4.15 En datafil beskriver sitt eget format
+
+Ett verktygs JSON-fil börjar med en **`$comment`**: en lista med korta texter som säger vilket format det är och vilka begränsningar som gäller. Den är till för en person eller en AI som skriver eller ändrar en sådan fil utan att känna till verktyget, så att den kan bedöma hur informationen får fyllas i.
+
+- **Vad den säger:** formatet och dess version, begränsningarna (till exempel "varje beskrivning är högst 300 tecken"), hur id:n bildas, de tillåtna värdena för fält med en fast uppsättning (styrka, status, en valkolumn) och vilka fält som är layoutläge som verktyget skriver själv.
+- **Den ignoreras när filen öppnas**, och **Save skriver den först i varje fil**, så att en sparad fil alltid har den aktuella kommentaren. Namnet följer JSON Schemas konvention för kommentarer; JSON har inga kommentarer i sig.
+- **En källa.** Kommentaren är en konstant i verktyget (`formatNote` på verktygets editorobjekt). `node scripts/build/format-notes.mjs` skriver in den i datafilerna i verktygsrepona, och ett test kontrollerar att varje datafil har samma kommentar som verktyget (`BOWTIE-FILE-2`, `HTA-FILE-2`). En ändring av formatet eller begränsningarna är en ändring av kommentaren.
+- **En begränsning kontrolleras också när filen öppnas.** En text över gränsen i en öppnad fil behålls, men användaren varnas, som när man skriver (`BOWTIE-FILE-3`).
+- **AI-stödet får samma begränsningar** i sina instruktioner, så att dess förslag håller sig inom dem.
+
+**Nuläge (2026-11-16):** byggt i Bowtie och HTA, vars data- och fixturfiler har kommentaren. STPA:s Save skriver den inte än, och hfa-stpa har inga JSON-datafiler i repot.
+
 ## 5. Navigera, markera och flytta objekt
 
 Samma principer gäller i alla verktyg och alla diagramtyper: uppgifter i HTA, kort, barriärer, fara och topphändelse i Bowtie, och block i STPA. Målet är att den som vill ska kunna arbeta i diagrammet med tangentbordet, utan att behöva klicka med musen på varje enskilt objekt.
@@ -581,7 +593,7 @@ En pil flyttar indikeringen (5.3) till närmaste objekt åt det håll pilen peka
 
 Exempel: → från en uppgift i HTA går till närmaste ruta till höger på samma nivå, även om den hör till en annan gren. → från en barriär i Bowtie går till det som ligger närmast till höger, en annan barriär eller topphändelsen beroende på var barriären står.
 
-**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3).
+**Ctrl/⌘+pil används inte för navigering.** Bara vanliga pilar flyttar indikeringen, och de markerar aldrig något (5.3). När ett objekt är markerat flyttar pilarna i stället det objektet, i de riktningar det kan flyttas (5.6).
 
 ### 5.3 En indikering för mus och tangentbord
 
@@ -591,7 +603,7 @@ Det som musen hovrar över och det som piltangenterna pekar ut är samma sak, so
 - **När musen passerar ett objekt flyttas indikeringen dit**, och tangentbordets indikering försvinner.
 - **Nästa pil fortsätter från det objekt musen senast var över.** Lämnar musen objekten för tom yta släcks indikeringen, men utgångspunkten sparas.
 - **Bara verklig musrörelse räknas.** När ett tangenttryck rullar diagrammet och ett annat objekt hamnar under en stilla muspekare, ska det objektet inte ta indikeringen.
-- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** (eller F2 eller dubbelklick). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
+- **Tre lägen, tre tangenter och tre utseenden.** *Indikeringen* ger objektet den hovrade skuggan (State = Hovered), och den sätts av musen eller av en vanlig pil. *Markeringen* ger objektet en suddig skugga runt hela objektet (State = Selected), och den sätts av ett klick eller av **Ctrl/⌘+Enter**. *Textredigeringsläget* (en textmarkör i objektets text, i STPA i namncellen i tabellen, 5.9) startas av **Enter** eller F2, aldrig av musen (5.11). Enter bekräftar texten, och Esc avbryter. Enter ensam markerar alltså inte, och en pil markerar inte.
 - **Skuggorna är tokens, lika för alla objekt.** `shadow.hovered` (indikeringen) och `shadow.selected` (markeringen: en suddig skugga runt hela objektet, spridning 4 px, oskärpa 2 px, `foreground.base` vid 40 %) definieras en gång i Penpot (HFA DS), exporteras till `tokens.json` och används av alla objekt i alla verktyg, så att indikering och markering ser likadana ut överallt (1.2, punkt 6). `shadow.hovered` är en skarp skugga nere till höger (4 px åt höger och ned, oskärpa 4 px, `foreground.base` vid 40 %). **Att utvärdera i framtiden (alternativ B):** att byta `shadow.hovered` till en ring plus glöd runt hela objektet, för bättre kontrast. Det ändrar utseendet på varje hovrat objekt i alla verktyg, men eftersom skuggan är en token görs bytet på ett ställe.
 - **Indikering, markering och redigering är skilda saker.** Indikeringen visar var man är, markeringen vad kommandon gäller, och redigeringen sker i textfältet. Musen tar aldrig bort markeringen, bara indikeringen.
 
@@ -604,14 +616,14 @@ Varje tangent har en motsvarighet med musen:
 | Hovra | Pil (5.2) |
 | Klick: markera, eller det verktyget annars gör vid klick, till exempel länkläge för en barriär | Ctrl/⌘+Enter |
 | Shift+klick eller Ctrl/⌘+klick: lägg till i eller ta bort ur markeringen | Shift+Ctrl/⌘+Enter |
-| Dubbelklick: textredigering | Enter eller F2 |
+| (ingen: musen startar aldrig textredigering, ett klick på texten markerar objektet, 5.11) | Enter eller F2 |
 | Dra: flytta | Alt/Option+pil (5.6) |
 | Verktygsfältets knappar *Add Above*, *Add Below* och *Add Beside* (5.10) | STPA: **B**, **S** och **A** (*Add Above*, byggs senare). HTA: **C** (barn), **S** (syskon), **D** (duplicera) |
 | Ta bort markerade objekt | Delete (5.10) |
 | Knappen som visar och döljer AI-panelen (4.7) | **I** (tills *Add Above* är byggt: **A**) |
 | Hjälpknappen | **?** |
 
-Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
+Pil (navigera, eller flytta ett markerat objekt), Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma mönster som i textredigerare och listor. Ctrl/⌘+pil används inte.
 
 **Bokstavstangenterna** (A, B, C, D, I, S, ?) gäller bara när ingen text redigeras och inte när Ctrl, ⌘ eller Alt hålls nere. Varje bokstav har en enda betydelse i ett verktyg.
 
@@ -627,7 +639,9 @@ Pil, Shift+pil (utöka markeringen) och Alt/Option+pil (flytta) följer samma m�
 
 ### 5.6 Flytta markerade objekt
 
-- **Alt/Option+pil flyttar alla markerade objekt ett steg tillsammans**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. Vanliga pilar navigerar (5.2) och flyttar aldrig.
+- **En pil flyttar det markerade objektet ett steg**, i den riktning pilen pekar och efter modellens struktur: kolumn för barriärer, rad för kort, plats bland syskon eller nivå för uppgifter, nivå eller ordning inom nivån för block. **Bara de riktningar objektet kan flyttas i räknas:** ett kort flyttas upp och ned men inte i sidled, en barriär åt vänster och höger men inte uppåt eller nedåt. En pil i någon annan riktning gör ingenting. Alt/Option+pil gör samma sak, så att vanan från ritverktyg fungerar. När inget är markerat navigerar pilarna (5.2) och flyttar ingenting.
+- **Vad som flyttas:** ett kort, en uppgift, eller en **grupp barriärer** markerade med Shift+klick, som flyttas tillsammans. **Flera markerade kort flyttas inte som en grupp** (Shift+↑/↓ utökar markeringen, 5.5, och en flytt med flera kort markerade gör ingenting). Att flytta en grupp kort är inte byggt och inte utlovat.
+- **Undantag, per verktyg och läge.** (1) I Bowties länkläge (en barriär är markerad) bläddrar ↑/↓ bland de orsaker eller konsekvenser barriären kan skydda, och ←/→ flyttar barriären. (2) I STPA flyttar pilarna bara indikeringen, eftersom block ännu inte går att flytta med tangenterna; regeln gäller där när blockflytt byggs.
 - **De behåller sin inbördes ordning**, och inget flyttas om något av dem redan står vid kanten.
 - **Varje flytt går att ångra** med Ctrl/⌘+Z (4.14).
 - Alt+←/→ betyder bakåt och framåt i webbläsaren på Windows och Linux; verktyget måste stoppa det när tangenterna används i diagrammet.
@@ -686,3 +700,74 @@ Användaren ska kunna bygga och ändra analysens struktur direkt i diagrammet, m
 - **Diagram och tabeller är två vägar till samma modell.** Markeringen delas och texten redigeras i tabellen (5.9).
 
 **Nuläge (2026-11-08):** inte byggt, och *Add Above* skjuts upp. STPA är första verktyget (se [design-stpa.md](design-stpa.md)). HTA har i dag *C*, *S* och *D* med verktygets egna ord *Child*, *Sibling* och *Duplicate*; att samordna orden i alla verktyg är ett eget beslut.
+
+### 5.11 Ett klick markerar objektet, Enter redigerar texten
+
+Samma i alla verktyg, för varje objekt som har en text: en uppgift i HTA, en orsak, konsekvens, barriär, fara eller topphändelse i Bowtie och ett block i STPA.
+
+- **Ett klick var som helst på ett objekt markerar objektet, texten inräknad.** Musen sätter aldrig en textmarkör i objektets text, och ett klick på texten är ingen väg in i redigering. Ctrl/⌘+Enter på det indikerade objektet gör samma sak som klicket (5.4).
+- **Enter, eller F2, redigerar texten** i det objekt som är markerat eller indikerat. Textmarkören hamnar i objektets text, Enter bekräftar och Esc avbryter (5.3). Shift+Enter ger en ny rad i en text med flera rader.
+- **Vad som händer i textredigeringsläget:**
+  - **Objektet ser inte längre markerat eller indikerat ut.** Markeringsskuggan och den hovrade skuggan tas bort, så att bara textmarkören visar var man är (5.3: indikering, markering och redigering är skilda).
+  - **Hela texten visas**, också när den annars kortas på skärmen, så att inget redigeras i blindo.
+  - **Tangenterna tillhör texten.** Pilarna flyttar textmarkören och flyttar inget objekt, och Ctrl/⌘+Z är fältets egen ångra (4.14). Bokstavstangenterna och verktygets övriga kommandon är avstängda (5.4). I ett verktyg där bredd eller radbrytning beror på texten, som barriärens bredd i Bowtie, följer de med medan man skriver.
+  - **Enter bekräftar.** Texten sparas, visas kortad igen, och objektet blir **markerat**, så att nästa pil flyttar det (5.6). Ctrl/⌘+Enter bekräftar på samma sätt; i Bowtie går en barriär in i länkläget.
+  - **Esc avbryter.** Texten går tillbaka till vad den var, och objektet får **indikeringen** men blir inte markerat. **Undantag, STPA:** där redigeras texten i namncellen i tabellen (5.9), och första Esc lämnar cellen och **behåller markeringen** (`design-stpa.md`, avsnittet STPA-SEL).
+  - **Ett klick någon annanstans bekräftar** redigeringen och markerar det som klickades på (samma som Enter följt av klicket). Det gäller också när klicket är på ett annat objekts id eller text: redigeringen bekräftas först, sedan markeras det objektet, även om verktyget ritar om däremellan. **Tab bekräftar också redigeringen** och går vidare, så att ingen ändring går förlorad i tysthet.
+  - **Orsaken till en blur hör till just den blurren.** Efter Enter, Esc eller Tab behandlas nästa, orelaterade blur som ett klick någon annanstans (bekräfta), aldrig som en upprepning av den tidigare orsaken. Ett verktyg får inte spara "det här var Enter" till nästa gång.
+  - **En bekräftad redigering är ett ångra-steg** (4.14).
+- **Id:n går inte att redigera.** Ett id (C1, P2, 1.1) ges av verktyget och visas som vanlig text. Det är inget fält och har ingen textmarkör. Ett id ändras bara genom verktygets egna kommandon, till exempel när uppgifter numreras om.
+- **Medan en text redigeras** flyttar ett klick i den textmarkören som vanligt. Ett klick någon annanstans bekräftar redigeringen och markerar det som klickades på.
+- **En text kan kortas på skärmen.** Ett verktyg får visa bara de första 100 tecknen av en lång text, **och högst 5 rader**, med tre punkter (`...`) efter, vilket blir högst 103 tecken på skärmen. Radgränsen gör att en text med många korta rader inte kan göra ett objekt högre än fönstret. Hela texten finns kvar och visas medan texten redigeras. Tre punkter används, inte tecknet `…`, så att kortningen ser likadan ut i alla verktyg och i den sparade filen.
+- **Den längsta texten är 300 tecken.** Skrivandet stoppas vid 300 och en inklistrad text kortas så att den passar, med en varning. **Från 240 tecken** rekommenderar en varning att man hänvisar till ett annat dokument för detaljerna i stället för att skriva mer i diagrammet. En text över 300 i en öppnad fil behålls som den är, med en varning när filen öppnas (4.15), och visas hel i verktygstipset.
+- **Ett klick tar tangenterna från andra fält.** Ett klick på ett objekt flyttar tangentbordsfokus ut ur varje fält utanför diagrammet, till exempel frågefältet i AI-panelen. Utkastet ligger kvar, men Enter efter klicket betyder då "redigera objektet" och inte "skicka frågan". F2 fungerar likadant.
+- **Hovrat (indikerat) läge.** När musen är över ett objekt, eller en pil har pekat ut det, får objektet den hovrade skuggan (5.3) och inget annat: markeringen och texten är oförändrade, ingen textmarkör visas och ingen text expanderas. När musen lämnar objektet, eller vid nästa pil, flyttas indikeringen vidare. Det är likadant för ett objekt med kortad text.
+- **Verktygstips: W3C-mönstret.** Ett verktygstips är ett `role="tooltip"`-element som objektet pekar på med `aria-describedby` medan det visas (WAI-ARIA Authoring Practices, *Tooltip pattern*); verktygstipsets id läggs till och tas bort i `aria-describedby` utan att röra andra id:n där. Det visas när musen är över objektet (också i Bowties länkläge, där musen inte sätter någon indikering) och när objektet indikeras med piltangenterna eller har fokus. **Esc tar bort det, och det gör Enter också** (textredigeringsläget visar själv hela texten); det håller sig borta tills pekaren eller indikeringen har flyttats. **När fokus lämnar elementet döljs det.**
+- **Pekaren kan vila på verktygstipset**, som W3C-mönstret säger: när pekaren lämnar objektet döljs det efter en kort stund (200 ms), så att pekaren hinner fram, och det ligger kvar medan pekaren är på det. Ett verktygstips som visas från tangentbordet släpper igenom pekaren, eftersom det kan dyka upp under en stilla pekare och inte får få pekaren att verka lämna objektet.
+- **Storlek och plats.** Verktygstipset **visar alltid hela texten**. Dess höjd är högst 40 % av fönstret, och en längre text rullar inuti det. Det placeras under objektet, annars ovanför, annars bredvid, och aldrig ovanpå det. **Det placeras inte om vid scroll eller ändrad fönsterstorlek utan försvinner**; det är vårt eget designval för ett litet, enkelt verktygstips, inte något W3C-mönstret kräver.
+- **Vad ett verktygstips visar:** texten i elementets `data-tip`-attribut, som vilket element som helst i vilket verktyg som helst kan använda (en knapps förklaring, en förkortning), eller annars hela texten i ett objekt vars text är kortad med `...`. En text som inte är kortad får inget verktygstips.
+- **Den röda kvadraten i titelraden** (4.10) är primärfärgen som en variabel verktyget måste definiera i båda teman. Testet `tests/shared/brand-mark.spec.mjs` kontrollerar kvadraten och att titelradens kommandon följer efter namnet från vänster i alla verktyg.
+
+**Nuläge (2026-11-15):** byggt i HTA och Bowtie, med testerna `tests/hta/select-edit.spec.mjs`, `tests/bowtie/select-link.spec.mjs` och `tests/bowtie/edit-focus.spec.mjs`. Efter den första granskningen rättades följande i båda verktygen: tangenterna blev kvar i AI-fältet efter ett klick på ett objekt, orsaken till en tidigare Enter läckte över till nästa blur, och Tab kastade redigeringen. I HTA ersatte dessutom Ctrl+Z under redigering en annan uppgifts text, och ett klick på en annan uppgifts id under redigering markerade den inte. STPA markerar redan vid klick och redigerar med Enter (`STPA-SEL-1` till `STPA-SEL-7`) och har egen cellredigering (5.9). Efter den andra granskningen visar verktygstipset hela texten och rullar, går att hovra, döljs när fokus lämnar och läggs aldrig ovanpå sitt objekt. Kortningen till 100 tecken, gränsen på 300 tecken och verktygstipset är byggda bara i Bowtie; `data-tip` är kroken för de andra verktygen.
+
+### 5.12 Kortkommandon och webbläsaren
+
+En tangentkombination i ett verktyg konkurrerar med webbläsaren och operativsystemet. Det här avsnittet bokför vad som framkom när Alt+siffror byggdes (Bowties länkläge, `BOWTIE-KEYS-1` till `BOWTIE-KEYS-7`) och vad varje verktyg måste göra när det lägger till en kombination.
+
+**Beslutet.** Ett tal över 9 skrivs med Alt/Option nedtryckt: Alt+1+2, släpp sedan Alt, växlar nummer 12. Siffrorna ensamma (1–9) är redan tagna av länkläget. Ctrl/⌘+siffra är hur webbläsare byter flik på alla plattformar och används aldrig av ett verktyg.
+
+**Regler för ett verktyg som lägger till en kombination**
+1. **Läs `event.code`** (`Digit1`, `Numpad1`), inte `event.key`. På macOS ger Option+1 `key` "¡" med `code` `Digit1`, och tangentbordslayouterna skiljer sig åt.
+2. **Bara utan Ctrl, ⌘ och Shift.** AltGr är Ctrl+Alt i Windows och Linux och skriver tecken på många layouter. Alt+Shift byter inmatningsspråk i Windows. Ctrl/⌘+siffra tillhör webbläsaren.
+3. **Bara när verktyget behöver tangenten.** Utanför länkläget anropar sidan inte `preventDefault`, så webbläsarens eget beteende rörs inte.
+4. **Anropa `preventDefault` på keydown**, så att en webbläsargenväg på samma tangent inte också körs, och **på släppet av Alt** efter en kombination, eftersom ett ensamt Alt-släpp kan ge fokus åt webbläsarens menyrad (Firefox i Windows och Linux).
+5. **Rensa en halvskriven kombination** när fönstret tappar fokus eller läget avslutas.
+6. **Visa den.** Raden i länkläget visar `Alt+1+2 → 12` medan den skrivs (5.11).
+
+**Vad som testas** (`tests/bowtie/alt-digits.cross.spec.mjs`, körs i tre webbläsare med konventionen `*.cross.spec.mjs` i `playwright.config.mjs`)
+
+| Fall | Chromium (Chrome, Edge) | WebKit (Safari) | Firefox |
+|---|---|---|---|
+| Alt+1+2 med riktiga tangenttryck länkar nummer 12 (`KEYS-1`) | ja | ja | ja |
+| macOS Option: andra tecken i `key`, samma `code` (`KEYS-2`) | ja | ja | ja |
+| Sifferblocket (`KEYS-3`) | ja | ja | ja |
+| Sidan tar Alt+siffra och släppet av Alt i länkläget (`KEYS-4`) | ja | ja | ja |
+| Ctrl/⌘+siffra, Ctrl+Alt+siffra (AltGr), Alt+Shift+siffra och Ctrl+Shift+siffra lämnas ifred (`KEYS-5`) | ja | ja | ja |
+| Utanför länkläget tas inget (`KEYS-6`) | ja | ja | ja |
+| Alt+pil flyttar barriären och tas från webbläsarens bakåt/framåt (`KEYS-7`) | ja | ja | ja |
+
+Edge är Chromium med ett annat gränssnitt; testerna körs i Chromium och Edge körs inte separat. Operativsystemet simuleras av de händelser det skickar, inte av själva systemet.
+
+**Vad testerna inte kan visa.** Playwright skickar tangenthändelser till sidan; det trycker inte tangenter i webbläsarfönstret, så en genväg som webbläsaren eller systemet tar **innan** sidan ser den prövas inte. Följande står i tillverkarnas genvägslistor, från minnet och **inte verifierat här**:
+
+| Webbläsare | Windows | macOS | Linux |
+|---|---|---|---|
+| Chrome, Edge | Ctrl+1–8 byter flik; ingen Alt+siffra känd | ⌘+1–8 byter flik; Option+siffra skriver ett tecken | Ctrl+1–8, och enligt uppgift Alt+1–8 i Chrome, byter flik |
+| Firefox | Ctrl+1–9 byter flik; ett ensamt Alt ger menyraden fokus | ⌘+1–9 byter flik | Alt+1–9 byter flik |
+| Safari | – | ⌘+1–9 byter flik; Option+siffra skriver ett tecken | – |
+
+Sidans eget `preventDefault` på keydown stoppar genvägar som webbläsaren inte reserverar, och de reserverade är få (ny flik, nytt fönster och stäng flik) och är inte siffror. Någon krock väntas därför inte, men det är inte bevisat.
+
+**Kontrollera för hand före en release** (varje webbläsare på varje operativsystem den finns för): markera en barriär, håll Alt/Option, tryck 1 och 2, släpp. Väntat: länken till nummer 12 växlar, och ingen flik byts, ingen menyrad får fokus och inget tecken som ¡ eller ™ skrivs. Om en kombination är tagen någonstans är reserven att skriva numret i ett litet fält i länkraden; det är inte byggt.
+
+**CI körs bara på Linux.** Att köra `*.cross.spec.mjs` på Windows- och macOS-runners skulle pröva den riktiga WebKit på macOS och Windowsbyggena av Chromium och Firefox, men fortfarande med syntetiska tangenthändelser, så det ersätter inte kontrollen för hand.

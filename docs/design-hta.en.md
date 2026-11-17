@@ -108,7 +108,7 @@ Feature: The analysis panel and the title bar
 
 ### HTA-NAV: indication, selection and arrow navigation
 
-**The arrow keys move the indication (a hovered shadow) to the nearest task in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected task (5.6). Ctrl/⌘+Enter selects the indicated task and Enter alone edits it.**
+**The arrow keys move the indication (a hovered shadow) to the nearest task in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select and Ctrl/⌘+arrow is not used. When a task is selected an arrow moves it in the directions it can move, and Alt/Option+arrow does the same (5.6). A click anywhere on a task selects it, text included, and Enter edits the text (5.11). Ctrl/⌘+Enter selects the indicated task and Enter alone edits it.**
 
 ```gherkin
 Feature: Indication, selection and arrow navigation
@@ -159,9 +159,9 @@ Feature: Indication, selection and arrow navigation
 
   @HTA-NAV-7
   Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
-    Given "1" is selected
+    Given the indication is on "1" and nothing is selected
     When the user presses ↓
-    Then the indication moves but "1" is still selected
+    Then the indication moves and nothing is selected
     When the user presses Ctrl/⌘+→
     Then the indication is unchanged
 
@@ -183,6 +183,74 @@ Feature: Indication, selection and arrow navigation
     When the user presses Enter
     Then the task's text has a text cursor
     And nothing is selected
+ 
+  @HTA-NAV-9
+  Scenario: A plain arrow moves the selected task
+    Given "1.1" is selected
+    When the user presses →
+    Then "1.1" has swapped places with "1.2"
+
+  @HTA-SEL-3
+  Scenario: A click on the text of a task selects the task
+    Given nothing is selected
+    When the user clicks the text of "1.1"
+    Then "1.1" is selected
+    And no text has a text cursor
+
+  @HTA-SEL-4
+  Scenario: Enter edits the text of the selected task, and an id cannot be edited
+    Given the user has clicked the id of "1.1"
+    Then "1.1" is selected and its id is not editable
+    When the user presses Enter
+    Then the text of "1.1" has a text cursor
+
+  @HTA-SEL-5
+  Scenario: A click on another task's id while a text is edited confirms the edit and selects that task
+    Given the user is editing the text of "1.1"
+    When the user clicks the id of "1.2"
+    Then the new text of "1.1" is kept and "1.2" is selected
+    When the user at once clicks "1"
+    Then "1" is selected and "1.2" is not (the next click is not swallowed)
+
+  @HTA-FOCUS-1
+  Scenario: Enter after a click edits the task and does not send the AI question
+    Given the question field of the AI panel has the draft "ett utkast" and focus
+    When the user clicks the text of "1.1" and presses Enter
+    Then the text of "1.1" has a text cursor
+    And the draft is still in the question field and nothing has been sent
+
+  @HTA-EDIT-1
+  Scenario: An edit after an Enter-confirmed edit is kept when the user clicks another task
+    Given the user has edited "1.1" and confirmed with Enter
+    When the user edits "1.2" and then clicks "1"
+    Then both edits are kept
+
+  @HTA-EDIT-2
+  Scenario: Ctrl/⌘+Z while a text is edited is the field's own undo
+    Given "1.1" has been duplicated, so that the copy is "1.2" and the old "1.2" is "1.3"
+    And the user is editing the text of "1.2"
+    When the user presses Ctrl/⌘+Z
+    Then the tasks are unchanged and the text of "1.3" is the same as before
+    When the user presses Enter
+    Then the text of "1.3" is still the same
+
+  @HTA-TAB-1 @later
+  Scenario: Tab from an edited text continues along the whole TTA row
+    Given the user is editing the text of the task "1.1"
+    When the user presses Tab
+    Then the edit is confirmed and focus goes to the first cell of the TTA row of "1.1"
+    When the user presses Tab again
+    Then focus goes to the next cell in the row, and so on to the last column and then to the row's ✕ button
+    And Shift+Tab goes back the same way
+
+  @HTA-FILE-1
+  Scenario: Save writes the format note first (design principles 4.15)
+    When the user presses Save
+    Then the file's first key is "$comment", equal to the tool's format note
+
+  @HTA-FILE-2
+  Scenario: The data files carry the same note
+    Then every JSON file in hfa-hta/data and hfa-hta/fixtures has the tool's format note as "$comment"
 ```
 
 ## 4. Not included
@@ -193,8 +261,9 @@ Feature: Indication, selection and arrow navigation
 
 ## 5. Open points to settle during the build
 
-- **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and moving the selected task has moved from the arrows to Alt/Option+arrow (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
-- **Undo.** *Title bar* has *Undo* in all tools, but HTA has no undo today. Either undo is built in HTA, or the button is shown inactive until it exists.
+- **Arrow navigation** is built (HTA-NAV and HTA-SEL above): the arrows follow the screen, and a selected task moves with the arrows, in the directions it can move; Alt/Option+arrow does the same (5.6). Selecting several tasks does not exist in HTA (one kind, one at a time), so Shift+Ctrl/⌘+Enter does nothing yet.
+- **Tab into the TTA table (a later release, `HTA-TAB-1`).** Tab from an edited task text confirms the edit and moves into the TTA table, which is the intended behaviour, but Tab then only visits the first two columns of the row. It must continue along the whole row, through every visible column to the ✕ button. Not yet investigated; a likely cause is that each cell's blur confirms the edit and redraws the table body, which replaces the cell that was about to get focus. The fix is to keep focus through the redraw (for example by redrawing only when a value changed, or by restoring focus to the cell with the same row and column after the redraw). Found when the first version was tried by hand (2026-11-15).
+- **Undo** is built in HTA as in the other tools (4.14); while a task's text is edited, Ctrl/⌘+Z is the text field's own undo (`HTA-EDIT-2`).
 - **The width of the TTA table.** In the open state *TTA Panel* is 746 px wide, but the six columns together are about 880 px. The table scrolls sideways or the columns shrink. This is decided at the review.
 - **The key for the panel toggle.** Today it is **A**, and the plan is that it moves to **I** when *Add Above* is built (4.7). The shared panel decides this during the build.
 - **The tree's placement.** The tree and the connector lines are moved 40 px down to make room for the commands. It is a drawing with free shapes, and in the build the layout places the tree.

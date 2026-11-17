@@ -106,7 +106,7 @@ Feature: The Add commands
 
 ### BOWTIE-NAV: indication, selection and arrow navigation
 
-**The arrow keys move the indication (a hovered shadow) to the nearest card, barrier, hazard or top event in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select, Ctrl/⌘+arrow is not used, and Alt/Option+arrow moves the selected objects (5.6). Ctrl/⌘+Enter selects the indicated object and Enter alone edits it.**
+**The arrow keys move the indication (a hovered shadow) to the nearest card, barrier, hazard or top event in the arrow's direction on the screen (5.2). The mouse and the arrow keys share the indication (5.3). Arrows do not select and Ctrl/⌘+arrow is not used. When an object is selected an arrow moves it in the directions it can move, and Alt/Option+arrow does the same (5.6). A click anywhere on an object selects it, text included, and Enter edits the text (5.11). Ctrl/⌘+Enter selects the indicated object and Enter alone edits it.**
 
 ```gherkin
 Feature: Indication, selection and arrow navigation
@@ -155,17 +155,15 @@ Feature: Indication, selection and arrow navigation
 
   @BOWTIE-NAV-7
   Scenario: Arrows do not select, and Ctrl/⌘+arrow is not used
-    Given "C2" is selected
+    Given the indication is on "C2" and nothing is selected
     When the user presses ↓
-    Then the indication moves but "C2" is still selected
+    Then the indication moves and nothing is selected
     When the user presses Ctrl/⌘+→
     Then the indication is unchanged
 
   @BOWTIE-NAV-8
   Scenario: Alt/Option+arrow moves the selected barriers
     Given the barrier "P4" is selected with Shift+click
-    When the user presses ←
-    Then the barrier stays
     When the user presses Alt/Option+←
     Then the barrier has moved one column to the left
 
@@ -187,6 +185,256 @@ Feature: Indication, selection and arrow navigation
     When the user presses Enter
     Then the card's text has a text cursor
     And "C3" is not selected
+ 
+  @BOWTIE-NAV-10
+  Scenario: A plain arrow moves the selected object in the directions it can move
+    Given the cause "C2" is selected
+    When the user presses ↓
+    Then "C2" has swapped places with the cause below
+    When the user presses ←
+    Then "C2" has not moved
+    Given the barrier "P4" is selected
+    When the user presses ←
+    Then "P4" has moved one column to the left
+
+  @BOWTIE-SEL-3
+  Scenario: A click on the text of a card selects the card
+    Given nothing is selected
+    When the user clicks the text of the cause "C2"
+    Then "C2" is selected
+    And no text has a text cursor
+
+  @BOWTIE-SEL-4
+  Scenario: A click on the text of the top event or a barrier selects it
+    When the user clicks the text of the top event
+    Then the top event is selected
+    When the user clicks the text of the barrier "P2"
+    Then "P2" is selected
+
+  @BOWTIE-SEL-5
+  Scenario: Enter edits the text of the selected object, and an id cannot be edited
+    Given the user has clicked the id of the cause "C2"
+    Then "C2" is selected and its id has no text cursor and is not editable
+    When the user presses Enter
+    Then the text of "C2" has a text cursor
+    When the user types a new text and presses Enter
+    Then "C2" has the new text
+```
+
+### BOWTIE-TEXT: the viewable text
+
+**A text is shown with at most 100 characters and 5 lines (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited, and in a tooltip while the object is hovered or indicated with the arrow keys (5.11). Enter and Esc remove the tooltip. The longest text is 300 characters, with a warning from 240.**
+
+```gherkin
+Feature: The viewable text
+  @BOWTIE-TEXT-1
+  Scenario: A long text is capped with three dots
+    Given the user has entered a text of 150 characters for the top event
+    When the text editing mode ends
+    Then the top event shows the first 100 characters followed by "..."
+    And the saved diagram still holds all 150 characters
+
+  @BOWTIE-TEXT-2
+  Scenario: Hovering an object with a capped text shows the full text
+    Given the cause "C1" has a text of 159 characters
+    When the mouse is over "C1"
+    Then a tooltip next to "C1" shows all 159 characters
+    When the mouse leaves "C1"
+    Then the tooltip is gone
+
+  @BOWTIE-TEXT-3
+  Scenario: An arrow shows the tooltip too, and Enter removes it
+    Given the cause "C2" has a short text and is indicated
+    Then there is no tooltip
+    When the user presses ↑ and the indication reaches "C1"
+    Then the tooltip with the full text of "C1" is shown
+    When the user presses Enter
+    Then the tooltip is gone and the text of "C1" has a text cursor
+
+  @BOWTIE-TEXT-4
+  Scenario: The longest text is 300 characters
+    Given the cause "C1" is in the text editing mode
+    When the user pastes 400 characters
+    Then only 300 characters are inserted
+    And a warning says that the longest text is 300 characters and recommends referring to another document
+
+  @BOWTIE-TEXT-5
+  Scenario: From 240 characters a warning recommends another document
+    Given the text of "C1" has 239 characters in the text editing mode
+    Then there is no warning
+    When the user types one more character
+    Then a warning says "240 of 300 characters" and recommends referring to another document for the details
+
+  @BOWTIE-TEXT-6
+  Scenario: The tooltip is an ARIA tooltip, also in link mode, and Esc dismisses it
+    Given "C1" has a capped text and the barrier "P3" is selected
+    When the mouse is over "C1"
+    Then a tooltip with role "tooltip" shows the full text, and "C1" points at it with aria-describedby
+    When the user presses Esc
+    Then the tooltip is gone and "C1" no longer points at it
+
+  @BOWTIE-TEXT-7
+  Scenario: Any element with data-tip gets a tooltip
+    Given a button has the attribute data-tip "Ångra senaste ändringen"
+    When the mouse is over the button
+    Then a tooltip shows "Ångra senaste ändringen"
+    When the mouse leaves the button
+    Then the tooltip is gone
+
+  @BOWTIE-TEXT-8
+  Scenario: A text of many short lines fits: the tooltip's height is capped and it scrolls
+    Given "C1" has a text of exactly 300 characters in 150 lines
+    When the mouse is over "C1"
+    Then the tooltip is at most 40 % of the window high, inside the window, and scrolls to show the rest
+    And the card shows its first 5 lines followed by "..." and is less than half the window high
+
+  @BOWTIE-TEXT-9
+  Scenario: A text over 300 characters from a file is shown whole in the tooltip
+    Given "C1" has a text of 353 characters from a file, ending with "END"
+    When the mouse is over "C1"
+    Then the tooltip shows the whole text, "END" included
+
+  @BOWTIE-TEXT-10
+  Scenario: The pointer can rest on the tooltip, focus leaving hides it, and other descriptions are kept
+    Given the Undo button has data-tip "Ångra" and aria-describedby "other"
+    When the mouse is over the button and then moves onto the tooltip
+    Then the tooltip stays, and the button's aria-describedby is "other hfaTooltip"
+    When the mouse leaves the tooltip
+    Then the tooltip is gone and aria-describedby is "other" again
+    When the button gets focus with the keyboard and the user presses Tab
+    Then the tooltip is gone
+```
+
+### BOWTIE-LINK: linking a barrier to causes and consequences
+
+**A selected barrier is linked to the causes (or consequences) it protects. The numbers are the numbers in the ids (C12 is 12, K3 is 3), not the row numbers. 1–9 toggle the link at once. A number above 9 is typed with Alt/Option held: Alt+1+2, then release Alt, toggles number 12. A bar next to the Add buttons lists the ids of what the barrier protects.**
+
+```gherkin
+Feature: Linking by number
+  Background:
+    Given Bowtie is open with the example diagram and 9 more causes added (C5–C13)
+    And the barrier "P3" is selected
+
+  @BOWTIE-LINK-1
+  Scenario: A number above 9 is typed with Alt held
+    When the user holds Alt/Option, presses 1 and then 2
+    Then the bar shows "Alt+1+2"
+    When the user releases Alt/Option
+    Then "P3" protects "C12"
+    When the user does the same again
+    Then "P3" no longer protects "C12"
+
+  @BOWTIE-LINK-2
+  Scenario: The digits 1–9 follow the id, not the row
+    Given "C1" and "C3" have swapped rows, so that "C3" is on row 1 and "C1" on row 3
+    When the user presses 3
+    Then "P3" protects "C3" and not "C1"
+
+  @BOWTIE-LINK-3
+  Scenario: A bar lists the ids of what the barrier protects
+    Then the bar shows "P3 protects causes: C4"
+    When the user presses 3
+    Then the bar shows "C3, C4"
+    When the user presses Esc
+    Then the bar is hidden
+```
+
+### BOWTIE-EDIT: focus and the transitions of editing
+
+**A click on an object moves the keys to the diagram, an edit is never lost when the user moves on, and Tab confirms (5.11).**
+
+```gherkin
+Feature: Focus and the transitions of editing
+  @BOWTIE-FOCUS-1
+  Scenario: Enter after a click edits the object and does not send the AI question
+    Given the question field of the AI panel has the draft "ett utkast" and focus
+    When the user clicks the text of the cause "C1" and presses Enter
+    Then the text of "C1" has a text cursor
+    And the draft is still in the question field and nothing has been sent
+
+  @BOWTIE-EDIT-1
+  Scenario: An edit after an Enter-confirmed edit is kept when the user clicks another object
+    Given the user has edited "C1" and confirmed with Enter
+    When the user edits "C2" and then clicks the text of "C3"
+    Then both edits are kept and "C3" is selected
+
+  @BOWTIE-EDIT-2
+  Scenario: Tab confirms the edit
+    Given the user is editing the text of "C1"
+    When the user presses Tab
+    Then the new text of "C1" is kept
+```
+
+### BOWTIE-KEYS: Alt+digits in every browser
+
+**Alt/Option+digits is the way to a number above 9 (BOWTIE-LINK). It must work in Chrome, Edge, Safari and Firefox on Windows, macOS and Linux and must not take the browser's own shortcuts (5.12). The tests run in Chromium, WebKit and Firefox with the operating system simulated by its events; the real shortcuts are checked by hand (5.12).**
+
+```gherkin
+Feature: Alt+digits and the browser
+  Background:
+    Given Bowtie is open with 13 causes and the barrier "P3" is selected
+
+  @BOWTIE-KEYS-1
+  Scenario: Alt+1+2 links number 12
+    When the user holds Alt, presses 1 and 2 and releases Alt
+    Then "P3" protects "C12"
+
+  @BOWTIE-KEYS-2
+  Scenario: macOS Option gives other characters, and the code decides
+    When the keys arrive as Option+1 ("¡") and Option+2 ("™") with the codes Digit1 and Digit2
+    Then "P3" protects "C12"
+
+  @BOWTIE-KEYS-3
+  Scenario: The number pad works too
+    When the user holds Alt and presses 1 and 2 on the number pad
+    Then "P3" protects "C12"
+
+  @BOWTIE-KEYS-4
+  Scenario: The page takes the keys so that the browser's shortcut does not run
+    When the user presses Alt+1
+    Then the page has called preventDefault
+    When the user releases Alt after the combination
+    Then the page has called preventDefault, so that the menu bar does not get focus
+
+  @BOWTIE-KEYS-5
+  Scenario: The browser's own shortcuts are left alone
+    When the user presses Ctrl+1, ⌘+1, Ctrl+Alt+1 (AltGr), Alt+Shift+1 or Ctrl+Shift+1
+    Then the page has not called preventDefault
+    And no link has changed
+
+  @BOWTIE-KEYS-6
+  Scenario: Outside the link mode nothing is taken
+    Given no barrier is selected
+    When the user presses Alt+1 and releases Alt
+    Then the page has not called preventDefault
+
+  @BOWTIE-KEYS-7
+  Scenario: Alt+arrow moves the barrier and is taken from the browser's back and forward
+    When the user presses Alt+←
+    Then the page has called preventDefault
+    And the barrier has moved one column to the left or stays at the edge
+```
+
+### BOWTIE-FILE: the file describes its format
+
+**A saved file starts with a "$comment" that states the format and its limits (design principles 4.15). The data files in the repository carry the same note, and a file with a text over the limit is opened with a warning.**
+
+```gherkin
+Feature: The file describes its format
+  @BOWTIE-FILE-1
+  Scenario: Save writes the format note first
+    When the user presses Save
+    Then the file's first key is "$comment", equal to the tool's format note, which says that a text is at most 300 characters
+
+  @BOWTIE-FILE-2
+  Scenario: The data files carry the same note
+    Then every JSON file in hfa-bowtie/data and hfa-bowtie/fixtures has the tool's format note as "$comment"
+
+  @BOWTIE-FILE-3
+  Scenario: Opening a file with a text over 300 characters warns and keeps the text
+    When the user opens a file where "C1" has a text of 320 characters
+    Then a warning says that the longest text is 300 characters
+    And after "Open anyway" "C1" has all 320 characters
 ```
 
 ### BOWTIE-WIDTH: the width of a barrier
@@ -311,7 +559,7 @@ Feature: Undo and redo
 - **How the key looks** is decided: an underlined letter in the button's text (5.10). *Compact Button* has an optional element, *Key*, for it. *Add Cause*, *Add Preventive Barrier*, *Add Reactive Barrier* and *Add Consequence* get an underlined **C**, **B**, **R** and **Q**.
 - **The width of the screen.** The open state is 2014 px wide, since the diagram (1294 px) and the legend keep their size. That is wider than STPA and HTA. This is decided at the review.
 - **The hover rise** is removed from the Bowtie code during the build.
-- **Arrow navigation** is built (BOWTIE-NAV and BOWTIE-SEL above): the arrows follow the screen and only count objects in the arrow's direction (an object far to the side does not), and moving has moved from the arrows to Alt/Option+arrow, also in the link mode for barriers. The link mode is otherwise unchanged.
+- **Arrow navigation** is built (BOWTIE-NAV and BOWTIE-SEL above): the arrows follow the screen and only count objects in the arrow's direction (an object far to the side does not), and a selected card moves up and down and a selected barrier left and right with the arrows (Alt/Option+arrow does the same), also in the link mode for barriers, where ↑/↓ still browse the link targets. Several selected cards are not moved as a group (5.6).
 
 - **The width of a barrier in Penpot.** Penpot has no sizing rule that follows the longest word of a wrapped text, and min/max only apply when the sizing is *Fill*. In the Bowtie file the barrier columns are therefore fixed, and the width is recalculated with a script when a text changes. A request for content-based sizing with min/max has been written for the Penpot developers.
 - **Text size in the barrier.** Penpot has a 14 px description and a 12 px id, the code has 16 px for both. The limits are set in characters and therefore give different pixel values (see the table in section 2). Which size applies is decided at the review.

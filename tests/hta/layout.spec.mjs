@@ -59,10 +59,12 @@ test.describe("HTA: panel header rows and title bar", () => {
   });
 
   test("HTA-ADD-5: bokstavstangenterna är avstängda medan man skriver", async ({ page }) => {
-    await page.locator(".task").first().dblclick();
+    await page.locator(".task").first().click();
+    await page.keyboard.press("Enter"); // a click selects, Enter edits the text
     const n = await count(page);
     await page.keyboard.type("Cd");
     expect(await count(page)).toBe(n);
+    expect(await page.evaluate(() => document.activeElement?.textContent)).toContain("Cd"); // the letters went into the text
   });
 
   test("HTA-TTA-1: TTA-panelens rubrikrad har titeln och kommandona på samma rad, utan understrykning", async ({ page }) => {

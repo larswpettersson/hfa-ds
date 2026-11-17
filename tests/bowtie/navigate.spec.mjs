@@ -74,10 +74,9 @@ test.describe("Bowtie: indication, selection and arrow navigation", () => {
   });
 
   test("BOWTIE-NAV-7: pilar markerar inte, och Ctrl/⌘+pil används inte", async ({ page }) => {
-    await page.locator("#c-C2").click({ position: { x: 3, y: 3 } });
-    await expect(page.locator("#c-C2")).toHaveClass(/is-selected/);
+    await hover(page, "#c-C2");
     await press(page, "ArrowDown");
-    await expect(page.locator("#c-C2")).toHaveClass(/is-selected/);
+    await expect(page.locator(".is-selected")).toHaveCount(0); // an arrow moves the indication and selects nothing
     const was = await indicated(page);
     await press(page, "ControlOrMeta+ArrowRight");
     expect(await indicated(page)).toEqual(was);
@@ -88,8 +87,6 @@ test.describe("Bowtie: indication, selection and arrow navigation", () => {
     const before = await col();
     await page.locator("#b-p4").click({ position: { x: 3, y: 3 }, modifiers: ["Shift"] });
     await page.evaluate(() => document.activeElement?.blur());
-    await press(page, "ArrowLeft");
-    expect(await col()).toBe(before); // a plain arrow never moves
     await press(page, "Alt+ArrowLeft");
     expect(await col()).toBeLessThan(before);
   });
