@@ -118,6 +118,10 @@ test.describe("Bowtie: focus, edit transitions and the longest text", () => {
     expect(m.top).toBeGreaterThanOrEqual(0);
     expect(m.bottom).toBeLessThanOrEqual(m.vh);
     expect(m.sh).toBeGreaterThan(m.ch); // the rest is reached by scrolling the tooltip
+    // The card itself shows at most 5 lines with "..." and stays well inside the window.
+    const card = await page.locator("#c-C1").boundingBox();
+    expect(card.height).toBeLessThan(m.vh / 2);
+    expect(await page.locator("#c-C1 .desc-text").textContent()).toBe("x\nx\nx\nx\nx...");
   });
 
   test("BOWTIE-TEXT-9: a text over 300 characters from a file is shown whole in the tooltip", async ({ page }) => {

@@ -223,7 +223,7 @@ Feature: Indikering, markering och pilnavigering
 
 ### BOWTIE-TEXT: den synliga texten
 
-**En text visas med högst 100 tecken (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras, och i ett verktygstips medan objektet hovras eller indikeras med piltangenterna (5.11). Enter och Esc tar bort verktygstipset. Den längsta texten är 300 tecken, med en varning från 240.**
+**En text visas med högst 100 tecken och 5 rader (5.11). En längre text slutar med tre punkter, `...`. Hela texten finns kvar och visas medan texten redigeras, och i ett verktygstips medan objektet hovras eller indikeras med piltangenterna (5.11). Enter och Esc tar bort verktygstipset. Den längsta texten är 300 tecken, med en varning från 240.**
 
 ```gherkin
 Feature: Den synliga texten
@@ -286,6 +286,7 @@ Feature: Den synliga texten
     Given "C1" har en text på exakt 300 tecken på 150 rader
     When musen är över "C1"
     Then är verktygstipset högst 40 % av fönstret högt, inom fönstret, och rullar för att visa resten
+    And kortet visar sina första 5 rader följda av "..." och är lägre än halva fönstret
 
   @BOWTIE-TEXT-9
   Scenario: En text över 300 tecken från en fil visas hel i verktygstipset
@@ -325,9 +326,9 @@ Feature: Koppla med nummer
 
   @BOWTIE-LINK-2
   Scenario: Siffrorna 1–9 följer id:t, inte raden
-    Given "C3" har flyttats till första raden
+    Given "C1" och "C3" har bytt rad, så att "C3" står på rad 1 och "C1" på rad 3
     When användaren trycker 3
-    Then "P3" skyddar "C3"
+    Then skyddar "P3" "C3" och inte "C1"
 
   @BOWTIE-LINK-3
   Scenario: En rad listar id:n på det barriären skyddar

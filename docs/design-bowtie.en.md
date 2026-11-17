@@ -223,7 +223,7 @@ Feature: Indication, selection and arrow navigation
 
 ### BOWTIE-TEXT: the viewable text
 
-**A text is shown with at most 100 characters (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited, and in a tooltip while the object is hovered or indicated with the arrow keys (5.11). Enter and Esc remove the tooltip. The longest text is 300 characters, with a warning from 240.**
+**A text is shown with at most 100 characters and 5 lines (5.11). A longer text ends with three dots, `...`. The full text is kept and is shown while the text is edited, and in a tooltip while the object is hovered or indicated with the arrow keys (5.11). Enter and Esc remove the tooltip. The longest text is 300 characters, with a warning from 240.**
 
 ```gherkin
 Feature: The viewable text
@@ -286,6 +286,7 @@ Feature: The viewable text
     Given "C1" has a text of exactly 300 characters in 150 lines
     When the mouse is over "C1"
     Then the tooltip is at most 40 % of the window high, inside the window, and scrolls to show the rest
+    And the card shows its first 5 lines followed by "..." and is less than half the window high
 
   @BOWTIE-TEXT-9
   Scenario: A text over 300 characters from a file is shown whole in the tooltip
@@ -325,9 +326,9 @@ Feature: Linking by number
 
   @BOWTIE-LINK-2
   Scenario: The digits 1–9 follow the id, not the row
-    Given "C3" has been moved to the first row
+    Given "C1" and "C3" have swapped rows, so that "C3" is on row 1 and "C1" on row 3
     When the user presses 3
-    Then "P3" protects "C3"
+    Then "P3" protects "C3" and not "C1"
 
   @BOWTIE-LINK-3
   Scenario: A bar lists the ids of what the barrier protects

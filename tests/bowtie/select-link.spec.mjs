@@ -99,19 +99,21 @@ test.describe("Bowtie: select, edit, move and link", () => {
 
   test("BOWTIE-LINK-2: the digits 1–9 link the cause whose id ends in that number, not the row", async ({ page }) => {
     await manyCauses(page);
-    // Move C3 to the first row through the app (replaceState), and check that the row and the id now differ.
+    // Swap the rows of C1 and C3 through the app, so that the card on row 3 is C1 and C3 is on row 1.
     await page.evaluate(() => {
       const st = BowtieEditor.getState();
-      const c3 = st.left.causes.find((c) => c.id === "C3");
-      st.left.causes = [c3, ...st.left.causes.filter((c) => c !== c3)];
+      const c1 = st.left.causes.find((c) => c.id === "C1"), c3 = st.left.causes.find((c) => c.id === "C3");
+      [c1.row, c3.row] = [c3.row, c1.row];
       BowtieEditor.replaceState(st);
     });
-    const order = await page.evaluate(() => BowtieEditor.getState().left.causes.map((c) => c.id));
-    expect(order.indexOf("C3")).toBe(0); // row 1 is C3, so "the 3rd row" would be C2
+    await expect(page.locator("#c-C3")).toHaveAttribute("data-row", "1");
+    await expect(page.locator("#c-C1")).toHaveAttribute("data-row", "3");
     await page.locator("#b-p3").click({ position: { x: 3, y: 3 } });
+    expect(await protects(page, "P3")).not.toContain("id-C1");
+    expect(await protects(page, "P3")).not.toContain("id-C3");
     await page.keyboard.press("Digit3");
-    expect(await protects(page, "P3")).toContain("id-C3");
-    expect(await protects(page, "P3")).not.toContain("id-C2");
+    expect(await protects(page, "P3")).toContain("id-C3"); // the id, C3 ...
+    expect(await protects(page, "P3")).not.toContain("id-C1"); // ... not the card on row 3
   });
 
   test("BOWTIE-LINK-3: a bar lists the ids of what the selected barrier protects", async ({ page }) => {
