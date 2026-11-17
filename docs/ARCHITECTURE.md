@@ -1,4 +1,4 @@
-# Architecture: The HFA Family (hfa-ds, hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd)
+# Architecture: The HFA Family (hfa-ds, hfa-hub, hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd)
 
 > **Status:** All tools and their data models are under development. File formats and data structures may change without backward compatibility, and the tools should therefore not be used for production analyses.
 
@@ -6,6 +6,7 @@
 
 | Tool | Live version | Status |
 |---|---|---|
+| HFA Hub (start page) | [larswpettersson.github.io/hfa-hub/](https://larswpettersson.github.io/hfa-hub/) | Runnable; lists the tools and opens them |
 | HTA (Hierarchical Task Analysis + TTA) | [larswpettersson.github.io/hfa-hta/HTA.html](https://larswpettersson.github.io/hfa-hta/HTA.html) · [standalone offline file](https://larswpettersson.github.io/hfa-hta/hta_offline.html) | Runnable, under development |
 | Bowtie | [larswpettersson.github.io/hfa-bowtie/Bowtie.html](https://larswpettersson.github.io/hfa-bowtie/Bowtie.html) · [standalone offline file](https://larswpettersson.github.io/hfa-bowtie/Bowtie_offline.html) | Runnable, under development |
 | STPA Workbench | [larswpettersson.github.io/hfa-stpa/workbench/](https://larswpettersson.github.io/hfa-stpa/workbench/) | Runnable, under development; being adapted for cumulative, step-by-step AI-supported analysis |
@@ -35,9 +36,10 @@ This choice is deliberate. Because the tools have no build step and use no exter
 
 ## 2. Purpose and Structure
 
-This document describes the architecture of five related repositories within the Human Factors Analysis (HFA) family:
+This document describes the architecture of six related repositories within the Human Factors Analysis (HFA) family:
 
 - **hfa-ds** – Design system repository. Contains no runnable applications. It is the source of truth for design tokens (colours, typography, corner radii, etc.) and holds scripts that keep a central design library in Penpot and the tools' own Penpot files up to date. It also holds shared automated tests (Playwright) that run against the tools in the other repositories. The scripts run on Node.js and need no other packages.
+- **hfa-hub** – The start page of the tools. A single file, `index.html`, that lists the tools with a sentence about each and opens them, including their standalone offline files. The links are relative (`../hfa-hta/HTA.html` and so on), so the page works both on GitHub Pages and from `file://` when the repositories lie in folders next to each other. The page has no data model and stores only the chosen theme.
 - **hfa-hta** – Standalone web tool for Hierarchical Task Analysis (HTA) combined with Tabular Task Analysis (TTA) and HEI fields. The main editor is `HTA.html`, with its logic in `scripts/hta-app.js`. Export to JSON and to CSV (for Excel and SmartArt), undo/redo, keyboard shortcuts and a help dialog. The data model is version 2.
 - **hfa-bowtie** – Standalone web tool for drawing and editing bowtie diagrams (causes → top event → consequences, with preventive and recovery barriers). The logic lives in `scripts/bowtie-app.js`. The example data is based on a signal passed at danger (SPAD, Swedish OSPA) scenario. Printing scales the diagram to a single A4 landscape page. The data model is version 1.
 - **hfa-stpa** – Support for System-Theoretic Process Analysis (STPA). Its core is the **STPA Workbench** (`workbench/index.html`), a single-file application with a JSON editor for the control structure, an automatically drawn SVG diagram, tables for losses, hazards, unsafe control actions (UCAs) and safety constraints, and an analysis chat with a language model of choice. The repository also contains `mermaid-stpa`, a separate Mermaid diagram plugin for STPA control structures (a separate TypeScript package with its own build step, which the Workbench does not use).
@@ -55,6 +57,7 @@ The shared purpose is to support safety and human factors analysis through separ
 
 | Tool | Start file | Offline file | Data model | How data is saved | Status |
 |---|---|---|---|---|---|
+| HFA Hub | `index.html` | – (the start file is already a single file) | – | – | Runnable |
 | HTA | `HTA.html` (+ earlier `hta-editor2.html`, `hta-editor.html`) | `hta_offline.html` | JSON v2 (HTA tree + `ttaRecords`) | JSON export/import, CSV export | Runnable, under development |
 | Bowtie | `Bowtie.html` | `Bowtie_offline.html` | JSON v1 | JSON export/import, print | Runnable, under development |
 | STPA Workbench | `workbench/index.html` (+ `ai-assist.js`) | `workbench/stpa_offline.html` | JSON (losses, hazards, constraints, UCAs, control structure, actuators, sensors) | JSON export/import, chat export as Markdown | Runnable, under development; transition to cumulative analysis in progress |
@@ -105,6 +108,10 @@ flowchart TB
         wb -. "only with AI support" .-> llm
     end
 
+    subgraph HUB["hfa-hub (start page)"]
+        hubHtml["index.html<br/>start page"]
+    end
+
     subgraph RBD["hfa-rbd (design stage)"]
         rbdHtml["RBD.html + styles/rbd.css<br/>(not runnable)"]
     end
@@ -127,6 +134,11 @@ flowchart TB
     tests -. "opens via file://" .-> bowtieHtml
     tests -. "opens via file://" .-> wb
     tests -. "opens via file://" .-> rbdHtml
+    tests -. "opens via file://" .-> hubHtml
+
+    hubHtml -. "links to" .-> htaHtml
+    hubHtml -. "links to" .-> bowtieHtml
+    hubHtml -. "links to" .-> wb
 ```
 
 **Notes on the diagram:**

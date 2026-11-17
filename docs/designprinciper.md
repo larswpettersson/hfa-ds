@@ -2,7 +2,7 @@
 
 *English version: [design-principles.md](design-principles.md)*
 
-Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
+Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd), startsidan hfa-hub och Penpot-filen **HFA DS**. [arkitektur.md](arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
 
 ## 1. Syfte och enkelhet
 
@@ -494,6 +494,7 @@ Varje verktyg har en titelrad överst, lika i alla verktyg:
 - **Theme och panelväxlingen** (*Hide panel*, 4.7) ligger längst till höger. Theme är en växlingsknapp med sol i ljust läge och halvmåne i mörkt. Nya generella knappar läggs i den högra gruppen.
 - **Verktygsspecifika kommandon** hör inte hemma i titelraden. Add-kommandona i STPA, HTA och Bowtie ligger i en rad över diagrammet (5.10).
 - **Alla verktyg har samma knappar** i titelraden, även när ett verktyg inte använder alla. *Undo* fungerar i alla verktyg (4.14). Det är bara appnamnet som skiljer.
+- **Undantag: HFA Hub.** Startsidan har inget dokument att skapa, öppna, spara eller ångra, och har därför bara appnamnet och Theme i titelraden (1.2, punkt 1).
 - **Raden är responsiv i verktygen.** Bredden 1440 px gäller bara komponenten *Title bar* i HFA DS (varianterna `Tool` = STPA, HTA, Bowtie); i verktyget fyller raden bredden och den högra gruppen ligger kvar längst till höger.
 
 **Nuläge (2026-11-12):** titelraden med 28 px höga knappar är byggd i HTA, Bowtie och STPA, och temaväxlaren (komponenten *Theme*, 44 × 24, `role="switch"` med namnet *Dark theme*) ersätter knappen *Theme* i alla tre; testet `tests/shared/theme-toggle.spec.mjs` kontrollerar det. De gamla verktygsfälten (komponenten *Toolbar*) ligger kvar i HFA DS.

@@ -2,7 +2,7 @@
 
 *Swedish version: [designprinciper.md](designprinciper.md)*
 
-Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
+Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd), the start page hfa-hub and the **HFA DS** Penpot file. [ARCHITECTURE.md](ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
 
 ## 1. Purpose and simplicity
 
@@ -494,6 +494,7 @@ Every tool has a title bar at the top, the same in all tools:
 - **Theme and the panel toggle** (*Hide panel*, 4.7) are at the far right. Theme is a toggle button with a sun in light mode and a crescent moon in dark mode. New general buttons go in the right group.
 - **Tool-specific commands** do not belong in the title bar. The Add commands in STPA, HTA and Bowtie are in a row above the diagram (5.10).
 - **All tools have the same buttons** in the title bar, even when a tool does not use all of them. *Undo* works in all tools (4.14). Only the application name differs.
+- **Exception: HFA Hub.** The start page has no document to create, open, save or undo, and so has only the application name and Theme in its title bar (1.2, point 1).
 - **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
 
 **Current state (2026-11-12):** the title bar with 28 px buttons is built in HTA, Bowtie and STPA, and the theme switch (the component *Theme*, 44 × 24, `role="switch"` named *Dark theme*) replaces the *Theme* button in all three; the test `tests/shared/theme-toggle.spec.mjs` checks it. The old toolbars (the component *Toolbar*) are still in HFA DS.

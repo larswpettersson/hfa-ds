@@ -24,7 +24,7 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
           TOKEN: ${{ secrets.HFA_REPOS_TOKEN || github.token }}
         run: |
-          for r in stpa hta bowtie rbd; do
+          for r in stpa hta bowtie rbd hub; do
             if git ls-remote --exit-code --heads "https://x-access-token:${TOKEN}@github.com/larswpettersson/hfa-${r}" "refs/heads/${BRANCH}" >/dev/null 2>&1; then
               ref="$BRANCH"
             else
@@ -45,6 +45,8 @@ jobs:
         with: { repository: larswpettersson/hfa-bowtie, ref: "${{ steps.refs.outputs.bowtie }}", path: ws/hfa-bowtie, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/checkout@v4
         with: { repository: larswpettersson/hfa-rbd, ref: "${{ steps.refs.outputs.rbd }}", path: ws/hfa-rbd, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
+      - uses: actions/checkout@v4
+        with: { repository: larswpettersson/hfa-hub, ref: "${{ steps.refs.outputs.hub }}", path: ws/hfa-hub, token: "${{ secrets.HFA_REPOS_TOKEN || github.token }}" }
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
