@@ -8,6 +8,7 @@ const TOOLS = [
   { id: "hta", ready: ".task", titlebar: ".header", themed: "body" },
   { id: "bowtie", ready: ".card", titlebar: ".titlebar", themed: "body" },
   { id: "stpa-workbench", ready: "#diagram g.node", titlebar: "header", themed: "html" },
+  { id: "hub", ready: ".tool", titlebar: ".titlebar", themed: "html" },
 ];
 
 for (const c of TOOLS) {

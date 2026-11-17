@@ -42,6 +42,14 @@ const SYNC = [{
       "--bg-success": { tool: "#1A5A42", token: "#2B5945" },
     },
   },
+}, {
+  tool: "hub",
+  map: {
+    "--background-base": "--background-base", "--background-elevated": "--background-elevated", "--background-sunken": "--background-sunken",
+    "--background-info": "--background-info", "--foreground-base": "--foreground-base", "--foreground-muted": "--foreground-muted",
+    "--brand-primary": "--brand-primary",
+  },
+  knownDrift: { light: {}, dark: {} },
 }];
 
 for (const s of SYNC) {
