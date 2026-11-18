@@ -39,7 +39,7 @@ This choice is deliberate. Because the tools have no build step and use no exter
 This document describes the architecture of six related repositories within the Human Factors Analysis (HFA) family:
 
 - **hfa-ds** – Design system repository. Contains no runnable applications. It is the source of truth for design tokens (colours, typography, corner radii, etc.) and holds scripts that keep a central design library in Penpot and the tools' own Penpot files up to date. It also holds shared automated tests (Playwright) that run against the tools in the other repositories. The scripts run on Node.js and need no other packages.
-- **hfa-hub** – The start page of the tools. A single file, `index.html`, that lists the tools with a sentence about each and opens them, including their standalone offline files. The links are relative (`../hfa-hta/HTA.html` and so on), so the page works both on GitHub Pages and from `file://` when the repositories lie in folders next to each other. The page has no data model and stores only the chosen theme.
+- **hfa-hub** – The start page of the tools. A single file, `index.html`, that lists the tools with a sentence about each and opens them, including their standalone offline files. The links are relative (`../hfa-hta/HTA.html` and so on), so the page works both on GitHub Pages and from `file://` when the repositories lie in folders next to each other. The page has no data model and stores only the chosen theme. Its design and the planned extension with projects and a source library are in [design-hub.en.md](design-hub.en.md).
 - **hfa-hta** – Standalone web tool for Hierarchical Task Analysis (HTA) combined with Tabular Task Analysis (TTA) and HEI fields. The main editor is `HTA.html`, with its logic in `scripts/hta-app.js`. Export to JSON and to CSV (for Excel and SmartArt), undo/redo, keyboard shortcuts and a help dialog. The data model is version 2.
 - **hfa-bowtie** – Standalone web tool for drawing and editing bowtie diagrams (causes → top event → consequences, with preventive and recovery barriers). The logic lives in `scripts/bowtie-app.js`. The example data is based on a signal passed at danger (SPAD, Swedish OSPA) scenario. Printing scales the diagram to a single A4 landscape page. The data model is version 1.
 - **hfa-stpa** – Support for System-Theoretic Process Analysis (STPA). Its core is the **STPA Workbench** (`workbench/index.html`), a single-file application with a JSON editor for the control structure, an automatically drawn SVG diagram, tables for losses, hazards, unsafe control actions (UCAs) and safety constraints, and an analysis chat with a language model of choice. The repository also contains `mermaid-stpa`, a separate Mermaid diagram plugin for STPA control structures (a separate TypeScript package with its own build step, which the Workbench does not use).
@@ -305,3 +305,88 @@ A future tool therefore gets the same panel by loading `ai-assist.js` and callin
 **Offline files.** The tools must still work as one file. `npm run build:offline -- <tool.html> <output.html>` (the script `scripts/build/inline-offline.mjs`) inlines every `<script src="…"></script>` that stands on a line of its own. HTA and Bowtie have their offline files (`hta_offline.html`, `Bowtie_offline.html`) built this way, and STPA has `workbench/stpa_offline.html`. Rebuild when `ai-assist.js` or the tool's HTML changes.
 
 STPA Workbench no longer has a provider or MCP layer of its own; it was removed when the tool moved to the shared panel.
+
+## 11. The AI Panel: Traceability to the Source Material (planned)
+
+Planned support for tracing the changes the AI panel makes in a model back to the source material. The purpose, the interface and the decisions are in the [design principles, section 1.8](design-principles.md). None of this is built (2026-11-18).
+
+**Layers and responsibilities.** The model files carry only light references; the heavy parts sit in the panel and the hub.
+
+| Layer | Responsibility |
+|---|---|
+| Model file (HTA, Bowtie, STPA) | Optional field `sources` per element. Plain data the tool does not have to interpret. |
+| The AI panel (`ai-assist.js`) | The contract: the AI must return source references per change, and the panel verifies the quotes against the source text. |
+| Storage adapter | Fetches and stores sources. The standalone adapter embeds the sources in the model file; the hub's adapter uses the project's source library. |
+| HFA Hub (planned extension, [design-hub.en.md](design-hub.en.md)) | Source library, segmentation, display with highlights, and reverse lookup across all models in the project. |
+
+**Source.**
+
+```json
+{
+  "id": "src-7f3a",
+  "title": "Accident investigation X, final report",
+  "hash": "sha256:...",
+  "origin": "chat-paste | file",
+  "granularity": "line | paragraph",
+  "replaces": "src-41c0",
+  "segments": [
+    { "id": "s-0042", "label": "Ch. 3.2, p. 14", "text": "..." }
+  ]
+}
+```
+
+- `hash` shows that the source has not been changed afterwards.
+- `segments` are lines or paragraphs depending on `granularity`, and give stable ids to point at. `granularity` is locked when the source is first used (1.8, decision 1).
+- `replaces` (optional) points to the source that a new version replaces (1.8, decision 2). The old source stays.
+
+**Source reference in a model element.**
+
+```json
+"sources": [
+  {
+    "sourceId": "src-7f3a",
+    "segmentId": "s-0042",
+    "quote": "exact quote",
+    "prefix": "some text before",
+    "suffix": "some text after",
+    "status": "ai-suggested | verified"
+  }
+]
+```
+
+The quote with `prefix` and `suffix` follows the idea of the *text quote selector* in W3C Web Annotation, so the anchor holds even if the source is reformatted. The same quote search is used when a source is added again with another level or in a new version: the reference moves to the segment where its quote is found, and a reference whose quote is not found is flagged. `status` is per reference, because verification is per reference (1.8, decision 3); an element's status is derived from its references and not stored.
+
+**Starting level.** The first version can make do with `sourceTitle` and `quote` in the element, without segments and without the hub. It is upgraded later without breaking older files.
+
+**Storage interface.** The panel talks only to this interface:
+
+| Function | Does |
+|---|---|
+| `getSource(id)` | Fetches a source with its segments. |
+| `addSource(text, title, granularity)` | Stores a new source, splits it into segments and returns its id. |
+| `findQuote(sourceId, quote)` | Checks that the quote exists and returns the segment. |
+| `elementsUsing(sourceId, segmentId)` | Reverse lookup. Full support only in the hub; the standalone adapter searches only the open model. |
+
+The standalone adapter embeds the sources in the model file or receives them together with it. The hub's adapter uses the project's shared source library. Both follow the basic requirements of the architecture (section 1): no server, and the sources leave the computer only if the user exports them or sends them to a cloud provider.
+
+**Flow when a source is added:**
+
+1. The panel asks whether the source is referenced per line or per paragraph, preset to the project's default (without the hub: *paragraph*).
+2. The user confirms, and the answer is stored as `granularity` on the source.
+3. Only then is the source sent to the AI.
+
+**AI contract.** Every change the AI proposes is returned as an event:
+
+```json
+{
+  "op": "add | update | delete",
+  "elementId": "barrier-12",
+  "change": { },
+  "sources": [ { "sourceId": "src-7f3a", "segmentId": "s-0042", "quote": "..." } ],
+  "chatTurn": "turn-18"
+}
+```
+
+The panel rejects or flags changes whose quote is not found in the source. The events can also give material for a summary message of the change. The model loosely follows W3C PROV: entity (element, source), activity (chat turn) and agent (the AI or a person). The contract is described in the tool's `schemaPrompt` (section 10), so it applies to every provider.
+
+The change is shown and approved like other AI proposals (design principles 1.3); the source references come along as `ai-suggested`.

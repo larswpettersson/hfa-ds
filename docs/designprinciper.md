@@ -152,6 +152,27 @@ TTA-tabellen i HTA används för olika syften: t.ex. felidentifiering enligt HEI
 
 Inget av detta är byggt ännu (2026-11-03). Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 8.
 
+### 1.8 Spårbarhet till källmaterialet (planerat)
+
+Det som AI-panelen för in i en modell ska gå att spåra tillbaka till källan, till exempel en olycksutredning eller ett kravdokument som klistrats in i panelen. Från ett element i HTA, Bowtie eller STPA ska man kunna gå till exakt det stycke eller den rad som informationen kom från.
+
+- **Varje ändring bär sina källor.** AI:n anger för varje föreslagen ändring vilket ställe i källan den bygger på, med ett ordagrant citat. Panelen kontrollerar att citatet finns i källan och flaggar eller avvisar förslaget annars.
+- **Användaren väljer referensnivå per källa:** *rad* för kravdokument med ett krav per rad (till exempel ERA:s CSM Monitoring och CSM RA) eller *stycke* för löpande text (till exempel olycksutredningar). Panelen frågar när källan läggs in, förvalt enligt projektets standard, och först därefter skickas källan till AI:n. Frågan är en vanlig funktion i panelen, inte ett verktygsanrop till modellen, så den fungerar likadant med alla leverantörer, även lokala modeller.
+- **Ett element kan ha många källreferenser**, från flera delar av ett eller flera dokument.
+- **AI-föreslaget och verifierat ser olika ut.** Varje källreferens verifieras för sig av användaren. Ett element räknas som verifierat när alla dess referenser är det, och skillnaden syns i diagrammet med form eller symbol, inte bara färg (som i 1.3).
+- **Klick på ett element** visar citatet och källan, med en knapp som hoppar till stället i källan. **Markerad text i källan** visar vilka element som bygger på den; det kräver hubbens källbibliotek ([design-hub.md](design-hub.md)).
+- **Samma panel överallt.** Spårbarheten byggs i den delade AI-panelen (`ai-assist.js`, 4.7) och fungerar likadant i de fristående verktygen och i hubben. Det enda som skiljer är var källorna lagras.
+
+**Beslut (2026-11-18):**
+
+1. **Referensnivån låses när källan används första gången.** Den som vill byta nivå lägger in källan på nytt med den andra nivån. Panelen flyttar då referenserna genom att söka upp citaten.
+2. **En ny version av en källa blir en ny källa** som pekar på den den ersätter. Referenser vars citat finns kvar oförändrat flyttas när användaren godkänner det, och de övriga flaggas. Den gamla versionen finns kvar, så att det går att se vad en äldre referens byggde på.
+3. **Verifiering sker per källreferens**, inte per element (punkten ovan).
+
+**Öppet:** om ett godkänt förslag (1.3) också verifierar dess källreferenser, eller om verifieringen är ett eget steg.
+
+Inget av detta är byggt eller ritat ännu (2026-11-18); gränssnittet ska skissas i Penpot. Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 11.
+
 ## 2. Typografi
 
 ### 2.1 Grund: typografisk enkelhet

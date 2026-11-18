@@ -152,6 +152,27 @@ The TTA table in HTA serves different purposes: for example error identification
 
 None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 8.
 
+### 1.8 Traceability to the source material (planned)
+
+What the AI panel brings into a model must be traceable back to its source, for example an accident investigation or a requirements document pasted into the panel. From an element in HTA, Bowtie or STPA, one should be able to go to the exact paragraph or line the information came from.
+
+- **Every change carries its sources.** For each change it proposes, the AI states which place in the source it builds on, with a verbatim quote. The panel checks that the quote is in the source and otherwise flags or rejects the proposal.
+- **The user chooses the reference level per source:** *line* for requirements documents with one requirement per line (for example ERA's CSM Monitoring and CSM RA) or *paragraph* for running text (for example accident investigations). The panel asks when the source is added, preset to the project's default, and only then is the source sent to the AI. The question is an ordinary function of the panel, not a tool call to the model, so it works the same with every provider, local models included.
+- **An element can have many source references**, from several parts of one or more documents.
+- **AI-suggested and verified look different.** The user verifies each source reference on its own. An element counts as verified when all its references are, and the difference shows in the diagram by shape or symbol, not only colour (as in 1.3).
+- **A click on an element** shows the quote and the source, with a button that jumps to the place in the source. **Selected text in the source** shows which elements build on it; that needs the hub's source library ([design-hub.en.md](design-hub.en.md)).
+- **The same panel everywhere.** Traceability is built in the shared AI panel (`ai-assist.js`, 4.7) and works the same in the standalone tools and in the hub. The only difference is where the sources are stored.
+
+**Decisions (2026-11-18):**
+
+1. **The reference level is locked when the source is first used.** Whoever wants another level adds the source again with that level. The panel then moves the references by searching for their quotes.
+2. **A new version of a source becomes a new source** that points to the one it replaces. References whose quote is still there unchanged are moved when the user approves; the others are flagged. The old version stays, so it remains clear what an older reference was based on.
+3. **Verification is per source reference**, not per element (the point above).
+
+**Open:** whether an approved proposal (1.3) also verifies its source references, or whether verification is a step of its own.
+
+None of this is built or drawn yet (2026-11-18); the interface is to be sketched in Penpot. The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 11.
+
 ## 2. Typography
 
 ### 2.1 Basis: typographic simplicity
