@@ -12,6 +12,7 @@ export const TOOLS = [
   { id: "hta-editor2", file: "hfa-hta/hta-editor2.html" },
   { id: "bowtie", file: "hfa-bowtie/Bowtie.html" },
   { id: "rbd", file: "hfa-rbd/RBD.html" },
+  { id: "hub", file: "hfa-hub/index.html" },
 ].map((t) => ({ ...t, path: path.join(WORKSPACE, t.file) }));
 
 export const tool = (id) => TOOLS.find((t) => t.id === id);

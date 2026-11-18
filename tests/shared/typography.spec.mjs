@@ -11,7 +11,7 @@ const tokens = JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPat
 const base = tokens["mode/light"]["font.family.base"].$value;
 const family = (list) => list.map((f) => (/\s/.test(f) ? `"${f}"` : f)).join(", ");
 
-for (const t of TOOLS.filter((x) => ["stpa-workbench", "hta", "bowtie"].includes(x.id))) {
+for (const t of TOOLS.filter((x) => ["stpa-workbench", "hta", "bowtie", "hub"].includes(x.id))) {
   test(`${t.id}: text is set in the token font`, async ({ page }) => {
     test.skip(!toolExists(t), `${t.file} not found in the workspace`);
     await openTool(page, t);

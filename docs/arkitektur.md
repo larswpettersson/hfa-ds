@@ -1,4 +1,4 @@
-# Arkitektur: HFA-familjen (hfa-ds, hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd)
+# Arkitektur: HFA-familjen (hfa-ds, hfa-hub, hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd)
 
 > **Status:** Samtliga verktyg och deras datamodeller är under utveckling. Filformat och datastrukturer kan ändras utan bakåtkompatibilitet, och verktygen bör därför inte användas för skarpa analyser.
 
@@ -6,6 +6,7 @@
 
 | Verktyg | Liveversion | Status |
 |---|---|---|
+| HFA Hub (startsida) | [larswpettersson.github.io/hfa-hub/](https://larswpettersson.github.io/hfa-hub/) | Körbar; listar verktygen och öppnar dem |
 | HTA (Hierarchical Task Analysis + TTA) | [larswpettersson.github.io/hfa-hta/HTA.html](https://larswpettersson.github.io/hfa-hta/HTA.html) · [fristående offlinefil](https://larswpettersson.github.io/hfa-hta/hta_offline.html) | Körbar, under utveckling |
 | Bowtie | [larswpettersson.github.io/hfa-bowtie/Bowtie.html](https://larswpettersson.github.io/hfa-bowtie/Bowtie.html) · [fristående offlinefil](https://larswpettersson.github.io/hfa-bowtie/Bowtie_offline.html) | Körbar, under utveckling |
 | STPA Workbench | [larswpettersson.github.io/hfa-stpa/workbench/](https://larswpettersson.github.io/hfa-stpa/workbench/) | Körbar, under utveckling; anpassas för kumulativ, AI-stödd analys steg för steg |
@@ -35,9 +36,10 @@ Valet är medvetet. Eftersom verktygen saknar byggsteg och externa paket måste 
 
 ## 2. Syfte och struktur
 
-Dokumentet beskriver arkitekturen för fem relaterade repon inom Human Factors Analysis-familjen (HFA):
+Dokumentet beskriver arkitekturen för sex relaterade repon inom Human Factors Analysis-familjen (HFA):
 
 - **hfa-ds** – Designsystemrepot. Innehåller inga körbara applikationer. Repot är källan till sanning för designtokens (färger, typografi, hörnradier m.m.) och innehåller skript som håller ett centralt designbibliotek i Penpot och verktygens egna Penpot-filer uppdaterade. Här finns också gemensamma automatiska tester (Playwright) som körs mot verktygen i de andra repona. Skripten körs med Node.js och kräver inga andra paket.
+- **hfa-hub** – Startsidan för verktygen. En enda fil, `index.html`, som listar verktygen med en mening om vart och ett och öppnar dem, även deras fristående offlinefiler. Länkarna är relativa (`../hfa-hta/HTA.html` och så vidare), så sidan fungerar både på GitHub Pages och från `file://` när repona ligger i mappar bredvid varandra. Sidan har ingen datamodell och sparar bara det valda temat. Designen och den planerade utbyggnaden med projekt och källbibliotek beskrivs i [design-hub.md](design-hub.md).
 - **hfa-hta** – Fristående webbverktyg för Hierarchical Task Analysis (HTA) kombinerad med Tabular Task Analysis (TTA) och HEI-fält. Huvudeditorn är `HTA.html` med logiken i `scripts/hta-app.js`. Export till JSON och till CSV (för Excel och SmartArt), ångra/gör om, kortkommandon och hjälpdialog. Datamodellen är version 2.
 - **hfa-bowtie** – Fristående webbverktyg för att rita och redigera bowtie-diagram (orsaker → topphändelse → konsekvenser, med förebyggande och återställande barriärer). Logiken finns i `scripts/bowtie-app.js`. Exempeldata utgår från obehörig stoppsignalpassage (OSPA). Utskrift skalar diagrammet till en A4-sida i liggande format. Datamodellen är version 1.
 - **hfa-stpa** – Stöd för System-Theoretic Process Analysis (STPA). Kärnan är **STPA Workbench** (`workbench/index.html`), en enfilsapplikation med JSON-editor för styrstrukturen, automatiskt ritat SVG-diagram, tabeller för förluster, faror, osäkra styråtgärder (UCA) och säkerhetskrav samt en analyschatt mot valfri språkmodell. Repot innehåller även `mermaid-stpa`, ett separat Mermaid-diagramtillägg för STPA-styrstrukturer (ett separat TypeScript-paket med eget byggsteg, som workbenchen inte använder).
@@ -55,6 +57,7 @@ Det gemensamma syftet är att stödja säkerhets- och human factors-analys genom
 
 | Verktyg | Startfil | Offlinefil | Datamodell | Hur data sparas | Status |
 |---|---|---|---|---|---|
+| HFA Hub | `index.html` | – (startfilen är redan en enda fil) | – | – | Körbar |
 | HTA | `HTA.html` (+ äldre `hta-editor2.html`, `hta-editor.html`) | `hta_offline.html` | JSON v2 (HTA-träd + `ttaRecords`) | JSON-export/import, CSV-export | Körbar, under utveckling |
 | Bowtie | `Bowtie.html` | `Bowtie_offline.html` | JSON v1 | JSON-export/import, utskrift | Körbar, under utveckling |
 | STPA Workbench | `workbench/index.html` (+ `ai-assist.js`) | `workbench/stpa_offline.html` | JSON (förluster, faror, krav, UCA, styrstruktur, aktuatorer, sensorer) | JSON-export/import, export av chatten som Markdown | Körbar, under utveckling; omställning till kumulativ analys pågår |
@@ -105,6 +108,10 @@ flowchart TB
         wb -. "endast vid AI-stöd" .-> llm
     end
 
+    subgraph HUB["hfa-hub (startsida)"]
+        hubHtml["index.html<br/>startsida"]
+    end
+
     subgraph RBD["hfa-rbd (designstadium)"]
         rbdHtml["RBD.html + styles/rbd.css<br/>(ej körbar)"]
     end
@@ -127,6 +134,11 @@ flowchart TB
     tests -. "öppnar via file://" .-> bowtieHtml
     tests -. "öppnar via file://" .-> wb
     tests -. "öppnar via file://" .-> rbdHtml
+    tests -. "öppnar via file://" .-> hubHtml
+
+    hubHtml -. "länkar till" .-> htaHtml
+    hubHtml -. "länkar till" .-> bowtieHtml
+    hubHtml -. "länkar till" .-> wb
 ```
 
 **Kommentarer till diagrammet:**
@@ -293,3 +305,88 @@ Ett kommande verktyg får alltså samma panel genom att ladda `ai-assist.js` och
 **Offlinefiler.** Verktygen ska fortfarande kunna användas som en enda fil. `npm run build:offline -- <verktyg.html> <utfil.html>` (skriptet `scripts/build/inline-offline.mjs`) lägger in varje `<script src="…"></script>` som står på en egen rad. HTA och Bowtie har sina offlinefiler (`hta_offline.html`, `Bowtie_offline.html`) byggda så, och STPA har `workbench/stpa_offline.html`. Starta om bygget när `ai-assist.js` eller verktygets HTML ändras.
 
 STPA Workbench har inget eget leverantörs- eller MCP-lager längre; det togs bort när verktyget gick över till den gemensamma panelen.
+
+## 11. AI-panelen: spårbarhet till källmaterialet (planerat)
+
+Planerat stöd för att spåra ändringar som AI-panelen gör i en modell tillbaka till källmaterialet. Syftet, gränssnittet och besluten beskrivs i [designprinciperna, avsnitt 1.8](designprinciper.md). Inget av detta är byggt (2026-11-18).
+
+**Lager och ansvar.** Modellfilerna bär bara lätta referenser; det tunga ligger i panelen och i hubben.
+
+| Lager | Ansvar |
+|---|---|
+| Modellfil (HTA, Bowtie, STPA) | Valfritt fält `sources` per element. Ren data som verktyget inte behöver tolka. |
+| AI-panelen (`ai-assist.js`) | Kontraktet: AI:n måste returnera källreferenser per ändring, och panelen verifierar citaten mot källtexten. |
+| Lagringsadapter | Hämtar och sparar källor. Den fristående adaptern bäddar in källorna i modellfilen; hubbens adapter använder projektets källbibliotek. |
+| HFA Hub (planerad utbyggnad, [design-hub.md](design-hub.md)) | Källbibliotek, segmentering, visning med markeringar och omvänd uppslagning över alla modeller i projektet. |
+
+**Källa.**
+
+```json
+{
+  "id": "src-7f3a",
+  "title": "Olycksutredning X, slutrapport",
+  "hash": "sha256:...",
+  "origin": "chat-paste | file",
+  "granularity": "line | paragraph",
+  "replaces": "src-41c0",
+  "segments": [
+    { "id": "s-0042", "label": "Kap 3.2, s. 14", "text": "..." }
+  ]
+}
+```
+
+- `hash` visar att källan inte har ändrats i efterhand.
+- `segments` är rader eller stycken beroende på `granularity`, och ger stabila id:n att peka på. `granularity` låses när källan används första gången (1.8, beslut 1).
+- `replaces` (valfritt) pekar på den källa som en ny version ersätter (1.8, beslut 2). Den gamla källan ligger kvar.
+
+**Källreferens i ett modellelement.**
+
+```json
+"sources": [
+  {
+    "sourceId": "src-7f3a",
+    "segmentId": "s-0042",
+    "quote": "exakt citat",
+    "prefix": "lite text före",
+    "suffix": "lite text efter",
+    "status": "ai-suggested | verified"
+  }
+]
+```
+
+Citatet med `prefix` och `suffix` följer idén med *text quote selector* i W3C Web Annotation, så att ankaret håller även om källan formateras om. Samma citatsökning används när en källa läggs in på nytt med en annan nivå eller i en ny version: referensen flyttas till det segment där citatet hittas, och en referens vars citat inte hittas flaggas. `status` finns per referens, eftersom verifieringen sker per referens (1.8, beslut 3); ett elements status räknas fram ur dess referenser och sparas inte.
+
+**Startnivå.** Första versionen kan nöja sig med `sourceTitle` och `quote` i elementet, utan segment och utan hubb. Den uppgraderas senare utan att äldre filer går sönder.
+
+**Lagringsgränssnitt.** Panelen talar bara med det här gränssnittet:
+
+| Funktion | Gör |
+|---|---|
+| `getSource(id)` | Hämtar en källa med dess segment. |
+| `addSource(text, title, granularity)` | Sparar en ny källa, delar upp den i segment och returnerar id. |
+| `findQuote(sourceId, quote)` | Kontrollerar att citatet finns och returnerar segmentet. |
+| `elementsUsing(sourceId, segmentId)` | Omvänd uppslagning. Fullt stöd bara i hubben; den fristående adaptern söker bara i den öppna modellen. |
+
+Den fristående adaptern bäddar in källorna i modellfilen eller tar emot dem tillsammans med den. Hubbens adapter använder projektets gemensamma källbibliotek. Båda följer arkitekturens grundkrav (avsnitt 1): ingen server, och källorna lämnar datorn bara om användaren exporterar dem eller skickar dem till en molnleverantör.
+
+**Flöde när en källa läggs in:**
+
+1. Panelen frågar om källan ska refereras per rad eller per stycke, förvalt enligt projektets standard (utan hubb: *stycke*).
+2. Användaren bekräftar, och svaret sparas som `granularity` på källan.
+3. Först därefter skickas källan till AI:n.
+
+**AI-kontrakt.** Varje ändring som AI:n föreslår returneras som en händelse:
+
+```json
+{
+  "op": "add | update | delete",
+  "elementId": "barrier-12",
+  "change": { },
+  "sources": [ { "sourceId": "src-7f3a", "segmentId": "s-0042", "quote": "..." } ],
+  "chatTurn": "turn-18"
+}
+```
+
+Panelen avvisar eller flaggar ändringar vars citat inte hittas i källan. Händelserna kan också ge underlag till ett sammanfattande meddelande för ändringen. Modellen följer löst W3C PROV: entitet (element, källa), aktivitet (chattur) och agent (AI:n eller människan). Kontraktet beskrivs i verktygets `schemaPrompt` (avsnitt 10), så det gäller alla leverantörer.
+
+Ändringen visas och godkänns som andra AI-förslag (designprinciperna 1.3); källreferenserna följer med som `ai-suggested`.

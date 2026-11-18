@@ -2,7 +2,7 @@
 
 *Swedish version: [designprinciper.md](designprinciper.md)*
 
-Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) and the **HFA DS** Penpot file. [ARCHITECTURE.md](ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
+Design decisions shared by all HFA tools (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd), the start page hfa-hub and the **HFA DS** Penpot file. [ARCHITECTURE.md](ARCHITECTURE.md) describes how the repositories fit together. This document describes what the tools are for, how they should look, and why.
 
 ## 1. Purpose and simplicity
 
@@ -151,6 +151,27 @@ The TTA table in HTA serves different purposes: for example error identification
 - **The AI follows the columns, it does not decide them.** It phrases content in the columns that exist. A suggestion of new columns is shown and accepted like any other suggestion (1.3), and if so comes later.
 
 None of this is built yet (2026-11-03). The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 8.
+
+### 1.8 Traceability to the source material (planned)
+
+What the AI panel brings into a model must be traceable back to its source, for example an accident investigation or a requirements document pasted into the panel. From an element in HTA, Bowtie or STPA, one should be able to go to the exact paragraph or line the information came from.
+
+- **Every change carries its sources.** For each change it proposes, the AI states which place in the source it builds on, with a verbatim quote. The panel checks that the quote is in the source and otherwise flags or rejects the proposal.
+- **The user chooses the reference level per source:** *line* for requirements documents with one requirement per line (for example ERA's CSM Monitoring and CSM RA) or *paragraph* for running text (for example accident investigations). The panel asks when the source is added, preset to the project's default, and only then is the source sent to the AI. The question is an ordinary function of the panel, not a tool call to the model, so it works the same with every provider, local models included.
+- **An element can have many source references**, from several parts of one or more documents.
+- **AI-suggested and verified look different.** The user verifies each source reference on its own. An element counts as verified when all its references are, and the difference shows in the diagram by shape or symbol, not only colour (as in 1.3).
+- **A click on an element** shows the quote and the source, with a button that jumps to the place in the source. **Selected text in the source** shows which elements build on it; that needs the hub's source library ([design-hub.en.md](design-hub.en.md)).
+- **The same panel everywhere.** Traceability is built in the shared AI panel (`ai-assist.js`, 4.7) and works the same in the standalone tools and in the hub. The only difference is where the sources are stored.
+
+**Decisions (2026-11-18):**
+
+1. **The reference level is locked when the source is first used.** Whoever wants another level adds the source again with that level. The panel then moves the references by searching for their quotes.
+2. **A new version of a source becomes a new source** that points to the one it replaces. References whose quote is still there unchanged are moved when the user approves; the others are flagged. The old version stays, so it remains clear what an older reference was based on.
+3. **Verification is per source reference**, not per element (the point above).
+
+**Open:** whether an approved proposal (1.3) also verifies its source references, or whether verification is a step of its own. The question stays open until it has been tried in the design in Penpot.
+
+None of this is built or drawn yet (2026-11-18); the interface is to be sketched in Penpot. The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 11.
 
 ## 2. Typography
 
@@ -494,6 +515,7 @@ Every tool has a title bar at the top, the same in all tools:
 - **Theme and the panel toggle** (*Hide panel*, 4.7) are at the far right. Theme is a toggle button with a sun in light mode and a crescent moon in dark mode. New general buttons go in the right group.
 - **Tool-specific commands** do not belong in the title bar. The Add commands in STPA, HTA and Bowtie are in a row above the diagram (5.10).
 - **All tools have the same buttons** in the title bar, even when a tool does not use all of them. *Undo* works in all tools (4.14). Only the application name differs.
+- **Exception: HFA Hub.** The start page has no document to create, open, save or undo, and so has only the application name and Theme in its title bar (1.2, point 1).
 - **The bar is responsive in the tools.** The width 1440 px applies only to the component *Title bar* in HFA DS (the variants `Tool` = STPA, HTA, Bowtie); in a tool the bar fills the width and the right group stays at the far right.
 
 **Current state (2026-11-12):** the title bar with 28 px buttons is built in HTA, Bowtie and STPA, and the theme switch (the component *Theme*, 44 × 24, `role="switch"` named *Dark theme*) replaces the *Theme* button in all three; the test `tests/shared/theme-toggle.spec.mjs` checks it. The old toolbars (the component *Toolbar*) are still in HFA DS.
