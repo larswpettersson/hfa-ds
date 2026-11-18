@@ -25,14 +25,15 @@ The colours are hand-written copies of `tokens.json`, as in the other tools. The
 The hub is extended into a workspace for projects. It stays a page without a server: the project is saved as a file on the user's computer, the same way the tools save their analyses (the architecture, section 1).
 
 - **A project** gathers the models (HTA, Bowtie, STPA) that belong to the same analysis, the source library and the project's settings.
+- **The models are separate files** (decided 2026-11-18). The project file points to them with loose references and does not embed them, so each model can be opened and used in its own tool without the hub.
 - **The source library** holds the sources with their segments (lines or paragraphs). Each source is added once and can be used by every model in the project.
 - **Project settings:** the default level for new sources, *line* or *paragraph*. The panel suggests it when a source is added, and the user can choose the other (1.8).
 - **Display of a source** with highlights on the places the models build on.
 - **Reverse lookup:** select text in a source and see which elements in all the project's models build on it.
 - **The hub's storage adapter** gives the AI panel the project's source library. The panel is the same as in the standalone tools; only the adapter differs (the architecture, section 11).
 
-**Open questions:**
+**Open question:**
 
-- Does the project file embed the models, or point to the model files?
 - How does a tool opened from the hub reach the project's source library? The tools are separate pages in separate repositories, and from `file://` two pages cannot share data through the browser's storage. The alternatives are that the hub shows the tool inside itself, or that the project is opened as a file in the tool.
-- What does the hub look like with a project open, compared with the start page without one? To be drawn in Penpot.
+
+What the hub looks like with a project open, compared with the start page without one, is drawn in Penpot before anything is built.

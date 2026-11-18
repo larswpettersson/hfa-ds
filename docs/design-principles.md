@@ -169,7 +169,7 @@ What the AI panel brings into a model must be traceable back to its source, for 
 2. **A new version of a source becomes a new source** that points to the one it replaces. References whose quote is still there unchanged are moved when the user approves; the others are flagged. The old version stays, so it remains clear what an older reference was based on.
 3. **Verification is per source reference**, not per element (the point above).
 
-**Open:** whether an approved proposal (1.3) also verifies its source references, or whether verification is a step of its own.
+**Open:** whether an approved proposal (1.3) also verifies its source references, or whether verification is a step of its own. The question stays open until it has been tried in the design in Penpot.
 
 None of this is built or drawn yet (2026-11-18); the interface is to be sketched in Penpot. The technical solution is described in [ARCHITECTURE.md](ARCHITECTURE.md), section 11.
 

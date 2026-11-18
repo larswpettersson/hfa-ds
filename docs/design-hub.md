@@ -25,14 +25,15 @@ Färgerna är handskrivna kopior av `tokens.json`, som i de andra verktygen. Tes
 Hubben byggs ut till en arbetsyta för projekt. Den förblir en sida utan server: projektet sparas som en fil på användarens dator, på samma sätt som verktygen sparar sina analyser (arkitekturen, avsnitt 1).
 
 - **Ett projekt** samlar modellerna (HTA, Bowtie, STPA) som hör till samma analys, källbiblioteket och projektets inställningar.
+- **Modellerna är separata filer** (beslutat 2026-11-18). Projektfilen pekar på dem med lösa referenser och bäddar inte in dem, så att varje modell kan öppnas och användas i sitt eget verktyg utan hubben.
 - **Källbiblioteket** innehåller källorna med deras segment (rader eller stycken). Varje källa läggs in en gång och kan användas av alla modeller i projektet.
 - **Projektinställningar:** standardnivån för nya källor, *rad* eller *stycke*. Panelen föreslår den när en källa läggs in, och användaren kan välja den andra (1.8).
 - **Visning av en källa** med markeringar för de ställen som modellerna bygger på.
 - **Omvänd uppslagning:** markera text i en källa och se vilka element i projektets alla modeller som bygger på den.
 - **Hubbens lagringsadapter** ger AI-panelen projektets källbibliotek. Panelen är densamma som i de fristående verktygen; bara adaptern skiljer (arkitekturen, avsnitt 11).
 
-**Öppna frågor:**
+**Öppen fråga:**
 
-- Bäddar projektfilen in modellerna, eller pekar den på modellfilerna?
 - Hur får ett verktyg som öppnas från hubben tillgång till projektets källbibliotek? Verktygen är egna sidor i egna repon, och från `file://` kan två sidor inte dela data genom webbläsarens lagring. Alternativen är att hubben visar verktyget inuti sig själv, eller att projektet öppnas som en fil i verktyget.
-- Hur ser hubben ut när den har ett projekt öppet, jämfört med startsidan utan projekt? Det ska ritas i Penpot.
+
+Hur hubben ser ut med ett projekt öppet, jämfört med startsidan utan projekt, ritas i Penpot innan något byggs.

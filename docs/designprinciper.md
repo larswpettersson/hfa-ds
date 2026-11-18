@@ -169,7 +169,7 @@ Det som AI-panelen för in i en modell ska gå att spåra tillbaka till källan,
 2. **En ny version av en källa blir en ny källa** som pekar på den den ersätter. Referenser vars citat finns kvar oförändrat flyttas när användaren godkänner det, och de övriga flaggas. Den gamla versionen finns kvar, så att det går att se vad en äldre referens byggde på.
 3. **Verifiering sker per källreferens**, inte per element (punkten ovan).
 
-**Öppet:** om ett godkänt förslag (1.3) också verifierar dess källreferenser, eller om verifieringen är ett eget steg.
+**Öppet:** om ett godkänt förslag (1.3) också verifierar dess källreferenser, eller om verifieringen är ett eget steg. Frågan står öppen tills den har prövats i designen i Penpot.
 
 Inget av detta är byggt eller ritat ännu (2026-11-18); gränssnittet ska skissas i Penpot. Den tekniska lösningen beskrivs i [arkitektur.md](arkitektur.md), avsnitt 11.
 
