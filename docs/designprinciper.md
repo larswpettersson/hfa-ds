@@ -4,7 +4,7 @@
 
 Designbeslut som gäller alla HFA-verktyg (hfa-hta, hfa-bowtie, hfa-stpa, hfa-rbd) och Penpot-filen **HFA DS**. [arkitektur.md](arkitektur.md) beskriver hur repona hänger ihop. Det här dokumentet beskriver vad verktygen ska vara till för, hur de ska se ut, och varför.
 
-## 1. Syfte och enkelhet
+## 1. Syfte
 
 ### 1.1 Vad verktygen är till för
 
